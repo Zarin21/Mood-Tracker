@@ -8,7 +8,7 @@
 | [WeiKun He] | [weikun1] | [@weikun0309]     |
 | [Chowdhury Tashrif Ahmed] | [cahmed] | [@tashrifahmedd]     |
 | [Full Name] | [CCID] | [@username]     |
-| [Full Name] | [CCID] | [@username]     |
+| [Levi Liu] | [yingjia6] | [@puro-exe]     |
 | [Full Name] | [CCID] | [@username]     |
 
 ## Project Description
