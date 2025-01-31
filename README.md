@@ -5,7 +5,7 @@
 | Name        | CCID   | GitHub Username |
 | ----------- | ------ | --------------- |
 | [Kevin Chan] | [kdchan] | [@kevindkchan]     |
-| [Full Name] | [CCID] | [@username]     |
+| [WeiKun He] | [weikun1] | [@weikun0309]     |
 | [Full Name] | [CCID] | [@username]     |
 | [Full Name] | [CCID] | [@username]     |
 | [Full Name] | [CCID] | [@username]     |
