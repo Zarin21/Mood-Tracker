@@ -9,7 +9,7 @@
 | [Chowdhury Tashrif Ahmed] | [cahmed] | [@tashrifahmedd]     |
 | [Full Name] | [CCID] | [@username]     |
 | [Levi Liu] | [yingjia6] | [@puro-exe]     |
-| [Full Name] | [CCID] | [@username]     |
+| [Ethan Shi] | [yunzhe3] | [@Stitches322]     |
 
 ## Project Description
 
