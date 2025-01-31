@@ -9,7 +9,7 @@
 | [Chowdhury Tashrif Ahmed] | [cahmed] | [@tashrifahmedd]     |
 | [Zarin Subah] | [zsubah] | [@Zarin21]     |
 | [Levi Liu] | [yingjia6] | [@puro-exe]     |
-| [Ethan Shi] | [yunzhe3] | [@Stitches322]     |
+| [Ethan Shi] | [yunzhe3] | [@EthanShi-push]     |
 
 ## Project Description
 
