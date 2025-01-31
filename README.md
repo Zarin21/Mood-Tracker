@@ -7,7 +7,7 @@
 | [Kevin Chan] | [kdchan] | [@kevindkchan]     |
 | [WeiKun He] | [weikun1] | [@weikun0309]     |
 | [Chowdhury Tashrif Ahmed] | [cahmed] | [@tashrifahmedd]     |
-| [Full Name] | [CCID] | [@username]     |
+| [Zarin Subah] | [zsubah] | [@Zarin21]     |
 | [Levi Liu] | [yingjia6] | [@puro-exe]     |
 | [Ethan Shi] | [yunzhe3] | [@Stitches322]     |
 
