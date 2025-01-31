@@ -6,7 +6,7 @@
 | ----------- | ------ | --------------- |
 | [Kevin Chan] | [kdchan] | [@kevindkchan]     |
 | [WeiKun He] | [weikun1] | [@weikun0309]     |
-| [Full Name] | [CCID] | [@username]     |
+| [Chowdhury Tashrif Ahmed] | [cahmed] | [@tashrifahmedd]     |
 | [Full Name] | [CCID] | [@username]     |
 | [Full Name] | [CCID] | [@username]     |
 | [Full Name] | [CCID] | [@username]     |
