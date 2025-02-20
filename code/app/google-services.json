@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988891216531",
+    "project_id": "unemployeedavenger",
+    "storage_bucket": "unemployeedavenger.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988891216531:android:caf5f88e8105c94bb02b66",
+        "android_client_info": {
+          "package_name": "com.example.unemployedavengers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATb6yrQmDvwS903gbmR129LDWILA4Xd0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
