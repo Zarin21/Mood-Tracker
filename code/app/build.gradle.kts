@@ -1,15 +1,20 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
+
 }
 
 android {
+    buildFeatures {
+        viewBinding = true
+    }
     namespace = "com.example.unemployedavengers"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.unemployedavengers"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -32,6 +37,11 @@ android {
 }
 
 dependencies {
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-firestore:25.1.1")
 
     implementation(libs.appcompat)
     implementation(libs.material)
