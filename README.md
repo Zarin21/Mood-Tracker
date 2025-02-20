@@ -31,5 +31,5 @@
 
 - [[Wiki Link](https://github.com/cmput301-w25/project-unemployedavengers/wiki)]
 - [[Scrum Board](https://github.com/orgs/cmput301-w25/projects/63)]
-- [[UI Mockups](https://github.com/cmput301-w25/project-unemployedavengers/wiki/UI-Mockup)]
+- [[UI Mockups](https://github.com/cmput301-w25/project-unemployedavengers/wiki/February-14,-2025-%E2%80%90-UI-Mockup)]
 - [UML]
