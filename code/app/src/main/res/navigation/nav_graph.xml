@@ -42,6 +42,6 @@
         android:id="@+id/dashboardFragment"
         android:name="com.example.unemployedavengers.auth.dashboard"
         android:label="dashboardFragment">
-
     </fragment>
+
 </navigation>
