@@ -14,14 +14,24 @@ public class User implements Serializable {
     private String username;
     private String dummyEmail;
 
-    public User() {
-        // Required by Firestore for deserialization
+    public String getPassword() {
+        return password;
     }
 
-    public User(String userId, String username, String dummyEmail) {
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String password;
+
+    public User() {
+    }
+
+    public User(String userId, String username, String dummyEmail,String password) {
         this.userId = userId;
         this.username = username;
         this.dummyEmail = dummyEmail;
+        this.password = password;
     }
 
     public String getUserId() {
