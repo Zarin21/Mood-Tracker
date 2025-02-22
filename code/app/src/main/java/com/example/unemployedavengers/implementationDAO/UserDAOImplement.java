@@ -8,11 +8,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserDAOImplement implements IUserDAO {
@@ -27,7 +29,7 @@ public class UserDAOImplement implements IUserDAO {
 
     @Override
     public Task<Void> signUpUser(@NonNull final String username, @NonNull final String password) {
-        final String dummyEmail = username + "@example.com";
+        final String dummyEmail = username.toLowerCase() + "@example.com";
 
         // Create user with dummyEmail and password
         return auth.createUserWithEmailAndPassword(dummyEmail, password)
@@ -56,7 +58,7 @@ public class UserDAOImplement implements IUserDAO {
     @Override
     public Task<Void> signInUser(@NonNull final String username, @NonNull final String password) {
         // Reconstruct the dummy email
-        final String dummyEmail = username + "@example.com";
+        final String dummyEmail = username.toLowerCase() + "@example.com";
         // Sign in with email/password
         return auth.signInWithEmailAndPassword(dummyEmail, password)
                 .continueWithTask(task -> {
@@ -66,7 +68,82 @@ public class UserDAOImplement implements IUserDAO {
                     return Tasks.forResult(null);
                 });
     }
+    @Override
+    public Task<Boolean> checkUserExists(@NonNull String username) {
+        // Query the database to check if user exist
+        return db.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .continueWith(task -> {
+                    if (!task.isSuccessful() || task.getResult() == null) {
+                        throw task.getException() != null
+                                ? task.getException()
+                                : new Exception("Error fetching user record.");
+                    }
+                    // If the query returns at least one document, the user exists.
+                    return !task.getResult().isEmpty();
+                });
+    }
+    public Task<Void> changePassword(@NonNull User user, @NonNull String newPassword) {
+        final String dummyEmail = user.getDummyEmail();
+        FirebaseUser currentUser = auth.getCurrentUser();
 
+        if (currentUser == null) {
+            return Tasks.forException(new Exception("User not logged in"));
+        }
+
+        if (!dummyEmail.equals(currentUser.getEmail())) {
+            return Tasks.forException(new Exception("Authenticated user does not match the username provided"));
+        }
+
+        // Update the password in Firebase Authentication.
+        return currentUser.updatePassword(newPassword)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Update the password in firebase
+                    String uid = currentUser.getUid();
+                    DocumentReference userDoc = db.collection("users").document(uid);
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("password", newPassword);
+                    return userDoc.update(updates);
+                });
+    }
+
+    @Override
+    public Task<Void> resetPassword(@NonNull String username, @NonNull String newPassword) {
+        final String dummyEmail = username.toLowerCase() + "@example.com";
+
+        return db.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful() || task.getResult() == null || task.getResult().isEmpty()) {
+                        throw new Exception("User record not found in Firestore.");
+                    }
+                    // get password
+                    String storedPassword = task.getResult().getDocuments().get(0).getString("password");
+                    if (storedPassword == null) {
+                        throw new Exception("Stored password not found.");
+                    }
+
+                    // sign in first to change password
+                    return auth.signInWithEmailAndPassword(dummyEmail, storedPassword);
+                })
+                .continueWithTask(getUserTask -> getCurrentUserProfile())
+                .continueWithTask(profileTask -> {
+                    User currentUser = profileTask.getResult();
+                    if (currentUser == null) {
+                        throw new Exception("Failed to retrieve current user profile.");
+                    }
+
+                    return changePassword(currentUser, newPassword);
+                });
+    }
     @Override
     public Task<User> getCurrentUserProfile() {
         FirebaseUser firebaseUser = auth.getCurrentUser();
@@ -83,6 +160,30 @@ public class UserDAOImplement implements IUserDAO {
             }
             return task.getResult().toObject(User.class);
         });
+    }
+
+    @Override
+    public Task<Void> changeUsername(@NonNull String newUsername) {
+        final String newDummyEmail = newUsername.toLowerCase() + "@example.com";
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser == null) {
+            return Tasks.forException(new Exception("No user is signed in."));
+        }
+
+        return currentUser.updateEmail(newDummyEmail)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    String uid = currentUser.getUid();
+                    DocumentReference userDoc = db.collection("users").document(uid);
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("username", newUsername);
+                    updates.put("dummyEmail", newDummyEmail);
+                    return userDoc.update(updates);
+                });
     }
 
     @Override

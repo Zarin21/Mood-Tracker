@@ -39,6 +39,12 @@ public class SignUp extends Fragment {
 
         userDAO = new UserDAOImplement();
 
+
+        binding.btnBack.setOnClickListener(v -> {
+            Navigation.findNavController(v)
+                    .navigate(R.id.action_signUpFragment_to_homeFragment);
+        });
+
         binding.btnSignup.setOnClickListener(v -> {
             String username = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
@@ -59,7 +65,7 @@ public class SignUp extends Fragment {
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(v)
-                                .navigate(R.id.action_profileFragment_to_loginFragment);
+                                .navigate(R.id.action_signUpFragment_to_loginFragment);
                     })
                     .addOnFailureListener(e -> {
                         LayoutInflater inflater = getLayoutInflater();

@@ -39,6 +39,11 @@ public class Login extends Fragment {
 
         userDAO = new UserDAOImplement();
 
+        binding.btnBack.setOnClickListener(v -> {
+            Navigation.findNavController(v)
+                    .navigate(R.id.action_loginFragment_to_homeFragment);
+        });
+
         // Set up the click listener for the Login button
         binding.btnLogin.setOnClickListener(v -> {
             String username = binding.etUsername.getText().toString().trim();
@@ -78,7 +83,8 @@ public class Login extends Fragment {
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> {
-
+            Navigation.findNavController(v)
+                    .navigate(R.id.action_loginFragment_to_passwordReset1Fragment);
         });
     }
 
