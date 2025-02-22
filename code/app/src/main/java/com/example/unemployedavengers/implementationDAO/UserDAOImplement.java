@@ -45,7 +45,7 @@ public class UserDAOImplement implements IUserDAO {
 
                     final String userId = firebaseUser.getUid();
                     // Create a User object
-                    User user = new User(userId, username, dummyEmail);
+                    User user = new User(userId, username, dummyEmail,password);
 
                     // Store user in Firestore
                     DocumentReference userDoc = db.collection("users").document(userId);
