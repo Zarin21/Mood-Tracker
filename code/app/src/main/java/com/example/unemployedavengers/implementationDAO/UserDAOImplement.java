@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
@@ -28,7 +29,7 @@ public class UserDAOImplement implements IUserDAO {
 
     @Override
     public Task<Void> signUpUser(@NonNull final String username, @NonNull final String password) {
-        final String dummyEmail = username + "@example.com";
+        final String dummyEmail = username.toLowerCase() + "@example.com";
 
         // Create user with dummyEmail and password
         return auth.createUserWithEmailAndPassword(dummyEmail, password)
@@ -57,7 +58,7 @@ public class UserDAOImplement implements IUserDAO {
     @Override
     public Task<Void> signInUser(@NonNull final String username, @NonNull final String password) {
         // Reconstruct the dummy email
-        final String dummyEmail = username + "@example.com";
+        final String dummyEmail = username.toLowerCase() + "@example.com";
         // Sign in with email/password
         return auth.signInWithEmailAndPassword(dummyEmail, password)
                 .continueWithTask(task -> {
@@ -114,7 +115,7 @@ public class UserDAOImplement implements IUserDAO {
 
     @Override
     public Task<Void> resetPassword(@NonNull String username, @NonNull String newPassword) {
-        final String dummyEmail = username + "@example.com";
+        final String dummyEmail = username.toLowerCase() + "@example.com";
 
         return db.collection("users")
                 .whereEqualTo("username", username)
@@ -159,6 +160,30 @@ public class UserDAOImplement implements IUserDAO {
             }
             return task.getResult().toObject(User.class);
         });
+    }
+
+    @Override
+    public Task<Void> changeUsername(@NonNull String newUsername) {
+        final String newDummyEmail = newUsername.toLowerCase() + "@example.com";
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser == null) {
+            return Tasks.forException(new Exception("No user is signed in."));
+        }
+
+        return currentUser.updateEmail(newDummyEmail)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    String uid = currentUser.getUid();
+                    DocumentReference userDoc = db.collection("users").document(uid);
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("username", newUsername);
+                    updates.put("dummyEmail", newDummyEmail);
+                    return userDoc.update(updates);
+                });
     }
 
     @Override
