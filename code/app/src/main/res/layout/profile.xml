@@ -43,7 +43,7 @@
         android:layout_marginBottom="140dp"
         android:backgroundTint="#F88379"
         android:paddingVertical="12dp"
-        android:text="back"
+        android:text="Back"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textStyle="bold"

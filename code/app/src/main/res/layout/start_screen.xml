@@ -69,6 +69,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Login Text -->
+
+    <!-- Login Button -->
     <TextView
         android:id="@+id/tvStartLogin2"
         android:layout_width="wrap_content"
@@ -80,11 +82,10 @@
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/tvStartLogin"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.756"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
-    <!-- Login Button -->
     <TextView
         android:id="@+id/tvStartLogin"
         android:layout_width="wrap_content"
