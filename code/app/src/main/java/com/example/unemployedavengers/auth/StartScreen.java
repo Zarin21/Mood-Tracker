@@ -1,5 +1,6 @@
 package com.example.unemployedavengers.auth;
 
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,6 @@ public class StartScreen extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Inflate with View Binding
         binding = StartScreenBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -31,11 +31,11 @@ public class StartScreen extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.getStarted.setOnClickListener(v ->
+        binding.btnStart.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_homeFragment_to_signUpFragment)
         );
-        binding.login.setOnClickListener(v ->
+        binding.tvStartLogin.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_homeFragment_to_loginFragment)
         );
