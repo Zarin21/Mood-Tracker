@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserDAOImplement implements IUserDAO {
@@ -66,7 +67,82 @@ public class UserDAOImplement implements IUserDAO {
                     return Tasks.forResult(null);
                 });
     }
+    @Override
+    public Task<Boolean> checkUserExists(@NonNull String username) {
+        // Query the database to check if user exist
+        return db.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .continueWith(task -> {
+                    if (!task.isSuccessful() || task.getResult() == null) {
+                        throw task.getException() != null
+                                ? task.getException()
+                                : new Exception("Error fetching user record.");
+                    }
+                    // If the query returns at least one document, the user exists.
+                    return !task.getResult().isEmpty();
+                });
+    }
+    public Task<Void> changePassword(@NonNull User user, @NonNull String newPassword) {
+        final String dummyEmail = user.getDummyEmail();
+        FirebaseUser currentUser = auth.getCurrentUser();
 
+        if (currentUser == null) {
+            return Tasks.forException(new Exception("User not logged in"));
+        }
+
+        if (!dummyEmail.equals(currentUser.getEmail())) {
+            return Tasks.forException(new Exception("Authenticated user does not match the username provided"));
+        }
+
+        // Update the password in Firebase Authentication.
+        return currentUser.updatePassword(newPassword)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Update the password in firebase
+                    String uid = currentUser.getUid();
+                    DocumentReference userDoc = db.collection("users").document(uid);
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("password", newPassword);
+                    return userDoc.update(updates);
+                });
+    }
+
+    @Override
+    public Task<Void> resetPassword(@NonNull String username, @NonNull String newPassword) {
+        final String dummyEmail = username + "@example.com";
+
+        return db.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful() || task.getResult() == null || task.getResult().isEmpty()) {
+                        throw new Exception("User record not found in Firestore.");
+                    }
+                    // get password
+                    String storedPassword = task.getResult().getDocuments().get(0).getString("password");
+                    if (storedPassword == null) {
+                        throw new Exception("Stored password not found.");
+                    }
+
+                    // sign in first to change password
+                    return auth.signInWithEmailAndPassword(dummyEmail, storedPassword);
+                })
+                .continueWithTask(getUserTask -> getCurrentUserProfile())
+                .continueWithTask(profileTask -> {
+                    User currentUser = profileTask.getResult();
+                    if (currentUser == null) {
+                        throw new Exception("Failed to retrieve current user profile.");
+                    }
+
+                    return changePassword(currentUser, newPassword);
+                });
+    }
     @Override
     public Task<User> getCurrentUserProfile() {
         FirebaseUser firebaseUser = auth.getCurrentUser();

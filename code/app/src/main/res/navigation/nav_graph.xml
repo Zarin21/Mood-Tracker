@@ -24,8 +24,11 @@
         android:name="com.example.unemployedavengers.auth.SignUp"
         android:label="signUpFragment">
         <action
-            android:id="@+id/action_profileFragment_to_loginFragment"
+            android:id="@+id/action_signUpFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_signUpFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 
     <!-- LoginFragment -->
@@ -36,12 +39,47 @@
         <action
             android:id="@+id/action_loginFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_passwordReset1Fragment"
+            app:destination="@id/passwordReset1Fragment" />
 
     </fragment>
+    <!-- DashBoard Fragment -->
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.example.unemployedavengers.auth.dashboard"
         android:label="dashboardFragment">
+    </fragment>
+
+    <!-- PasswordReset1 Fragment -->
+    <fragment
+        android:id="@+id/passwordReset1Fragment"
+        android:name="com.example.unemployedavengers.auth.PasswordReset1"
+        android:label="passwordReset1Fragment">
+        <action
+            android:id="@+id/action_passwordReset1Fragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_passwordReset1Fragment_to_passwordReset2Fragment"
+            app:destination="@id/passwordReset2Fragment" />
+
+
+    </fragment>
+
+    <!-- PasswordReset2 Fragment -->
+    <fragment
+        android:id="@+id/passwordReset2Fragment"
+        android:name="com.example.unemployedavengers.auth.PasswordReset2"
+        android:label="dashboardFragment">
+        <action
+            android:id="@+id/action_passwordReset2Fragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_passwordReset2Fragment_to_passwordReset1Fragment"
+            app:destination="@id/passwordReset1Fragment" />
     </fragment>
 
 </navigation>
