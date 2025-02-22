@@ -23,20 +23,28 @@ public interface IUserDAO {
     /**
      * Checks if a user exists by converting the username into a dummy email
      * and querying Firebase Authentication.
-     *
-     * @param username The username to check.
-     * @return A Task that resolves to true if the user exists, or false otherwise.
      */
     Task<Boolean> checkUserExists(@NonNull String username);
     /**
      * Changes the password for the user corresponding to the given username.
-     *
-     * @param user    The current signed in user
-     * @param newPassword The new password to set.
-     * @return A Task that completes when the password has been successfully updated.
      */
     Task<Void> changePassword(@NonNull User user, @NonNull String newPassword);
+
+    /**
+     * Reset Password of the user before signed in
+     */
     Task<Void> resetPassword(@NonNull String username, @NonNull String newPassword);
+
+
+    /**
+     * Changes the username by updating the dummy email (username@example.com) in Firebase Authentication
+     * and the user record in Firestore.
+     *
+     * @param newUsername The new username to be set.
+     * @return A Task that completes when both updates are successful.
+     */
+    Task<Void> changeUsername(@NonNull String newUsername);
+
 
     /**
      * Gets the current logged-in User object from firebase.

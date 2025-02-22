@@ -15,7 +15,6 @@ import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.DAO.IUserDAO;
 import com.example.unemployedavengers.R;
-import com.example.unemployedavengers.databinding.PasswordReset1Binding;
 import com.example.unemployedavengers.databinding.PasswordReset2Binding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.google.android.gms.tasks.Task;

@@ -50,8 +50,14 @@
     <!-- DashBoard Fragment -->
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="com.example.unemployedavengers.auth.dashboard"
+        android:name="com.example.unemployedavengers.Dashboard"
         android:label="dashboardFragment">
+        <action
+            android:id="@+id/action_dashboardFragment_to_friendsHistoryFragment"
+            app:destination="@id/friendsHistory" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <!-- PasswordReset1 Fragment -->
@@ -80,6 +86,24 @@
         <action
             android:id="@+id/action_passwordReset2Fragment_to_passwordReset1Fragment"
             app:destination="@id/passwordReset1Fragment" />
+    </fragment>
+
+    <!-- FriendsHistory Fragment -->
+    <fragment
+        android:id="@+id/friendsHistory"
+        android:name="com.example.unemployedavengers.friendSection.FriendsHistory"
+        android:label="friendHistory Fragment">
+
+    </fragment>
+
+    <!-- Profile Fragment -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.unemployedavengers.auth.Profile"
+        android:label="profileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
     </fragment>
 
 </navigation>
