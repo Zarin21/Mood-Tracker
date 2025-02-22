@@ -1,0 +1,46 @@
+package com.example.unemployedavengers.DAO;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.Task;
+
+import androidx.annotation.NonNull;
+
+import com.example.unemployedavengers.models.User;
+import com.google.android.gms.tasks.Task;
+
+public interface IUserDAO {
+
+    /**
+     * Signs up a user with a username (converted to a dummy email) and password.
+     */
+    Task<Void> signUpUser(@NonNull String username, @NonNull String password);
+
+    /**
+     * Signs in a user using username-only (dummy email behind the scenes).
+     */
+    Task<Void> signInUser(@NonNull String username, @NonNull String password);
+
+    /**
+     * Gets the current logged-in User object from firebase.
+     */
+    Task<User> getCurrentUserProfile();
+
+    /**
+     * User A requests to follow User B.
+     */
+    Task<Void> requestFollow(@NonNull String requesterId, @NonNull String targetId);
+
+    /**
+     * Accept a follow request (B accepts A's request),
+     * creating a real follow relationship.
+     */
+    Task<Void> acceptFollowRequest(@NonNull String requesterId, @NonNull String targetId);
+
+    /**
+     * Reject a follow request (B rejects A's request),
+     */
+    Task<Void> rejectFollowRequest(@NonNull String requesterId, @NonNull String targetId);
+
+    Task<Void> unfollowUser(@NonNull String followerId, @NonNull String followedId);
+}
