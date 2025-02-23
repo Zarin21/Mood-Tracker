@@ -34,12 +34,12 @@
             app:layout_constraintTop_toBottomOf="@+id/tvUsernameLabel" />
 
         <Button
-            android:id="@+id/requests_button"
+            android:id="@+id/search_button"
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:backgroundTint="#F88379"
             android:paddingVertical="12dp"
-            android:text="Requests"
+            android:text="Search"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textStyle="bold"
@@ -52,10 +52,10 @@
     </LinearLayout>
 
     <ListView
+        android:id="@+id/search_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/search_list" />
+        android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
