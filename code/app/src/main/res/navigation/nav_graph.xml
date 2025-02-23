@@ -93,6 +93,9 @@
         android:id="@+id/friendsHistory"
         android:name="com.example.unemployedavengers.friendSection.FriendsHistory"
         android:label="friendHistory Fragment">
+        <action
+            android:id="@+id/action_friendsHistoryFragment_to_userSearchFragment"
+            app:destination="@id/userSearch" />
 
     </fragment>
 
@@ -105,5 +108,14 @@
             android:id="@+id/action_profileFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment" />
     </fragment>
+
+    <!-- UserSearch Fragment -->
+    <fragment
+        android:id="@+id/userSearch"
+        android:name="com.example.unemployedavengers.friendSection.UserSearch"
+        android:label="userSearch Fragment">
+
+    </fragment>
+
 
 </navigation>

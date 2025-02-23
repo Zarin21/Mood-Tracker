@@ -10,9 +10,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,18 +206,19 @@ public class UserDAOImplement implements IUserDAO {
 
     @Override
     public Task<Void> acceptFollowRequest(@NonNull String requesterId, @NonNull String targetId) {
-        // Step 1: Remove or update the "pending" request doc
+        // Delete the follow request document
         DocumentReference requestDocRef = db.collection("users")
                 .document(targetId)
                 .collection("requests")
                 .document(requesterId);
 
-        // Step 2: Create the actual follow relationship
+        // Create a document in the requester's "following" subcollection for the target user
         DocumentReference followerFollowingRef = db.collection("users")
                 .document(requesterId)
                 .collection("following")
                 .document(targetId);
 
+        // Create a document in the target user's "followers" subcollection for the requester
         DocumentReference followedFollowersRef = db.collection("users")
                 .document(targetId)
                 .collection("followers")
@@ -232,8 +236,6 @@ public class UserDAOImplement implements IUserDAO {
 
         WriteBatch batch = db.batch();
         batch.delete(requestDocRef);
-
-        // Now create the relationship
         batch.set(followerFollowingRef, followingData);
         batch.set(followedFollowersRef, followerData);
 
@@ -252,25 +254,70 @@ public class UserDAOImplement implements IUserDAO {
 
     @Override
     public Task<Void> unfollowUser(@NonNull String followerId, @NonNull String followedId) {
-        // Reference to the document in the follower's "following" subcollection.
+        // Remove the follow relationship in both directions.
         DocumentReference followerFollowingRef = db.collection("users")
                 .document(followerId)
                 .collection("following")
                 .document(followedId);
 
-        // Reference to the document in the followed user's "followers" subcollection.
         DocumentReference followedFollowersRef = db.collection("users")
                 .document(followedId)
                 .collection("followers")
                 .document(followerId);
 
-        // Create a batch write to delete both documents at once.
         WriteBatch batch = db.batch();
         batch.delete(followerFollowingRef);
         batch.delete(followedFollowersRef);
 
-        // Commit the batch and return the task.
         return batch.commit();
+    }
+
+
+
+    @Override
+    public Task<List<User>> searchUsers(@NonNull String userName) {
+        // query users first
+        Task<QuerySnapshot> queryTask = db.collection("users")
+                .orderBy("username")
+                .startAt(userName)
+                .endAt(userName + "\uf8ff")
+                .get();
+
+        // Retrieve the current user's profile.
+        Task<User> currentUserTask = getCurrentUserProfile();
+
+        // When all success
+        return Tasks.whenAllSuccess(queryTask, currentUserTask)
+                .continueWith(task -> {
+                    // 2 tasks in one list and extract
+                    List<Object> results = task.getResult();
+                    QuerySnapshot querySnapshot = (QuerySnapshot) results.get(0);
+                    User currentUser = (User) results.get(1);
+                    String currentUid = currentUser.getUserId();
+
+                    // logic to get right ones
+                    List<User> userList = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        User user = doc.toObject(User.class);
+                        if (user != null && !user.getUserId().equals(currentUid)) {
+                            userList.add(user);
+                        }
+                    }
+                    return userList;
+                });
+    }
+    @Override
+    public Task<User> getUserByUsername(@NonNull String username) {
+        return db.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .continueWith(task -> {
+                    if (!task.isSuccessful() || task.getResult() == null || task.getResult().isEmpty()) {
+                        return null;
+                    }
+                    return task.getResult().getDocuments().get(0).toObject(User.class);
+                });
     }
 
 
