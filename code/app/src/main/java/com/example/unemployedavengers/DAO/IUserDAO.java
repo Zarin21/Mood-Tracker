@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import com.example.unemployedavengers.models.User;
 import com.google.android.gms.tasks.Task;
 
+import java.util.List;
+
 public interface IUserDAO {
 
     /**
@@ -68,4 +70,14 @@ public interface IUserDAO {
     Task<Void> rejectFollowRequest(@NonNull String requesterId, @NonNull String targetId);
 
     Task<Void> unfollowUser(@NonNull String followerId, @NonNull String followedId);
+
+    /**
+     * Search user functionality
+     */
+    Task<List<User>> searchUsers(@NonNull String query);
+
+    /**
+     * get user by user name
+     */
+    Task<User> getUserByUsername(@NonNull String username);
 }
