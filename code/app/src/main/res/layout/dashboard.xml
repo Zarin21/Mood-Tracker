@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
     android:background="@android:color/white"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -22,95 +22,83 @@
             app:menu="@menu/top_navigation_menu" />
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/dashboard_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Dashboard"
-            android:textColor="#F88379"
-            android:textSize="32dp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/mood_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="How are you feeling today?"
-            android:textColor="#ffdfde"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/add_mood_button"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#ffdfde"
-            android:text="😠 😕 🤢 😨 😄 😔 😳 😯"
-            android:letterSpacing="0.9" />
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <Button
-            android:id="@+id/friendsButton"
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#F88379"
-            android:paddingVertical="12dp"
-            android:text="Friends"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/dashboard_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dashboard"
+                android:textColor="#F88379"
+                android:textSize="32dp"
+                android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/profileButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#F88379"
-            android:text="Profile" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/mood_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How are you feeling today?"
+                android:textColor="#ffdfde"
+                android:textSize="20dp"
+                android:textStyle="bold" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
+            <Button
+                android:id="@+id/add_mood_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#ffdfde"
+                android:letterSpacing="0.9"
+                android:text="😠 😕 🤢 😨 😄 😔 😳 😯" />
 
-        <TextView
-            android:id="@+id/activity_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Recent Activity"
-            android:textColor="#808080"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            <Button
+                android:id="@+id/friendsButton"
+                android:layout_width="126dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F88379"
+                android:paddingVertical="12dp"
+                android:text="Friends"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
 
-    <ListView
-        android:id="@+id/activity_list"
-        android:layout_width="match_parent"
-        android:layout_height="598dp"
-        android:layout_weight="1" />
+            <Button
+                android:id="@+id/profileButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F88379"
+                android:text="Profile" />
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            app:menu="@menu/bottom_navigation_menu" />
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/activity_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Recent Activity"
+                    android:textColor="#808080"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/activity_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
