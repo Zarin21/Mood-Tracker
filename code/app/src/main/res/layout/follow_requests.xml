@@ -8,20 +8,6 @@
     android:background="@android:color/white"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/top_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            app:itemActiveIndicatorStyle="@android:color/transparent"
-            app:labelVisibilityMode="unlabeled"
-            app:menu="@menu/top_navigation_menu" />
-    </LinearLayout>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -33,5 +19,4 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
     </FrameLayout>
-
 </LinearLayout>
