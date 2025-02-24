@@ -45,8 +45,20 @@
         <action
             android:id="@+id/action_loginFragment_to_passwordReset1Fragment"
             app:destination="@id/passwordReset1Fragment" />
-
     </fragment>
+
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.example.unemployedavengers.Notifications"
+        android:label="notificationsFragment"
+        tools:layout="@layout/notifications" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.unemployedavengers.Settings"
+        android:label="settingsFragment"
+        tools:layout="@layout/settings" />
+
     <!-- DashBoard Fragment -->
     <fragment
         android:id="@+id/dashboardFragment"
