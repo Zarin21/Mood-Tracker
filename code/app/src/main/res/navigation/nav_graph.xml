@@ -60,6 +60,18 @@
             app:destination="@id/profileFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.unemployedavengers.Map"
+        android:label="mapFragment"
+        tools:layout="@layout/map" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.unemployedavengers.History"
+        android:label="historyFragment"
+        tools:layout="@layout/history" />
+
     <!-- PasswordReset1 Fragment -->
     <fragment
         android:id="@+id/passwordReset1Fragment"
