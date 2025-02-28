@@ -1,15 +1,15 @@
-# CMPUT 301 W25 - Team [UnemployedAvengers]
+# CMPUT 301 W25 - Team UnemployedAvengers
 
 ## Team Members
 
 | Name        | CCID   | GitHub Username |
 | ----------- | ------ | --------------- |
-| [Kevin Chan] | [kdchan] | [@kevindkchan]     |
-| [WeiKun He] | [weikun1] | [@weikun0309]     |
-| [Chowdhury Tashrif Ahmed] | [cahmed] | [@tashrifahmedd]     |
-| [Zarin Subah] | [zsubah] | [@Zarin21]     |
-| [Levi Liu] | [yingjia6] | [@puro-exe]     |
-| [Ethan Shi] | [yunzhe3] | [@EthanShi-push]     |
+| Kevin Chan | kdchan | @kevindkchan     |
+| WeiKun He | weikun1 | @weikun0309     |
+| Chowdhury Tashrif Ahmed | cahmed | @tashrifahmedd     |
+| Zarin Subah | zsubah | @Zarin21     |
+| Levi Liu | yingjia6 | @puro-exe     |
+| Ethan Shi | yunzhe3 | @EthanShi-push     |
 
 ## Project Description
 
@@ -29,7 +29,7 @@
 
 ## Documentation
 
-- [[Wiki Link](https://github.com/cmput301-w25/project-unemployedavengers/wiki)]
-- [[Scrum Board](https://github.com/orgs/cmput301-w25/projects/63)]
-- [[UI Mockups](https://github.com/cmput301-w25/project-unemployedavengers/wiki/February-14,-2025-%E2%80%90-UI-Mockup)]
+- [Wiki Link](https://github.com/cmput301-w25/project-unemployedavengers/wiki)
+- [Scrum Board](https://github.com/orgs/cmput301-w25/projects/63)
+- [UI Mockups](https://github.com/cmput301-w25/project-unemployedavengers/wiki/February-14,-2025-%E2%80%90-UI-Mockup)
 - [UML]
