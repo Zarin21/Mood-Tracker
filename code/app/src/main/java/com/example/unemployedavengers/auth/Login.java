@@ -1,5 +1,7 @@
 package com.example.unemployedavengers.auth;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -58,7 +60,27 @@ public class Login extends Fragment {
             userDAO.signInUser(username, password)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(getContext(), "Login successful!", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_dashboardFragment);
+
+                        // Log to ensure username is correct before navigating
+                        Log.d("Login", "Username before passing: " + username);
+
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("username", username);
+                        editor.apply();  // Use apply() to save asynchronously
+                        Log.d("SharedPreferences", "Username saved: " + username);  // Ensure username is being saved
+
+                        userDAO.getUserByUsername(username)
+                                .addOnSuccessListener(user -> {
+                                    if (user != null) {
+                                        // Retrieve user data (ensure user has a valid userId)
+                                        Log.d("Login", "User ID: " + user.getUserId());
+                                        String userID = user.getUserId();
+                                        editor.putString("userID", user.getUserId());
+                                        Log.d("SharedPreferences", "User ID saved: " + userID);
+                                        editor.apply();
+                                        Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_dashboardFragment);
+                                    }});
                     })
                     .addOnFailureListener(e -> {
                         String errorMessage = e.getMessage(); // default message
