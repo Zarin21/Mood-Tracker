@@ -123,7 +123,9 @@ public class InputDialog extends DialogFragment {
                         textView.setTextColor(Color.RED);
                         break;
                     case 1: // Confusion
+
                         textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.orange));
+
                         break;
                     case 2: // Disgust
                         textView.setTextColor(Color.GREEN);
