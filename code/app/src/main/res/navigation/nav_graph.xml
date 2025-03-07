@@ -70,6 +70,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_inputDialog"
+            app:destination="@id/inputDialog" />
     </fragment>
 
     <fragment
@@ -139,6 +142,14 @@
         android:name="com.example.unemployedavengers.friendSection.UserSearch"
         android:label="userSearch Fragment">
 
+    </fragment>
+    <fragment
+        android:id="@+id/inputDialog"
+        android:name="com.example.unemployedavengers.InputDialog"
+        android:label="InputDialog" >
+        <action
+            android:id="@+id/action_inputDialog_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
     </fragment>
 
 
