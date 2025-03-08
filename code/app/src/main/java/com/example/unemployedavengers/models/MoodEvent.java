@@ -13,6 +13,10 @@ public class MoodEvent implements Serializable {
 
     private long time;
 
+    private boolean existed;
+
+    private String id;
+
     //Constructor
     public MoodEvent(String mood, String trigger, String situation, long time) {
         this.mood = mood;
@@ -22,7 +26,7 @@ public class MoodEvent implements Serializable {
     }
 
     public MoodEvent(){
-    //empty constructor for firebase
+        //empty constructor for firebase
     }
 
     //getters and setters
@@ -42,6 +46,15 @@ public class MoodEvent implements Serializable {
         return time;
     }
 
+    public boolean getExisted(){
+        return existed;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+
     public void setMood(String mood){
         this.mood = mood;
     }
@@ -57,4 +70,11 @@ public class MoodEvent implements Serializable {
     //Exclude time as we will not let user change time.
 
 
+    public void setExisted(boolean existed) {
+        this.existed = existed;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
