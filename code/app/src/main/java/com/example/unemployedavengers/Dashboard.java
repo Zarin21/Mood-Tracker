@@ -89,9 +89,6 @@ public class Dashboard extends Fragment{
                         .navigate(R.id.action_dashboardFragment_to_profileFragment)
         );
 
-
-
-
         //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
             Navigation.findNavController(v)
