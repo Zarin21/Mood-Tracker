@@ -8,18 +8,20 @@ import java.io.Serializable;
 public class MoodEvent implements Serializable {
     //Attribute
     private String mood;
+    private String reason;
     private String trigger;
     private String situation;
 
     private long time;
-
     private boolean existed;
 
     private String id;
 
+
     //Constructor
-    public MoodEvent(String mood, String trigger, String situation, long time) {
+    public MoodEvent(String mood, String reason, String trigger, String situation, long time) {
         this.mood = mood;
+        this.reason = reason;
         this.trigger = trigger;
         this.situation = situation;
         this.time = time;
@@ -34,6 +36,9 @@ public class MoodEvent implements Serializable {
         return mood;
     }
 
+    public String getReason() {
+        return reason;
+    }
     public String getTrigger(){
         return trigger;
     }
@@ -57,6 +62,9 @@ public class MoodEvent implements Serializable {
 
     public void setMood(String mood){
         this.mood = mood;
+    }
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public void setTrigger(String trigger){
