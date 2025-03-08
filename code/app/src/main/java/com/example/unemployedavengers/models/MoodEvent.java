@@ -21,6 +21,10 @@ public class MoodEvent implements Serializable {
         this.time = time;
     }
 
+    public MoodEvent(){
+    //empty constructor for firebase
+    }
+
     //getters and setters
     public String getMood() {
         return mood;
