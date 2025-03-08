@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,20 +20,16 @@ import com.example.unemployedavengers.arrayadapters.MoodEventArrayAdapter;
 import com.example.unemployedavengers.databinding.DashboardBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.MoodEvent;
-import com.example.unemployedavengers.models.User;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Dashboard extends Fragment {
+public class Dashboard extends Fragment{
     private DashboardBinding binding;
     private ArrayList<MoodEvent> moodList;
     //private ListView moodListView;
@@ -44,6 +39,8 @@ public class Dashboard extends Fragment {
     private IUserDAO userDAO;
     private String userID;
     private String username;
+
+
 
 
 
@@ -120,9 +117,12 @@ public class Dashboard extends Fragment {
         });
 
 
+
+
     }
 
     //adds a new mood event to the database
+
     public void addMoodEvent(MoodEvent moodEvent) {
         moodEvent.setExisted(true); //mark it as an existing mood event
 
@@ -141,8 +141,10 @@ public class Dashboard extends Fragment {
                                     moodEvent.setId(id);
 
                                     //update user
-                                    Toast.makeText(getContext(), "Mood added successfully", Toast.LENGTH_SHORT).show();
+                                    //NEED TO RELOAD DATABASE CAUSE FIREBASE IS AN IDIOT (crashes if you add a moodEvent and tries to update it right away cause "cannot find id")
 
+                                    updateMoodEvent(moodEvent);
+                                    Toast.makeText(getContext(), "Mood added successfully", Toast.LENGTH_SHORT).show();
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(getContext(), "Failed to update ID in Firestore", Toast.LENGTH_SHORT).show();
@@ -162,6 +164,8 @@ public class Dashboard extends Fragment {
         loadMoodEvents();
 
         String moodEventId = moodEvent.getId();
+
+        Log.d("Dashboard", "updateMoodEvent: " + moodEventId);
         //get document via id
         DocumentReference moodEventDocRef = moodEventRef.document(moodEventId);
 
@@ -174,6 +178,7 @@ public class Dashboard extends Fragment {
                     Toast.makeText(getContext(), "Failed to update mood", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void loadMoodEvents() {
         //get all moodevent from firebase
@@ -217,6 +222,8 @@ public class Dashboard extends Fragment {
                             //navigate to inputdialog and pass the selected mood event
                             Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, bundle);
                         });
+
+
                     } else {
                         Log.e("Dashboard", "Error fetching mood events", task.getException());
                     }
@@ -225,10 +232,13 @@ public class Dashboard extends Fragment {
 
 
 
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
+
 
 }
