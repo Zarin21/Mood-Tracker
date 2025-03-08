@@ -37,13 +37,7 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/add_mood_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#ffdfde"
-                android:letterSpacing="0.9"
-                android:text="😠 😕 🤢 😨 😄 😔 😳 😯" />
+            <include layout="@layout/mood_selector"/>
 
             <Button
                 android:id="@+id/friendsButton"
