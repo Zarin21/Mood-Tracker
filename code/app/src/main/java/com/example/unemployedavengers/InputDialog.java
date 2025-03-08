@@ -237,29 +237,33 @@ public class InputDialog extends DialogFragment {
 
         //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
-            //get all relevant information
-            String mood = (String) binding.spinnerEmotion.getSelectedItem();
-            String trigger = binding.editTrigger.getText().toString();
-            String situation = binding.editSocialSituation.getText().toString();
-            long time = System.currentTimeMillis();
+            if (binding.editReason.getText().toString().split(" ").length <= 3) {
+                //get all relevant information
+                String mood = (String) binding.spinnerEmotion.getSelectedItem();
+                String trigger = binding.editTrigger.getText().toString();
+                String situation = binding.editSocialSituation.getText().toString();
+                long time = System.currentTimeMillis();
 
-            //if moodEvent exists, update it otherwise create a new one
-            if (moodEvent != null) {
-                moodEvent.setMood(mood);
-                moodEvent.setTrigger(trigger);
-                moodEvent.setSituation(situation);
+                //if moodEvent exists, update it otherwise create a new one
+                if (moodEvent != null) {
+                    moodEvent.setMood(mood);
+                    moodEvent.setTrigger(trigger);
+                    moodEvent.setSituation(situation);
 
-                //no need to change the time because we are editing the existing event
+                    //no need to change the time because we are editing the existing event
+                } else {
+                    moodEvent = new MoodEvent(mood, trigger, situation, time);
+                }
+                //pass the updated MoodEvent back to dashboard
+                Bundle result = new Bundle();
+                result.putSerializable("mood_event_key", moodEvent);
+                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
+
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
             } else {
-                moodEvent = new MoodEvent(mood, trigger, situation, time);
+                binding.editReason.setError("Reason must be 3 words or less!");
             }
-            //pass the updated MoodEvent back to dashboard
-            Bundle result = new Bundle();
-            result.putSerializable("mood_event_key", moodEvent);
-            getParentFragmentManager().setFragmentResult("input_dialog_result", result);
-
-            Navigation.findNavController(v)
-                    .navigate(R.id.action_inputDialog_to_dashboardFragment);
         });
 
 
