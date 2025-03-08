@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.DAO.IUserDAO;
+import com.example.unemployedavengers.arrayadapters.MoodEventArrayAdapter;
 import com.example.unemployedavengers.databinding.DashboardBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.MoodEvent;
@@ -25,23 +26,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Dashboard extends Fragment {
     private DashboardBinding binding;
-
     private ArrayList<MoodEvent> moodList;
-    private ListView moodListView;
-
-    // private MoodEventArrayAdapter moodAdapter; Still need adapter
+    //private ListView moodListView;
+    private MoodEventArrayAdapter moodAdapter;
     private FirebaseFirestore db;
     private CollectionReference moodEventRef;
     private IUserDAO userDAO;
-
     private String userID;
-
     private String username;
 
 
@@ -51,7 +52,6 @@ public class Dashboard extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = DashboardBinding.inflate(inflater, container, false);
-
         return binding.getRoot();
     }
 
@@ -71,6 +71,17 @@ public class Dashboard extends Fragment {
             Log.e("Dashboard", "No username found in SharedPreferences");
         }
 
+        //database
+        db = FirebaseFirestore.getInstance();
+        moodEventRef = db.collection("users").document(userID).collection("moods");
+
+        moodList = new ArrayList<>();
+        moodAdapter = new MoodEventArrayAdapter(requireContext(), moodList);
+        binding.activityList.setAdapter(moodAdapter);
+
+        //load mood event function
+        loadMoodEvents();
+
 
         binding.friendsButton.setOnClickListener(v ->
                 Navigation.findNavController(v)
@@ -82,9 +93,6 @@ public class Dashboard extends Fragment {
         );
 
 
-        //database
-        db = FirebaseFirestore.getInstance();
-        moodEventRef = db.collection("users").document(userID).collection("moods");
 
 
         //Navitages to the input dialog
@@ -130,6 +138,38 @@ public class Dashboard extends Fragment {
     }
 
 
+    private void loadMoodEvents() {
+        //get all moodevent from firebase
+        moodEventRef.get()
+                .addOnCompleteListener(task -> {
+                    //convert each document to
+                    if (task.isSuccessful()) {
+                        List<MoodEvent> moodEvents = new ArrayList<>();
+                        //each documentSnapsho is a document fethced from task.getResult()
+                        for (DocumentSnapshot document : task.getResult()) {
+                            MoodEvent moodEvent = document.toObject(MoodEvent.class); //convert to MoodEvent class
+                            moodEvents.add(moodEvent); //add to array
+                        }
+
+                        //sort the mood events by time in descending order (most recent first)
+                        Collections.sort(moodEvents, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
+
+                        //limit the list to the most recent 7 mood events
+                        List<MoodEvent> recentMoodEvents = new ArrayList<>();
+
+                        //store the most recent 7 moodevent or smaller.
+                        for (int i = 0; i < Math.min(7, moodEvents.size()); i++) {
+                            recentMoodEvents.add(moodEvents.get(i));
+                        }
+
+                        // Set the adapter with the recent 7 mood events
+                        MoodEventArrayAdapter adapter = new MoodEventArrayAdapter(getContext(), recentMoodEvents);
+                        binding.activityList.setAdapter(adapter);
+                    } else {
+                        Log.e("Dashboard", "Error fetching mood events", task.getException());
+                    }
+                });
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
