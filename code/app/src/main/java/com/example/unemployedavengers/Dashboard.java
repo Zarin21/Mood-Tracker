@@ -116,7 +116,18 @@ public class Dashboard extends Fragment{
             }
         });
 
-
+        //register the result listener for the delete confirmation
+        getParentFragmentManager().setFragmentResultListener("delete_mood_event", getViewLifecycleOwner(), new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                boolean deleteConfirmed = result.getBoolean("DeleteConfirmed", false);
+                if (deleteConfirmed) {
+                    //proceed with the deletion
+                    onDeleteConfirmed(selectedMoodForDeletion);
+                    loadMoodEvents(); //reload the mood events after deletion
+                }
+            }
+        });
 
 
     }
@@ -179,7 +190,19 @@ public class Dashboard extends Fragment{
                 });
     }
 
+    //delete function
 
+    public void onDeleteConfirmed(MoodEvent moodEvent) {
+        moodEventRef.document(moodEvent.getId()).delete() //using the id to delete
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "Mood deleted successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Failed to delete mood", Toast.LENGTH_SHORT).show();
+                });
+
+        loadMoodEvents(); //reload mood events
+    }
     private void loadMoodEvents() {
         //get all moodevent from firebase
 
