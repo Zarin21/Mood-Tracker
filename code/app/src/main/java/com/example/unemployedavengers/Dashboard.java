@@ -162,9 +162,22 @@ public class Dashboard extends Fragment {
                             recentMoodEvents.add(moodEvents.get(i));
                         }
 
-                        // Set the adapter with the recent 7 mood events
+                        //set the adapter with the recent 7 mood events
                         MoodEventArrayAdapter adapter = new MoodEventArrayAdapter(getContext(), recentMoodEvents);
                         binding.activityList.setAdapter(adapter);
+
+                        //set item click listener
+                        binding.activityList.setOnItemClickListener((parent, view, position, id) -> {
+                            //get the selected MoodEvent based on position
+                            MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
+
+                            //create a bundle and put the selected MoodEvent in it
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("selected_mood_event", selectedMoodEvent);
+
+                            //navigate to inputdialog and pass the selected mood event
+                            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, bundle);
+                        });
                     } else {
                         Log.e("Dashboard", "Error fetching mood events", task.getException());
                     }

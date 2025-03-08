@@ -52,6 +52,8 @@ public class InputDialog extends DialogFragment {
     private String mParam2;
     private InputDialogBinding binding; //binding
 
+    private MoodEvent moodEvent;
+
     /**
      * A empty constructor needed
      */
@@ -202,6 +204,35 @@ public class InputDialog extends DialogFragment {
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //get the selected MoodEvent passed from Dashboard
+        if (getArguments() != null) {
+            moodEvent = (MoodEvent) getArguments().getSerializable("selected_mood_event");
+
+            if (moodEvent != null) {
+                //populate the fields with the data from the selected MoodEvent
+                EditText triggerEditText = view.findViewById(R.id.editTrigger);
+                EditText situationEditText = view.findViewById(R.id.editSocialSituation);
+                Spinner spinner =  view.findViewById(R.id.spinnerEmotion);
+
+                //using getter function from model to get text
+                triggerEditText.setText(moodEvent.getTrigger());
+                situationEditText.setText(moodEvent.getSituation());
+
+                //using the adapter in onCreateview
+                ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
+
+                String selectedMood = moodEvent.getMood();
+
+                //match the position to the adapter position and set it to that mood
+                int position = adapter.getPosition(selectedMood);
+                if (position != -1) {
+                    spinner.setSelection(position);
+                }
+
+            }
+        }
+
 
         //When user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
