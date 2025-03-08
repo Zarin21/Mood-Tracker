@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -193,7 +194,7 @@ public class InputDialog extends DialogFragment {
             }
         };
 
-        // Set the adapter to the spinner
+        //set the adapter to the spinner
         spinnerEmotion.setAdapter(adapter);
 
         return binding.getRoot();
@@ -234,7 +235,7 @@ public class InputDialog extends DialogFragment {
         }
 
 
-        //When user clicks confirm
+        //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
             //get all relevant information
             String mood = (String) binding.spinnerEmotion.getSelectedItem();
@@ -242,8 +243,17 @@ public class InputDialog extends DialogFragment {
             String situation = binding.editSocialSituation.getText().toString();
             long time = System.currentTimeMillis();
 
-            //create a new moodEvent and pass it back to dashboard
-            MoodEvent moodEvent = new MoodEvent(mood,trigger,situation,time);
+            //if moodEvent exists, update it otherwise create a new one
+            if (moodEvent != null) {
+                moodEvent.setMood(mood);
+                moodEvent.setTrigger(trigger);
+                moodEvent.setSituation(situation);
+
+                //no need to change the time because we are editing the existing event
+            } else {
+                moodEvent = new MoodEvent(mood, trigger, situation, time);
+            }
+            //pass the updated MoodEvent back to dashboard
             Bundle result = new Bundle();
             result.putSerializable("mood_event_key", moodEvent);
             getParentFragmentManager().setFragmentResult("input_dialog_result", result);
