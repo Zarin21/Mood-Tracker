@@ -247,6 +247,10 @@ public class InputDialog extends DialogFragment {
                 String situation = binding.editSocialSituation.getText().toString();
                 long time = System.currentTimeMillis();
 
+                reason = reason.trim();
+                trigger = trigger.trim();
+                situation = situation.trim();
+
                 //if moodEvent exists, update it otherwise create a new one
                 if (moodEvent != null) {
                     moodEvent.setMood(mood);
