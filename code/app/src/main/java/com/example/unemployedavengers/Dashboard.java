@@ -40,7 +40,7 @@ public class Dashboard extends Fragment{
     private String userID;
     private String username;
 
-
+    private MoodEvent selectedMoodForDeletion;
 
 
 
@@ -92,7 +92,7 @@ public class Dashboard extends Fragment{
 
 
 
-        //Navitages to the input dialog
+        //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
             Navigation.findNavController(v)
                     .navigate(R.id.action_dashboardFragment_to_inputDialog);
@@ -222,7 +222,16 @@ public class Dashboard extends Fragment{
                             //navigate to inputdialog and pass the selected mood event
                             Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, bundle);
                         });
+                        //long click to delete
+                        binding.activityList.setOnItemLongClickListener((parent, view, position, id) -> {
+                            selectedMoodForDeletion = recentMoodEvents.get(position);
 
+                            ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(selectedMoodForDeletion.getId());
+                            dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
+
+
+                            return true; // Indicate the event was handled
+                        });
 
                     } else {
                         Log.e("Dashboard", "Error fetching mood events", task.getException());
