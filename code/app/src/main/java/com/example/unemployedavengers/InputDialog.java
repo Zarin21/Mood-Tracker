@@ -214,11 +214,13 @@ public class InputDialog extends DialogFragment {
                 //populate the fields with the data from the selected MoodEvent
                 EditText triggerEditText = view.findViewById(R.id.editTrigger);
                 EditText situationEditText = view.findViewById(R.id.editSocialSituation);
+                EditText reasonEditText = view.findViewById(R.id.editReason);
                 Spinner spinner =  view.findViewById(R.id.spinnerEmotion);
 
                 //using getter function from model to get text
                 triggerEditText.setText(moodEvent.getTrigger());
                 situationEditText.setText(moodEvent.getSituation());
+                reasonEditText.setText(moodEvent.getReason());
 
                 //using the adapter in onCreateview
                 ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
@@ -240,6 +242,7 @@ public class InputDialog extends DialogFragment {
             if (binding.editReason.getText().toString().split(" ").length <= 3) {
                 //get all relevant information
                 String mood = (String) binding.spinnerEmotion.getSelectedItem();
+                String reason = binding.editReason.getText().toString();
                 String trigger = binding.editTrigger.getText().toString();
                 String situation = binding.editSocialSituation.getText().toString();
                 long time = System.currentTimeMillis();
@@ -247,12 +250,13 @@ public class InputDialog extends DialogFragment {
                 //if moodEvent exists, update it otherwise create a new one
                 if (moodEvent != null) {
                     moodEvent.setMood(mood);
+                    moodEvent.setReason(reason);
                     moodEvent.setTrigger(trigger);
                     moodEvent.setSituation(situation);
 
                     //no need to change the time because we are editing the existing event
                 } else {
-                    moodEvent = new MoodEvent(mood, trigger, situation, time);
+                    moodEvent = new MoodEvent(mood, reason, trigger, situation, time);
                 }
                 //pass the updated MoodEvent back to dashboard
                 Bundle result = new Bundle();
