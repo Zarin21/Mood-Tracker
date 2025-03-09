@@ -1,3 +1,14 @@
+/*
+ * SignUp Fragment for the Unemployed Avengers Android application.
+ *
+ * This fragment handles user registration, including:
+ * - Inflating the sign-up layout using view binding.
+ * - Validating user input for username, password, and confirmation.
+ * - Registering the user via the UserDAO.
+ * - Navigating to the Login screen upon successful sign-up.
+ * - Displaying error messages with a custom Toast on failure.
+ */
+
 package com.example.unemployedavengers.auth;
 
 import android.os.Bundle;
@@ -28,6 +39,7 @@ public class SignUp extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate the view using view binding
         binding = SignUpBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -37,47 +49,53 @@ public class SignUp extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Initialize the User Data Access Object
         userDAO = new UserDAOImplement();
 
-
+        // Navigate back to Home fragment when Back button is clicked
         binding.btnBack.setOnClickListener(v -> {
             Navigation.findNavController(v)
                     .navigate(R.id.action_signUpFragment_to_homeFragment);
         });
 
+        // Handle Sign-Up button click for user registration
         binding.btnSignup.setOnClickListener(v -> {
             String username = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
             String confirmPassword = binding.etConfirmPassword.getText().toString().trim();
 
+            // Validate that all fields are filled
             if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
                 Toast.makeText(getContext(), "All fields are required.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Validate that password and confirm password match
             if (!password.equals(confirmPassword)) {
                 Toast.makeText(getContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Attempt to sign up the user using the DAO
             Task<Void> signUpTask = userDAO.signUpUser(username, password);
             signUpTask
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
+                        // Navigate to login screen after successful sign-up
                         Navigation.findNavController(v)
                                 .navigate(R.id.action_signUpFragment_to_loginFragment);
                     })
                     .addOnFailureListener(e -> {
+                        // Inflate custom toast layout to display error message
                         LayoutInflater inflater = getLayoutInflater();
                         View layout = inflater.inflate(R.layout.custom_toast, null);
                         TextView toastText = layout.findViewById(R.id.toastText);
 
-                        // work around
+                        // Workaround for specific error messages
                         String errorMessage = e.getMessage();
                         if (errorMessage != null && errorMessage.contains("email address is")) {
                             errorMessage = "Username already taken. Please choose a different one.";
                         }
-
                         toastText.setText("Sign up failed: " + errorMessage);
 
                         Toast toast = new Toast(getContext());
@@ -91,6 +109,7 @@ public class SignUp extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Prevent memory leaks by nullifying the binding
         binding = null;
     }
 }

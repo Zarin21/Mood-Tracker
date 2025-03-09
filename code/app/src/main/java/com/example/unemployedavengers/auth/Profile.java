@@ -1,3 +1,13 @@
+/*
+ * Profile Fragment for the Unemployed Avengers Android application.
+ *
+ * This file handles user profile management, including:
+ * - Navigating back to the Dashboard.
+ * - Allowing the user to change their username via a dialog.
+ * - Allowing the user to change their password via a dialog.
+ * - Navigating to the login screen (possibly for avatar change, as per app design).
+ */
+
 package com.example.unemployedavengers.auth;
 
 import android.app.AlertDialog;
@@ -24,11 +34,11 @@ public class Profile extends Fragment {
     private ProfileBinding binding;
     private IUserDAO userDAO;
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate the layout using view binding
         binding = ProfileBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -37,22 +47,20 @@ public class Profile extends Fragment {
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Navigate back to Dashboard when the Back button is clicked
         binding.btnBack.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_profileFragment_to_dashboardFragment)
         );
 
+        // Set up the change username dialog
         binding.btnChangeUsername.setOnClickListener(v -> {
-
-
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-
             LayoutInflater inflater = requireActivity().getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.change_user_name, null);
-
             EditText etNewUsername = dialogView.findViewById(R.id.etNewUsername);
             Button btnSubmitUsername = dialogView.findViewById(R.id.btnSubmitUsername);
-
             builder.setView(dialogView);
             AlertDialog dialog = builder.create();
 
@@ -68,26 +76,21 @@ public class Profile extends Fragment {
                             .addOnFailureListener(e -> {
                                 Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             });
-
                     dialog.dismiss();
                 } else {
                     Toast.makeText(getContext(), "Please enter a valid username", Toast.LENGTH_SHORT).show();
                 }
             });
-
             dialog.show();
         });
+
+        // Set up the change password dialog
         binding.btnChangePassword.setOnClickListener(v -> {
-
-
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-
             LayoutInflater inflater = requireActivity().getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.change_password, null);
-
             EditText etNewPassword = dialogView.findViewById(R.id.etNewPassword);
             Button btnSubmitPassword = dialogView.findViewById(R.id.btnSubmitPassword);
-
             builder.setView(dialogView);
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -96,19 +99,17 @@ public class Profile extends Fragment {
                 String newPassword = etNewPassword.getText().toString().trim();
                 userDAO = new UserDAOImplement();
 
-
                 if (!newPassword.isEmpty()) {
                     userDAO.getCurrentUserProfile()
-                            .continueWithTask(next ->{
+                            .continueWithTask(next -> {
                                 if (!next.isSuccessful() || next.getResult() == null) {
                                     throw next.getException() != null ? next.getException() : new Exception("Failed to retrieve user profile");
                                 }
                                 User user = next.getResult();
-                                return userDAO.changePassword(user,newPassword);
+                                return userDAO.changePassword(user, newPassword);
                             }).addOnSuccessListener(result -> {
                                 Toast.makeText(getContext(), "User password changed", Toast.LENGTH_LONG).show();
-                            })
-                            .addOnFailureListener(e -> {
+                            }).addOnFailureListener(e -> {
                                 Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             });
                     dialog.dismiss();
@@ -116,23 +117,19 @@ public class Profile extends Fragment {
                     Toast.makeText(getContext(), "Please enter a valid password", Toast.LENGTH_SHORT).show();
                 }
             });
-
-
         });
 
+        // Change avatar button navigates to login screen (as per current app flow)
         binding.btnChangeAvatar.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_homeFragment_to_loginFragment)
         );
-
-
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Prevent memory leaks
+        // Prevent memory leaks by nullifying the binding
         binding = null;
     }
-
-
 }
