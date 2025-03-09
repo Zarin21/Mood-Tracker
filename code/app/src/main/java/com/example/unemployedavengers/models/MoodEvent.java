@@ -1,5 +1,7 @@
 package com.example.unemployedavengers.models;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,7 @@ import java.io.Serializable;
 public class MoodEvent implements Serializable {
     //Attribute
     private String mood;
+    private String imageUri;
     private String reason;
     private String trigger;
     private String situation;
@@ -19,12 +22,13 @@ public class MoodEvent implements Serializable {
 
 
     //Constructor
-    public MoodEvent(String mood, String reason, String trigger, String situation, long time, String radioSituation) {
+    public MoodEvent(String mood, String reason, String trigger, String situation, long time, String radioSituation, String imageUri) {
         this.mood = mood;
         this.reason = reason;
         this.trigger = trigger;
         this.situation = situation;
         this.time = time;
+        this.imageUri = imageUri;
         this.radioSituation = radioSituation;
     }
 
@@ -93,5 +97,13 @@ public class MoodEvent implements Serializable {
 
     public void setRadioSituation(String radioSituation) {
         this.radioSituation = radioSituation;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 }

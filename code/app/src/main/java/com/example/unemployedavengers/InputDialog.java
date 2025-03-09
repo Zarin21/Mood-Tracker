@@ -1,9 +1,13 @@
 package com.example.unemployedavengers;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -11,6 +15,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,19 +23,22 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.unemployedavengers.databinding.DashboardBinding;
+import com.bumptech.glide.Glide;
 import com.example.unemployedavengers.databinding.InputDialogBinding;
 import com.example.unemployedavengers.models.MoodEvent;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,6 +66,14 @@ public class InputDialog extends DialogFragment {
 
     private MoodEvent moodEvent;
     private String source;
+
+    private Uri imageUri;
+    private FirebaseStorage storage;
+    private String imageUrl = "";
+    private ImageView imagePreview;
+    private Button btnUploadImage;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private ActivityResultLauncher<String> permissionLauncher;
 
     /**
      * A empty constructor needed
@@ -103,9 +119,15 @@ public class InputDialog extends DialogFragment {
 
         //create the binding
         binding = InputDialogBinding.inflate(inflater, container, false);
+        storage = FirebaseStorage.getInstance();
 
         //get the spinner
         Spinner spinnerEmotion = binding.spinnerEmotion;
+
+        imagePreview = binding.imagePreview;
+        btnUploadImage = binding.buttonUploadPicture;
+
+        setupImagePickerLaunchers();
 
         //create the adapter
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -205,14 +227,49 @@ public class InputDialog extends DialogFragment {
 
     }
 
+    private void setupImagePickerLaunchers() {
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        imageUri = result.getData().getData();
+                        imagePreview.setImageURI(imageUri);
+                    }
+                });
+
+        // Permission launcher
+        permissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("image/*");
+                        imagePickerLauncher.launch(intent);
+                    } else {
+                        Toast.makeText(getContext(), "Permission required", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        btnUploadImage.setOnClickListener(v -> {
+            imagePickerLauncher.launch(new Intent(MediaStore.ACTION_PICK_IMAGES));
+        });
+
         //get the selected MoodEvent passed from Dashboard
         if (getArguments() != null) {
             moodEvent = (MoodEvent) getArguments().getSerializable("selected_mood_event");
+
+            if (moodEvent != null && moodEvent.getImageUri() != null && !moodEvent.getImageUri().isEmpty()) {
+                Glide.with(requireContext())
+                        .load(moodEvent.getImageUri())
+                        .into(imagePreview);
+            }
+
             source = getArguments().getString("source");
             if (moodEvent != null) {
                 //populate the fields with the data from the selected MoodEvent
@@ -274,18 +331,15 @@ public class InputDialog extends DialogFragment {
                     moodEvent.setSituation(situation);
                     moodEvent.setRadioSituation(radioSituation);
                     //no need to change the time because we are editing the existing event
+                    uploadImage(moodEvent);
                 } else {
-                    moodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation);
+                    uploadNewEvent(moodEvent, mood, reason, trigger, situation, time, radioSituation);
                 }
-                //pass the updated MoodEvent back to dashboard
-                Bundle result = new Bundle();
-                result.putSerializable("mood_event_key", moodEvent);
-                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
 
-                if (source=="dashboard") {
+                if (Objects.equals(source, "dashboard")) {
                     Navigation.findNavController(v)
                             .navigate(R.id.action_inputDialog_to_dashboardFragment);
-                }else if (source=="history"){
+                } else if (Objects.equals(source, "history")){
                     Navigation.findNavController(v)
                             .navigate(R.id.action_inputDialog_to_historyFragment);
                 }
@@ -298,13 +352,73 @@ public class InputDialog extends DialogFragment {
         //go right back to dashboard
         binding.buttonCancel.setOnClickListener(v ->{
             Toast.makeText(getContext(), "Action Cancelled", Toast.LENGTH_SHORT).show();
-            if (source=="dashboard") {
+            if (Objects.equals(source, "dashboard")) {
                 Navigation.findNavController(v)
                         .navigate(R.id.action_inputDialog_to_dashboardFragment);
-            }else if (source=="history"){
+            } else if (Objects.equals(source, "history")){
                 Navigation.findNavController(v)
                         .navigate(R.id.action_inputDialog_to_historyFragment);
             }
         });
+    }
+
+    private void uploadNewEvent(MoodEvent moodEvent, String mood, String reason, String trigger,
+                                String situation, long time, String radioSituation) {
+        // Create a new MoodEvent with empty image URL initially
+        MoodEvent newMoodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation, "");
+
+        if (imageUri != null) {
+            StorageReference storageRef = storage.getReference();
+            StorageReference imageRef = storageRef.child("mood_images/" + UUID.randomUUID() + ".jpg");
+
+            // Show loading indicator if needed
+
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot ->
+                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                // Update the image URL and send result
+                                newMoodEvent.setImageUri(uri.toString());
+                                sendResultToParent(newMoodEvent);
+                            }))
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        // Still send the event, just without an image
+                        sendResultToParent(newMoodEvent);
+                    });
+        } else {
+            // No image to upload, send result immediately
+            sendResultToParent(newMoodEvent);
+        }
+    }
+
+    // Helper method to send result
+    private void sendResultToParent(MoodEvent event) {
+        Bundle result = new Bundle();
+        result.putSerializable("mood_event_key", event);
+        getParentFragmentManager().setFragmentResult("input_dialog_result", result);
+    }
+    private void uploadImage(MoodEvent moodEvent) {
+        if (imageUri != null) {
+            StorageReference storageRef = storage.getReference();
+            StorageReference imageRef = storageRef.child("mood_images/" + UUID.randomUUID() + ".jpg");
+
+            // Show loading indicator if needed
+
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot ->
+                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                // Update the image URL and send result
+                                moodEvent.setImageUri(uri.toString());
+                                sendResultToParent(moodEvent);
+                            }))
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        // Still send the event with its original image URL
+                        sendResultToParent(moodEvent);
+                    });
+        } else {
+            // No new image to upload, send result immediately
+            sendResultToParent(moodEvent);
+        }
     }
 }
