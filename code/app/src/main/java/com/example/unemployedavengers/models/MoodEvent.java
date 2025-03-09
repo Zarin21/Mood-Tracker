@@ -11,7 +11,7 @@ public class MoodEvent implements Serializable {
     private String reason;
     private String trigger;
     private String situation;
-
+    private String radioSituation;
     private long time;
     private boolean existed;
 
@@ -19,12 +19,13 @@ public class MoodEvent implements Serializable {
 
 
     //Constructor
-    public MoodEvent(String mood, String reason, String trigger, String situation, long time) {
+    public MoodEvent(String mood, String reason, String trigger, String situation, long time, String radioSituation) {
         this.mood = mood;
         this.reason = reason;
         this.trigger = trigger;
         this.situation = situation;
         this.time = time;
+        this.radioSituation = radioSituation;
     }
 
     public MoodEvent(){
@@ -84,5 +85,13 @@ public class MoodEvent implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getRadioSituation() {
+        return radioSituation;
+    }
+
+    public void setRadioSituation(String radioSituation) {
+        this.radioSituation = radioSituation;
     }
 }
