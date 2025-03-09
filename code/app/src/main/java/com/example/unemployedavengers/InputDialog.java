@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +30,7 @@ import com.example.unemployedavengers.models.MoodEvent;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -223,6 +226,15 @@ public class InputDialog extends DialogFragment {
                 situationEditText.setText(moodEvent.getSituation());
                 reasonEditText.setText(moodEvent.getReason());
 
+                if (Objects.equals(moodEvent.getRadioSituation(), "Alone")) {
+                    ((RadioButton) view.findViewById(R.id.radioAlone)).setChecked(true);
+                } else if (Objects.equals(moodEvent.getRadioSituation(), "Two or Several")) {
+                    ((RadioButton) view.findViewById(R.id.radioTwoSeveral)).setChecked(true);
+                } else if (Objects.equals(moodEvent.getRadioSituation(), "A Crowd")) {
+                    ((RadioButton) view.findViewById(R.id.radioCrowd)).setChecked(true);
+                }
+
+
                 //using the adapter in onCreateview
                 ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
 
@@ -246,6 +258,8 @@ public class InputDialog extends DialogFragment {
                 String reason = binding.editReason.getText().toString();
                 String trigger = binding.editTrigger.getText().toString();
                 String situation = binding.editSocialSituation.getText().toString();
+                String radioSituation = ((RadioButton) v.getRootView().findViewById(binding.radioGroupSocial.getCheckedRadioButtonId())).getText().toString();
+
                 long time = System.currentTimeMillis();
 
                 reason = reason.trim();
@@ -258,10 +272,10 @@ public class InputDialog extends DialogFragment {
                     moodEvent.setReason(reason);
                     moodEvent.setTrigger(trigger);
                     moodEvent.setSituation(situation);
-
+                    moodEvent.setRadioSituation(radioSituation);
                     //no need to change the time because we are editing the existing event
                 } else {
-                    moodEvent = new MoodEvent(mood, reason, trigger, situation, time);
+                    moodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation);
                 }
                 //pass the updated MoodEvent back to dashboard
                 Bundle result = new Bundle();
