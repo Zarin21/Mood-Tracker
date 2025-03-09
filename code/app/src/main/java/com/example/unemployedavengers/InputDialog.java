@@ -54,6 +54,7 @@ public class InputDialog extends DialogFragment {
     private InputDialogBinding binding; //binding
 
     private MoodEvent moodEvent;
+    private String source;
 
     /**
      * A empty constructor needed
@@ -209,7 +210,7 @@ public class InputDialog extends DialogFragment {
         //get the selected MoodEvent passed from Dashboard
         if (getArguments() != null) {
             moodEvent = (MoodEvent) getArguments().getSerializable("selected_mood_event");
-
+            source = getArguments().getString("source");
             if (moodEvent != null) {
                 //populate the fields with the data from the selected MoodEvent
                 EditText triggerEditText = view.findViewById(R.id.editTrigger);
@@ -267,8 +268,13 @@ public class InputDialog extends DialogFragment {
                 result.putSerializable("mood_event_key", moodEvent);
                 getParentFragmentManager().setFragmentResult("input_dialog_result", result);
 
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
+                if (source=="dashboard") {
+                    Navigation.findNavController(v)
+                            .navigate(R.id.action_inputDialog_to_dashboardFragment);
+                }else if (source=="history"){
+                    Navigation.findNavController(v)
+                            .navigate(R.id.action_inputDialog_to_historyFragment);
+                }
             } else {
                 binding.editReason.setError("Reason must be 3 words or less!");
             }
@@ -278,8 +284,13 @@ public class InputDialog extends DialogFragment {
         //go right back to dashboard
         binding.buttonCancel.setOnClickListener(v ->{
             Toast.makeText(getContext(), "Action Cancelled", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(v)
-                    .navigate(R.id.action_inputDialog_to_dashboardFragment);
+            if (source=="dashboard") {
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
+            }else if (source=="history"){
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_inputDialog_to_historyFragment);
+            }
         });
     }
 }
