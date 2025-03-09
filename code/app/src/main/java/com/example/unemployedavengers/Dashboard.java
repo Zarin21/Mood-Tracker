@@ -251,7 +251,7 @@ public class Dashboard extends Fragment{
                             dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
 
 
-                            return true; // Indicate the event was handled
+                            return true; //indicate the event was handled
                         });
 
                     } else {
