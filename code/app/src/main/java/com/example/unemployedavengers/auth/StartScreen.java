@@ -1,5 +1,12 @@
-package com.example.unemployedavengers.auth;
+/*
+ * StartScreen Fragment for the Unemployed Avengers Android application.
+ *
+ * This fragment serves as the starting screen of the app, allowing users to:
+ * - Navigate to the Sign-Up screen to create a new account.
+ * - Navigate to the Login screen if they already have an account.
+ */
 
+package com.example.unemployedavengers.auth;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,6 +29,7 @@ public class StartScreen extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate the view using view binding
         binding = StartScreenBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -31,22 +39,23 @@ public class StartScreen extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Navigate to the Sign-Up screen when "Start" button is clicked
         binding.btnStart.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_homeFragment_to_signUpFragment)
         );
+
+        // Navigate to the Login screen when "Login" text is clicked
         binding.tvStartLogin.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_homeFragment_to_loginFragment)
         );
-
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Prevent memory leaks
+        // Prevent memory leaks by nullifying the binding
         binding = null;
     }
-
-
 }
