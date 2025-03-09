@@ -143,7 +143,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="What was the reason (Picture, Optional)"
+            android:text="Add a Picture (Optional)"
             android:textColor="#F08080"
             android:textSize="16sp" />
 
