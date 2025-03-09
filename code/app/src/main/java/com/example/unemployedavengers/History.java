@@ -141,7 +141,8 @@ public class History extends Fragment {
                             MoodEvent moodEvent = document.toObject(MoodEvent.class);
                             moodList.add(moodEvent);
                         }
-
+                        //sort by time (latest first)
+                        Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
 
                         moodAdapter.notifyDataSetChanged(); //update UI
 
