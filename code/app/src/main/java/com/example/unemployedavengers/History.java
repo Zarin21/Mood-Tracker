@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.arrayadapters.MoodEventArrayAdapter;
 import com.example.unemployedavengers.databinding.HistoryBinding;
@@ -69,6 +70,16 @@ public class History extends Fragment {
 
                         //removed limit
                         moodAdapter.notifyDataSetChanged(); //update UI
+
+                        binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
+                            MoodEvent selectedEvent = moodList.get(position);
+                            Bundle args = new Bundle();
+                            args.putSerializable("selected_mood_event", selectedEvent);
+                            args.putString("source", "history");
+                            Navigation.findNavController(view)
+                                    .navigate(R.id.action_historyFragment_to_inputDialog, args);
+                        });
+
                     } else {
                         Log.e("HistoryFragment", "Error fetching mood events", task.getException());
                     }
