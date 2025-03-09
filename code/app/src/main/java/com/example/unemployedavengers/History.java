@@ -25,7 +25,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
-//largely adapted from dashboard
+
+//A history class that displays all mood event and can filter through them (to be completed later)
+//All functions currently are adapted from dashboard
 public class History extends Fragment {
 
     private HistoryBinding binding;
@@ -45,6 +47,7 @@ public class History extends Fragment {
         binding = HistoryBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
+
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class History extends Fragment {
         binding.historyList.setAdapter(moodAdapter);
 
         loadHistoryMoodEvents(); //load all mood events
+
+
         //register the listener for the result from InputDialog (Only once)
         getParentFragmentManager().setFragmentResultListener("input_dialog_result", getViewLifecycleOwner(), new FragmentResultListener() {
             @Override
@@ -74,6 +79,22 @@ public class History extends Fragment {
                 }
             }
         });
+
+        //register the result listener for the delete confirmation
+        getParentFragmentManager().setFragmentResultListener("delete_mood_event", getViewLifecycleOwner(), new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                boolean deleteConfirmed = result.getBoolean("DeleteConfirmed", false);
+                if (deleteConfirmed) {
+                    //proceed with the deletion
+                    onDeleteConfirmed(selectedMoodForDeletion);
+                    loadHistoryMoodEvents(); //reload the mood events after deletion
+                }
+            }
+        });
+
+
+
     }
 
     private void updateMoodEvent(MoodEvent moodEvent) {
@@ -99,6 +120,18 @@ public class History extends Fragment {
 
     }
 
+    public void onDeleteConfirmed(MoodEvent moodEvent) {
+        moodEventRef.document(moodEvent.getId()).delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "Mood deleted successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Failed to delete mood", Toast.LENGTH_SHORT).show();
+                });
+
+        loadHistoryMoodEvents();
+    }
+
     private void loadHistoryMoodEvents() {
         moodEventRef.get()
                 .addOnCompleteListener(task -> {
@@ -109,7 +142,7 @@ public class History extends Fragment {
                             moodList.add(moodEvent);
                         }
 
-                        //removed limit
+
                         moodAdapter.notifyDataSetChanged(); //update UI
 
                         binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
@@ -121,12 +154,20 @@ public class History extends Fragment {
                                     .navigate(R.id.action_historyFragment_to_inputDialog, args);
                         });
 
+                        binding.historyList.setOnItemLongClickListener((parent, view, position, id) -> {
+                            selectedMoodForDeletion = moodList.get(position);
+
+                            ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(selectedMoodForDeletion.getId());
+                            dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
+
+                            return true; // Indicate the event was handled
+                        });
+
                     } else {
                         Log.e("HistoryFragment", "Error fetching mood events", task.getException());
                     }
                 });
     }
-
 
     @Override
     public void onDestroyView() {
