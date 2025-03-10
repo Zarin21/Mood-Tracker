@@ -1,3 +1,10 @@
+/*
+ * MoodEvent - Model class representing a mood event.
+ *
+ * Purpose:
+ * - Encapsulates details of a mood event (mood, image URI, reason, trigger, situation, radioSituation, time, existed flag, id).
+ * - Provides getters and setters for these fields.
+ */
 package com.example.unemployedavengers.models;
 
 import android.net.Uri;
