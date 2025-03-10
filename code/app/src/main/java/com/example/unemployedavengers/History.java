@@ -1,3 +1,12 @@
+/*
+ * History Fragment - Displays the mood event history.
+ *
+ * Purpose:
+ * - Loads mood events from Firestore.
+ * - Sorts events in reverse chronological order and shows them in a ListView using MoodEventArrayAdapter.
+ * - Handles user interactions for editing or deleting mood events.
+ *
+ */
 package com.example.unemployedavengers;
 
 import android.content.Context;
