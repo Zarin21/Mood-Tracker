@@ -1,40 +1,17 @@
 package com.example.unemployedavengers;
-/*
- * DashboardTest.java
- *
- * This is an **Espresso UI test class** for testing the **Dashboard** functionality of the "Unemployed Avengers" app.
- * It tests different UI elements and interactions within the Dashboard, including:
- *
- * - Display of mood events retrieved from Firestore
- * - Adding new mood events
- * - Editing existing mood events
- * - Deleting mood events
- * - Field validations (word limits, input correctness, etc.)
- * - Image upload and preview functionality
- * - Spinner and radio button selections
- *
- * The tests interact with the UI using Espresso matchers and actions, ensuring that everything behaves as expected.
- */
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.startsWith;
-import static androidx.test.espresso.action.ViewActions.click;
+
+
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
-import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -66,8 +43,8 @@ import java.util.HashMap;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class DashboardTest {
-    private static final String TAG = "DashboardTest";
+public class DashTestImage {
+    private static final String TAG = "DashTestImage";
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<>(MainActivity.class);
@@ -149,65 +126,69 @@ public class DashboardTest {
         Thread.sleep(8000);
         Log.d(TAG, "Wait for dashboard completed");
     }
-
-    // --- ORIGINAL TESTS ---
-
     @Test
-    public void dashboardShouldDisplayExistingMoods() {
+    public void testMoodWithoutImage() {
         try {
-            Log.d(TAG, "Beginning dashboardShouldDisplayExistingMoods");
-            loginAndNavigateToDashboard();
-
-            // Check for just one mood to keep it simple
-            Log.d(TAG, "Checking for 'Happiness' mood");
-            onView(withText("Happiness")).check(matches(isDisplayed()));
-            Log.d(TAG, "Happiness mood found, test successful");
-        } catch (Exception e) {
-            Log.e(TAG, "Test failed with exception", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    // --- IMAGE-RELATED TESTS ---
-
-    @Test
-    public void testImageUploadButtonVisible() {
-        try {
-            Log.d(TAG, "Beginning testImageUploadButtonVisible");
+            Log.d(TAG, "Beginning testMoodWithoutImage");
             loginAndNavigateToDashboard();
 
             // Click add mood button
             Log.d(TAG, "Clicking add mood button");
             onView(withId(R.id.add_mood_button)).perform(click());
 
-            // Check that the image upload button is visible
-            Log.d(TAG, "Checking if image upload button is visible");
-            onView(withId(R.id.buttonUploadPicture)).check(matches(isDisplayed()));
-            Log.d(TAG, "Image upload button is visible, test successful");
+            // Fill in minimum required fields
+            Log.d(TAG, "Entering reason text");
+            onView(withId(R.id.editReason)).perform(typeText("No image"), closeSoftKeyboard());
 
-            // Go back to dashboard
-            Espresso.pressBack();
+            Log.d(TAG, "Selecting 'Alone' radio button");
+            onView(withId(R.id.radioAlone)).perform(click());
+
+            // Wait a moment to let UI settle
+            Thread.sleep(1000);
+
+            // Confirm mood creation without adding an image
+            Log.d(TAG, "Clicking confirm button");
+            onView(withId(R.id.buttonConfirm)).perform(click());
+
+            // Wait for dashboard to reload
+            Log.d(TAG, "Waiting for dashboard to reload");
+            Thread.sleep(5000);
+
+            // Check that we're back on the dashboard
+            Log.d(TAG, "Checking for add mood button to verify we're back on dashboard");
+            onView(withId(R.id.add_mood_button)).check(matches(isDisplayed()));
+            Log.d(TAG, "Add mood button is visible, test successful");
         } catch (Exception e) {
             Log.e(TAG, "Test failed with exception", e);
             throw new RuntimeException(e);
         }
     }
-
     @Test
-    public void testImagePreviewVisible() {
+    public void testEditMoodWithImage() {
         try {
-            Log.d(TAG, "Beginning testImagePreviewVisible");
+            Log.d(TAG, "Beginning testEditMoodWithImage");
             loginAndNavigateToDashboard();
 
-            // Click add mood button
-            Log.d(TAG, "Clicking add mood button");
-            onView(withId(R.id.add_mood_button)).perform(click());
+            // Find and click on the sad mood which has an image URI
+            Log.d(TAG, "Finding and clicking on 'Sadness' mood");
+            onView(withText("Sadness")).perform(click());
 
-            // Check that the image preview is visible
+            // Verify we're in edit mode by checking for the confirm button
+            Log.d(TAG, "Checking if confirm button is visible (edit mode)");
+            onView(withId(R.id.buttonConfirm)).check(matches(isDisplayed()));
+
+            // Check that the image preview is displayed
             Log.d(TAG, "Checking if image preview is visible");
             onView(withId(R.id.imagePreview)).check(matches(isDisplayed()));
-            Log.d(TAG, "Image preview is visible, test successful");
+
+            // Verify other fields
+            Log.d(TAG, "Verifying reason text");
+            onView(withId(R.id.editReason)).check(matches(withText("Bad day")));
+
+            Log.d(TAG, "Verifying trigger text");
+            onView(withId(R.id.editTrigger)).check(matches(withText("Rain")));
+
+            Log.d(TAG, "All fields verified, test successful");
 
             // Go back to dashboard
             Espresso.pressBack();
@@ -216,6 +197,33 @@ public class DashboardTest {
             throw new RuntimeException(e);
         }
     }
+    @Test
+    public void testSpinnerSelection() {
+        try {
+            Log.d(TAG, "Beginning testSpinnerSelection");
+            loginAndNavigateToDashboard();
+
+            // Click add mood button
+            Log.d(TAG, "Clicking add mood button");
+            onView(withId(R.id.add_mood_button)).perform(click());
+
+            // Test spinner selection
+            Log.d(TAG, "Opening emotion spinner");
+            onView(withId(R.id.spinnerEmotion)).perform(click());
+
+            Log.d(TAG, "Selecting 'Hapiiness' from spinner");
+            onData(allOf(is(instanceOf(String.class)), containsString("Happiness"))).perform(click());
+
+            Log.d(TAG, "Spinner selection complete, test successful");
+
+            // Go back to dashboard
+            Espresso.pressBack();
+        } catch (Exception e) {
+            Log.e(TAG, "Test failed with exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
 }

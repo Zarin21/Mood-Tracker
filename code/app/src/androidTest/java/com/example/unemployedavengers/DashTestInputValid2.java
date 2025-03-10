@@ -1,40 +1,18 @@
 package com.example.unemployedavengers;
-/*
- * DashboardTest.java
- *
- * This is an **Espresso UI test class** for testing the **Dashboard** functionality of the "Unemployed Avengers" app.
- * It tests different UI elements and interactions within the Dashboard, including:
- *
- * - Display of mood events retrieved from Firestore
- * - Adding new mood events
- * - Editing existing mood events
- * - Deleting mood events
- * - Field validations (word limits, input correctness, etc.)
- * - Image upload and preview functionality
- * - Spinner and radio button selections
- *
- * The tests interact with the UI using Espresso matchers and actions, ensuring that everything behaves as expected.
- */
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.startsWith;
-import static androidx.test.espresso.action.ViewActions.click;
+
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -66,8 +44,8 @@ import java.util.HashMap;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class DashboardTest {
-    private static final String TAG = "DashboardTest";
+public class DashTestInputValid2{
+    private static final String TAG = "DashTestInputValid2";
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<>(MainActivity.class);
@@ -122,13 +100,6 @@ public class DashboardTest {
 
         Log.d(TAG, "Database seeding completed");
     }
-
-    @After
-    public void clearDatabase() {
-        Log.d(TAG, "Cleaning up database after tests");
-        FirebaseTestHelper.clearDatabase();
-    }
-
     private void loginAndNavigateToDashboard() throws InterruptedException {
         Log.d(TAG, "Starting navigation to dashboard");
 
@@ -150,41 +121,25 @@ public class DashboardTest {
         Log.d(TAG, "Wait for dashboard completed");
     }
 
-    // --- ORIGINAL TESTS ---
 
     @Test
-    public void dashboardShouldDisplayExistingMoods() {
+    public void testTriggerField() {
         try {
-            Log.d(TAG, "Beginning dashboardShouldDisplayExistingMoods");
-            loginAndNavigateToDashboard();
-
-            // Check for just one mood to keep it simple
-            Log.d(TAG, "Checking for 'Happiness' mood");
-            onView(withText("Happiness")).check(matches(isDisplayed()));
-            Log.d(TAG, "Happiness mood found, test successful");
-        } catch (Exception e) {
-            Log.e(TAG, "Test failed with exception", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    // --- IMAGE-RELATED TESTS ---
-
-    @Test
-    public void testImageUploadButtonVisible() {
-        try {
-            Log.d(TAG, "Beginning testImageUploadButtonVisible");
+            Log.d(TAG, "Beginning testTriggerField");
             loginAndNavigateToDashboard();
 
             // Click add mood button
             Log.d(TAG, "Clicking add mood button");
             onView(withId(R.id.add_mood_button)).perform(click());
 
-            // Check that the image upload button is visible
-            Log.d(TAG, "Checking if image upload button is visible");
-            onView(withId(R.id.buttonUploadPicture)).check(matches(isDisplayed()));
-            Log.d(TAG, "Image upload button is visible, test successful");
+            // Test just the trigger field
+            Log.d(TAG, "Entering text in trigger field");
+            onView(withId(R.id.editTrigger)).perform(typeText("Test trigger"), closeSoftKeyboard());
+
+            // Check that text was entered correctly
+            Log.d(TAG, "Verifying trigger text was entered correctly");
+            onView(withId(R.id.editTrigger)).check(matches(withText("Test trigger")));
+            Log.d(TAG, "Trigger text verified, test successful");
 
             // Go back to dashboard
             Espresso.pressBack();
@@ -195,19 +150,74 @@ public class DashboardTest {
     }
 
     @Test
-    public void testImagePreviewVisible() {
+    public void testReasonWordLimitValidation() {
         try {
-            Log.d(TAG, "Beginning testImagePreviewVisible");
+            Log.d(TAG, "Beginning testReasonWordLimitValidation");
             loginAndNavigateToDashboard();
 
             // Click add mood button
             Log.d(TAG, "Clicking add mood button");
             onView(withId(R.id.add_mood_button)).perform(click());
 
-            // Check that the image preview is visible
-            Log.d(TAG, "Checking if image preview is visible");
-            onView(withId(R.id.imagePreview)).check(matches(isDisplayed()));
-            Log.d(TAG, "Image preview is visible, test successful");
+            // Enter more than 3 words
+            Log.d(TAG, "Entering text with more than 3 words in reason field");
+            onView(withId(R.id.editReason)).perform(typeText("This is way too many words"), closeSoftKeyboard());
+
+            // Select a radio button (required for form validation)
+            Log.d(TAG, "Selecting 'Alone' radio button");
+            onView(withId(R.id.radioAlone)).perform(click());
+
+            // Try to confirm
+            Log.d(TAG, "Clicking confirm button");
+            onView(withId(R.id.buttonConfirm)).perform(click());
+
+            // Check for error message
+            Log.d(TAG, "Checking for error message");
+            onView(withId(R.id.editReason)).check(matches(hasErrorText("Reason must be 3 words or less!")));
+            Log.d(TAG, "Error message verified, test successful");
+
+            // Go back to dashboard
+            Espresso.pressBack();
+        } catch (Exception e) {
+            Log.e(TAG, "Test failed with exception", e);
+            throw new RuntimeException(e);
+        }
+
+    }
+    @Test
+    public void testReasonFieldMaxLength() {
+        try {
+            Log.d(TAG, "Beginning testReasonFieldMaxLength");
+            loginAndNavigateToDashboard();
+
+            // First, wait to ensure dashboard is fully loaded
+            Thread.sleep(2000);
+
+            // Verify we're on the dashboard by checking for the add_mood_button
+            Log.d(TAG, "Verifying we're on dashboard by checking for add_mood_button");
+            onView(withId(R.id.add_mood_button)).check(matches(isDisplayed()));
+
+            // Click add mood button to navigate to input dialog
+            Log.d(TAG, "Clicking add_mood_button to navigate to input dialog");
+            onView(withId(R.id.add_mood_button)).perform(click());
+
+            // Wait for input dialog to appear
+            Log.d(TAG, "Waiting for input dialog to appear");
+            Thread.sleep(2000);
+
+            // Verify we're on the input dialog by checking for the buttonConfirm
+            Log.d(TAG, "Verifying we're on input dialog by checking for buttonConfirm");
+            onView(withId(R.id.buttonConfirm)).check(matches(isDisplayed()));
+
+            // Try to enter more than 20 characters (but the EditText should limit it to 20)
+            String longText = "This is a very long text that exceeds twenty characters";
+            Log.d(TAG, "Entering text with more than 20 characters in reason field");
+            onView(withId(R.id.editReason)).perform(typeText(longText), closeSoftKeyboard());
+
+            // Verify that only 20 characters were actually entered due to maxLength attribute
+            Log.d(TAG, "Verifying text was truncated to 20 characters");
+            onView(withId(R.id.editReason)).check(matches(withText(longText.substring(0, 20))));
+            Log.d(TAG, "Text length verification successful");
 
             // Go back to dashboard
             Espresso.pressBack();
@@ -217,5 +227,11 @@ public class DashboardTest {
         }
     }
 
+
+    @After
+    public void clearDatabase() {
+        Log.d(TAG, "Cleaning up database after tests");
+        FirebaseTestHelper.clearDatabase();
+    }
 
 }
