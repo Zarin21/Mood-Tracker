@@ -1,42 +1,15 @@
 package com.example.unemployedavengers;
-/*
- * DashboardTest.java
- *
- * This is an **Espresso UI test class** for testing the **Dashboard** functionality of the "Unemployed Avengers" app.
- * It tests different UI elements and interactions within the Dashboard, including:
- *
- * - Display of mood events retrieved from Firestore
- * - Adding new mood events
- * - Editing existing mood events
- * - Deleting mood events
- * - Field validations (word limits, input correctness, etc.)
- * - Image upload and preview functionality
- * - Spinner and radio button selections
- *
- * The tests interact with the UI using Espresso matchers and actions, ensuring that everything behaves as expected.
- */
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.startsWith;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.Espresso.onData;
+
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 import android.content.Context;
@@ -66,8 +39,8 @@ import java.util.HashMap;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class DashboardTest {
-    private static final String TAG = "DashboardTest";
+public class DashTestInputValid {
+    private static final String TAG = "DashTestInputValid";
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<>(MainActivity.class);
@@ -122,13 +95,6 @@ public class DashboardTest {
 
         Log.d(TAG, "Database seeding completed");
     }
-
-    @After
-    public void clearDatabase() {
-        Log.d(TAG, "Cleaning up database after tests");
-        FirebaseTestHelper.clearDatabase();
-    }
-
     private void loginAndNavigateToDashboard() throws InterruptedException {
         Log.d(TAG, "Starting navigation to dashboard");
 
@@ -150,41 +116,24 @@ public class DashboardTest {
         Log.d(TAG, "Wait for dashboard completed");
     }
 
-    // --- ORIGINAL TESTS ---
-
     @Test
-    public void dashboardShouldDisplayExistingMoods() {
+    public void testReasonField() {
         try {
-            Log.d(TAG, "Beginning dashboardShouldDisplayExistingMoods");
-            loginAndNavigateToDashboard();
-
-            // Check for just one mood to keep it simple
-            Log.d(TAG, "Checking for 'Happiness' mood");
-            onView(withText("Happiness")).check(matches(isDisplayed()));
-            Log.d(TAG, "Happiness mood found, test successful");
-        } catch (Exception e) {
-            Log.e(TAG, "Test failed with exception", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    // --- IMAGE-RELATED TESTS ---
-
-    @Test
-    public void testImageUploadButtonVisible() {
-        try {
-            Log.d(TAG, "Beginning testImageUploadButtonVisible");
+            Log.d(TAG, "Beginning testReasonField");
             loginAndNavigateToDashboard();
 
             // Click add mood button
             Log.d(TAG, "Clicking add mood button");
             onView(withId(R.id.add_mood_button)).perform(click());
 
-            // Check that the image upload button is visible
-            Log.d(TAG, "Checking if image upload button is visible");
-            onView(withId(R.id.buttonUploadPicture)).check(matches(isDisplayed()));
-            Log.d(TAG, "Image upload button is visible, test successful");
+            // Test just the reason field
+            Log.d(TAG, "Entering text in reason field");
+            onView(withId(R.id.editReason)).perform(typeText("Test reason"), closeSoftKeyboard());
+
+            // Check that text was entered correctly
+            Log.d(TAG, "Verifying reason text was entered correctly");
+            onView(withId(R.id.editReason)).check(matches(withText("Test reason")));
+            Log.d(TAG, "Reason text verified, test successful");
 
             // Go back to dashboard
             Espresso.pressBack();
@@ -195,19 +144,23 @@ public class DashboardTest {
     }
 
     @Test
-    public void testImagePreviewVisible() {
+    public void testSocialSituationField() {
         try {
-            Log.d(TAG, "Beginning testImagePreviewVisible");
+            Log.d(TAG, "Beginning testSocialSituationField");
             loginAndNavigateToDashboard();
 
             // Click add mood button
             Log.d(TAG, "Clicking add mood button");
             onView(withId(R.id.add_mood_button)).perform(click());
 
-            // Check that the image preview is visible
-            Log.d(TAG, "Checking if image preview is visible");
-            onView(withId(R.id.imagePreview)).check(matches(isDisplayed()));
-            Log.d(TAG, "Image preview is visible, test successful");
+            // Test just the social situation field
+            Log.d(TAG, "Entering text in social situation field");
+            onView(withId(R.id.editSocialSituation)).perform(typeText("Test situation"), closeSoftKeyboard());
+
+            // Check that text was entered correctly
+            Log.d(TAG, "Verifying social situation text was entered correctly");
+            onView(withId(R.id.editSocialSituation)).check(matches(withText("Test situation")));
+            Log.d(TAG, "Social situation text verified, test successful");
 
             // Go back to dashboard
             Espresso.pressBack();
@@ -217,5 +170,39 @@ public class DashboardTest {
         }
     }
 
+    @Test
+    public void testRadioButtonSelection() {
+        try {
+            Log.d(TAG, "Beginning testRadioButtonSelection");
+            loginAndNavigateToDashboard();
+
+            // Click add mood button
+            Log.d(TAG, "Clicking add mood button");
+            onView(withId(R.id.add_mood_button)).perform(click());
+
+            // Test radio button selection
+            Log.d(TAG, "Clicking 'Alone' radio button");
+            onView(withId(R.id.radioAlone)).perform(click());
+
+            // Check that radio button was selected
+            Log.d(TAG, "Verifying radio button is checked");
+            onView(withId(R.id.radioAlone)).check(matches(isChecked()));
+            Log.d(TAG, "Radio button selection verified, test successful");
+
+            // Go back to dashboard
+            Espresso.pressBack();
+        } catch (Exception e) {
+            Log.e(TAG, "Test failed with exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    @After
+    public void clearDatabase() {
+        Log.d(TAG, "Cleaning up database after tests");
+        FirebaseTestHelper.clearDatabase();
+    }
 
 }
