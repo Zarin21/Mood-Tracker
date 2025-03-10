@@ -1,3 +1,10 @@
+/*
+ * ConfirmDeleteDialogFragment - A DialogFragment to confirm deletion of a mood event.
+ *
+ * Purpose:
+ * - Displays a confirmation prompt with options to "Delete" or "Cancel".
+ * - Sends the deletion confirmation result back to the parent fragment via FragmentResult.
+ */
 package com.example.unemployedavengers;
 
 import android.app.AlertDialog;
