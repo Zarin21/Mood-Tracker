@@ -1,5 +1,19 @@
 package com.example.unemployedavengers;
 
+/*
+ * FirebaseTestHelper.java
+ *
+ * This class is responsible for setting up Firebase emulators for testing.
+ * It configures Firestore, Authentication, and Storage to use local emulators,
+ * preventing the need to interact with real cloud services during testing.
+ *
+ * Features:
+ * - `setupEmulator()`: Configures Firebase services (Firestore, Auth, Storage) to use local emulator ports.
+ * - `clearDatabase()`: Deletes all data in Firestore and Storage to ensure a clean state for each test run.
+ *
+ * This is useful for automated testing and ensures consistent test environments without affecting production data.
+ */
+
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
