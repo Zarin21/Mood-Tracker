@@ -233,11 +233,26 @@ public class InputDialog extends DialogFragment {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         imageUri = result.getData().getData();
-                        imagePreview.setImageURI(imageUri);
+
+                        try {
+                            int fileSize = requireContext().getContentResolver()
+                                    .openInputStream(imageUri)
+                                    .available(); // Get file size in bytes
+
+                            if (fileSize > 2 * 1024 * 1024) { // 2MB limit
+                                Toast.makeText(getContext(), "File size must be under 2MB", Toast.LENGTH_SHORT).show();
+                                imageUri = null; // Reset imageUri
+                            } else {
+                                imagePreview.setImageURI(imageUri); //set file
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Error checking file size", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
                     }
                 });
 
-        // Permission launcher
+        //permission launcher
         permissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
@@ -250,6 +265,7 @@ public class InputDialog extends DialogFragment {
                     }
                 });
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view,
