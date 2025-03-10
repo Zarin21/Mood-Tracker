@@ -243,7 +243,7 @@ public class InputDialog extends DialogFragment {
                                 Toast.makeText(getContext(), "File size must be under 2MB", Toast.LENGTH_SHORT).show();
                                 imageUri = null; // Reset imageUri
                             } else {
-                                imagePreview.setImageURI(imageUri); //set file
+                                imagePreview.setImageURI(imageUri);
                             }
                         } catch (Exception e) {
                             Toast.makeText(getContext(), "Error checking file size", Toast.LENGTH_SHORT).show();
@@ -252,7 +252,6 @@ public class InputDialog extends DialogFragment {
                     }
                 });
 
-        //permission launcher
         permissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
@@ -286,13 +285,16 @@ public class InputDialog extends DialogFragment {
                         .into(imagePreview);
             }
 
+            //get the source dashboard/history
             source = getArguments().getString("source");
+
+            //if we are updating
             if (moodEvent != null) {
                 //populate the fields with the data from the selected MoodEvent
                 EditText triggerEditText = view.findViewById(R.id.editTrigger);
                 EditText situationEditText = view.findViewById(R.id.editSocialSituation);
                 EditText reasonEditText = view.findViewById(R.id.editReason);
-                Spinner spinner =  view.findViewById(R.id.spinnerEmotion);
+                Spinner spinner = view.findViewById(R.id.spinnerEmotion);
 
                 //using getter function from model to get text
                 triggerEditText.setText(moodEvent.getTrigger());
@@ -305,6 +307,8 @@ public class InputDialog extends DialogFragment {
                     ((RadioButton) view.findViewById(R.id.radioTwoSeveral)).setChecked(true);
                 } else if (Objects.equals(moodEvent.getRadioSituation(), "A Crowd")) {
                     ((RadioButton) view.findViewById(R.id.radioCrowd)).setChecked(true);
+                }else if (Objects.equals(moodEvent.getRadioSituation(), "None")) {
+                    ((RadioButton) view.findViewById(R.id.radioNone)).setChecked(true);
                 }
 
 
