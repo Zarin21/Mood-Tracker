@@ -1,4 +1,20 @@
 package com.example.unemployedavengers;
+/*
+ * DashboardTest.java
+ *
+ * This is an **Espresso UI test class** for testing the **Dashboard** functionality of the "Unemployed Avengers" app.
+ * It tests different UI elements and interactions within the Dashboard, including:
+ *
+ * - Display of mood events retrieved from Firestore
+ * - Adding new mood events
+ * - Editing existing mood events
+ * - Deleting mood events
+ * - Field validations (word limits, input correctness, etc.)
+ * - Image upload and preview functionality
+ * - Spinner and radio button selections
+ *
+ * The tests interact with the UI using Espresso matchers and actions, ensuring that everything behaves as expected.
+ */
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
