@@ -1,3 +1,11 @@
+/*
+ * InputDialog - DialogFragment for adding or editing mood events.
+ *
+ * Purpose:
+ * - Collects user inputs including mood, reason, trigger, situation, and an image.
+ * - Provides UI elements such as a spinner with custom styling, image upload, and text inputs.
+ * - Sends the new or updated MoodEvent back to the parent fragment via FragmentResult.
+ */
 package com.example.unemployedavengers;
 
 import android.app.Activity;
