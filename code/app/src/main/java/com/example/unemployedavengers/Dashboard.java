@@ -1,3 +1,12 @@
+/*
+ * Dashboard Fragment
+ * --------------------
+ * Purpose:
+ * - Display the main dashboard of the Unemployed Avengers app.
+ * - Load and show mood events from Firestore using MoodEventArrayAdapter.
+ * - Provide navigation to other screens (e.g., friends history, profile, input dialog).
+ * - Handle user interactions such as selecting mood events, editing, and deleting.
+ */
 package com.example.unemployedavengers;
 
 import android.content.Context;
@@ -89,15 +98,12 @@ public class Dashboard extends Fragment{
                         .navigate(R.id.action_dashboardFragment_to_profileFragment)
         );
 
-
-
-
         //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("source", "dashboard");
             Navigation.findNavController(v)
-                    .navigate(R.id.action_dashboardFragment_to_inputDialog);
-
-
+                    .navigate(R.id.action_dashboardFragment_to_inputDialog, args);
         });
 
         //register the listener for the result from InputDialog (Only once)
@@ -239,11 +245,12 @@ public class Dashboard extends Fragment{
                             MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
 
                             //create a bundle and put the selected MoodEvent in it
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("selected_mood_event", selectedMoodEvent);
+                            Bundle args = new Bundle();
+                            args.putSerializable("selected_mood_event", selectedMoodEvent);
+                            args.putString("source", "dashboard");
 
                             //navigate to inputdialog and pass the selected mood event
-                            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, bundle);
+                            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, args);
                         });
                         //long click to delete
                         binding.activityList.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -253,7 +260,7 @@ public class Dashboard extends Fragment{
                             dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
 
 
-                            return true; // Indicate the event was handled
+                            return true; //indicate the event was handled
                         });
 
                     } else {
