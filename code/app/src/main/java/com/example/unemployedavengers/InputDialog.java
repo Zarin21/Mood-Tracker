@@ -237,7 +237,6 @@ public class InputDialog extends DialogFragment {
 
         //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
-            if (binding.editReason.getText().toString().split(" ").length <= 3) {
                 //get all relevant information
                 String mood = (String) binding.spinnerEmotion.getSelectedItem();
                 String trigger = binding.editTrigger.getText().toString();
@@ -261,9 +260,6 @@ public class InputDialog extends DialogFragment {
 
                 Navigation.findNavController(v)
                         .navigate(R.id.action_inputDialog_to_dashboardFragment);
-            } else {
-                binding.editReason.setError("Reason must be 3 words or less!");
-            }
         });
 
 
