@@ -337,7 +337,6 @@ public class InputDialog extends DialogFragment {
 
         //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
-            if (binding.editReason.getText().toString().split(" ").length <= 3) {
                 //get all relevant information
                 String mood = (String) binding.spinnerEmotion.getSelectedItem();
                 String reason = binding.editReason.getText().toString();
@@ -375,9 +374,15 @@ public class InputDialog extends DialogFragment {
                     Navigation.findNavController(v)
                             .navigate(R.id.action_inputDialog_to_historyFragment);
                 }
-            } else {
-                binding.editReason.setError("Reason must be 3 words or less!");
-            }
+          
+                //pass the updated MoodEvent back to dashboard
+                Bundle result = new Bundle();
+                result.putSerializable("mood_event_key", moodEvent);
+                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
+
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
+
         });
 
 
