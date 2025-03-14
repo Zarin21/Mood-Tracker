@@ -27,6 +27,7 @@ public class MoodEvent implements Serializable {
 
     private String id;
 
+    private boolean publicStatus;
 
     //Constructor
     public MoodEvent(String mood, String reason, String trigger, String situation, long time, String radioSituation, String imageUri) {
@@ -43,7 +44,7 @@ public class MoodEvent implements Serializable {
         //empty constructor for firebase
     }
 
-    //getters and setters
+    //getters and setters (exclude time)
     public String getMood() {
         return mood;
     }
@@ -71,6 +72,17 @@ public class MoodEvent implements Serializable {
         return id;
     }
 
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public String getRadioSituation() {
+        return radioSituation;
+    }
+
+    public Boolean getPubicStatus(){return publicStatus;}
+
+
 
     public void setMood(String mood){
         this.mood = mood;
@@ -87,9 +99,6 @@ public class MoodEvent implements Serializable {
         this.situation = situation;
     }
 
-    //Exclude time as we will not let user change time.
-
-
     public void setExisted(boolean existed) {
         this.existed = existed;
     }
@@ -97,20 +106,14 @@ public class MoodEvent implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
-
-    public String getRadioSituation() {
-        return radioSituation;
-    }
-
     public void setRadioSituation(String radioSituation) {
         this.radioSituation = radioSituation;
     }
-
-    public String getImageUri() {
-        return imageUri;
-    }
-
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public void setPublicStatus(boolean publicStatus) {
+        this.publicStatus = publicStatus;
     }
 }
