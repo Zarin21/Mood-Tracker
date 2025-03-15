@@ -81,7 +81,7 @@ public class MoodEvent implements Serializable {
         return radioSituation;
     }
 
-    public Boolean getPubicStatus(){return publicStatus;}
+    public Boolean getPublicStatus(){return publicStatus;}
 
 
 
