@@ -71,12 +71,6 @@ public class Dashboard extends Fragment{
         username = sharedPreferences.getString("username", null);  // Default to null if not found
         userID = sharedPreferences.getString("userID", null);  // Default to null if not found
 
-        if (username != null) {
-            Log.d("Dashboard", "Username retrieved: " + username);
-        } else {
-            Log.e("Dashboard", "No username found in SharedPreferences");
-        }
-
         //database
         db = FirebaseFirestore.getInstance();
         moodEventRef = db.collection("users").document(userID).collection("moods");
@@ -115,6 +109,7 @@ public class Dashboard extends Fragment{
 
                 //existed is true if we are updating a mood, else we are adding a mood
                 if ((moodEvent != null)&&(moodEvent.getExisted()==false)) {
+
                     addMoodEvent(moodEvent); //store the mood event in Firestore
                 }else{
                     updateMoodEvent(moodEvent);
@@ -182,7 +177,6 @@ public class Dashboard extends Fragment{
 
         String moodEventId = moodEvent.getId();
 
-        Log.d("Dashboard", "updateMoodEvent: " + moodEventId);
         //get document via id
         DocumentReference moodEventDocRef = moodEventRef.document(moodEventId);
 
@@ -243,6 +237,7 @@ public class Dashboard extends Fragment{
                         binding.activityList.setOnItemClickListener((parent, view, position, id) -> {
                             //get the selected MoodEvent based on position
                             MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
+
 
                             //create a bundle and put the selected MoodEvent in it
                             Bundle args = new Bundle();
