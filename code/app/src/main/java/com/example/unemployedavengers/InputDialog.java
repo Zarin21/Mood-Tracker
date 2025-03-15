@@ -319,7 +319,7 @@ public class InputDialog extends DialogFragment {
                     ((RadioButton) view.findViewById(R.id.radioNone)).setChecked(true);
                 }
 
-                Log.d("InputDialog", "testing status: "+moodEvent.getPublicStatus());
+
 
                 if (moodEvent.getPublicStatus()){
                     ((RadioButton) view.findViewById(R.id.radioPublicStatus)).setChecked(true);
@@ -364,7 +364,7 @@ public class InputDialog extends DialogFragment {
                 trigger = trigger.trim();
                 situation = situation.trim();
 
-                Log.d("InputDialog", "testing public status: "+ publicStatus);
+
 
                 //if moodEvent exists, update it otherwise create a new one
                 if (moodEvent != null) {
@@ -374,7 +374,7 @@ public class InputDialog extends DialogFragment {
                     moodEvent.setSituation(situation);
                     moodEvent.setRadioSituation(radioSituation);
                     moodEvent.setPublicStatus(publicStatus);
-                    Log.d("InputDialog", "getting public status: "+ moodEvent.getPublicStatus());
+
 
                     //no need to change the time because we are editing the existing event
                     uploadImage(moodEvent);
@@ -407,11 +407,12 @@ public class InputDialog extends DialogFragment {
     private void uploadNewEvent(MoodEvent moodEvent, String mood, String reason, String trigger,
                                 String situation, long time, String radioSituation,boolean publicStatus) {
         // Create a new MoodEvent with empty image URL initially
-        Log.d("InputDialog", "testing public status 4: "+ publicStatus);
+
+
         MoodEvent newMoodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation, "",publicStatus);
 
 
-        Log.d("InputDialog", "testing public status 2: "+ newMoodEvent.getPublicStatus());
+
 
 
         if (imageUri != null) {
@@ -434,14 +435,13 @@ public class InputDialog extends DialogFragment {
                     });
         } else {
             // No image to upload, send result immediately
-            Log.d("InputDialog", "testing public status 5: "+newMoodEvent.getPublicStatus());
             sendResultToParent(newMoodEvent);
         }
     }
 
     // Helper method to send result
     private void sendResultToParent(MoodEvent event) {
-        Log.d("InputDialog", "testing public status 3: "+ event.getPublicStatus());
+
         Bundle result = new Bundle();
         result.putSerializable("mood_event_key", event);
         getParentFragmentManager().setFragmentResult("input_dialog_result", result);
