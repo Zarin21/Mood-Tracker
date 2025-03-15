@@ -30,7 +30,7 @@ public class MoodEvent implements Serializable {
     private boolean publicStatus;
 
     //Constructor
-    public MoodEvent(String mood, String reason, String trigger, String situation, long time, String radioSituation, String imageUri) {
+    public MoodEvent(String mood, String reason, String trigger, String situation, long time, String radioSituation, String imageUri, Boolean publicStatus) {
         this.mood = mood;
         this.reason = reason;
         this.trigger = trigger;
@@ -38,6 +38,7 @@ public class MoodEvent implements Serializable {
         this.time = time;
         this.imageUri = imageUri;
         this.radioSituation = radioSituation;
+        this.publicStatus = publicStatus;
     }
 
     public MoodEvent(){
