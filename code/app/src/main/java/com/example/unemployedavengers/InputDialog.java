@@ -319,6 +319,14 @@ public class InputDialog extends DialogFragment {
                     ((RadioButton) view.findViewById(R.id.radioNone)).setChecked(true);
                 }
 
+                Log.d("InputDialog", "testing status: "+moodEvent.getPublicStatus());
+
+                if (moodEvent.getPublicStatus()){
+                    ((RadioButton) view.findViewById(R.id.radioPublicStatus)).setChecked(true);
+                }else{
+                    ((RadioButton) view.findViewById(R.id.radioPrivateStatus)).setChecked(true);
+                }
+
 
                 //using the adapter in onCreateview
                 ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
@@ -334,7 +342,6 @@ public class InputDialog extends DialogFragment {
             }
         }
 
-
         //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
                 //get all relevant information
@@ -343,6 +350,7 @@ public class InputDialog extends DialogFragment {
                 String trigger = binding.editTrigger.getText().toString();
                 String situation = binding.editSocialSituation.getText().toString();
                 long time = System.currentTimeMillis();
+                boolean publicStatus = binding.radioPublicStatus.isChecked();
 
                 String radioSituation = "Not Set";
                 try {
@@ -356,6 +364,8 @@ public class InputDialog extends DialogFragment {
                 trigger = trigger.trim();
                 situation = situation.trim();
 
+                Log.d("InputDialog", "testing public status: "+ publicStatus);
+
                 //if moodEvent exists, update it otherwise create a new one
                 if (moodEvent != null) {
                     moodEvent.setMood(mood);
@@ -363,9 +373,12 @@ public class InputDialog extends DialogFragment {
                     moodEvent.setTrigger(trigger);
                     moodEvent.setSituation(situation);
                     moodEvent.setRadioSituation(radioSituation);
+                    moodEvent.setPublicStatus(publicStatus);
+                    Log.d("InputDialog", "getting public status: "+ moodEvent.getPublicStatus());
+
                     //no need to change the time because we are editing the existing event
                     uploadImage(moodEvent);
-                } else uploadNewEvent(moodEvent, mood, reason, trigger, situation, time, radioSituation);
+                } else uploadNewEvent(moodEvent, mood, reason, trigger, situation, time, radioSituation,publicStatus);
 
                 if (Objects.equals(source, "dashboard")) {
                     Navigation.findNavController(v)
@@ -374,14 +387,6 @@ public class InputDialog extends DialogFragment {
                     Navigation.findNavController(v)
                             .navigate(R.id.action_inputDialog_to_historyFragment);
                 }
-          
-                //pass the updated MoodEvent back to dashboard
-                Bundle result = new Bundle();
-                result.putSerializable("mood_event_key", moodEvent);
-                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
-
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
 
         });
 
@@ -400,9 +405,14 @@ public class InputDialog extends DialogFragment {
     }
 
     private void uploadNewEvent(MoodEvent moodEvent, String mood, String reason, String trigger,
-                                String situation, long time, String radioSituation) {
+                                String situation, long time, String radioSituation,boolean publicStatus) {
         // Create a new MoodEvent with empty image URL initially
-        MoodEvent newMoodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation, "");
+        Log.d("InputDialog", "testing public status 4: "+ publicStatus);
+        MoodEvent newMoodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation, "",publicStatus);
+
+
+        Log.d("InputDialog", "testing public status 2: "+ newMoodEvent.getPublicStatus());
+
 
         if (imageUri != null) {
             StorageReference storageRef = storage.getReference();
@@ -424,15 +434,18 @@ public class InputDialog extends DialogFragment {
                     });
         } else {
             // No image to upload, send result immediately
+            Log.d("InputDialog", "testing public status 5: "+newMoodEvent.getPublicStatus());
             sendResultToParent(newMoodEvent);
         }
     }
 
     // Helper method to send result
     private void sendResultToParent(MoodEvent event) {
+        Log.d("InputDialog", "testing public status 3: "+ event.getPublicStatus());
         Bundle result = new Bundle();
         result.putSerializable("mood_event_key", event);
         getParentFragmentManager().setFragmentResult("input_dialog_result", result);
+
     }
     private void uploadImage(MoodEvent moodEvent) {
         if (imageUri != null) {
