@@ -31,7 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,7 +189,7 @@ public class FollowedUserMoodEvents extends Fragment {
                             MoodEvent moodEvent = doc.toObject(MoodEvent.class);
 
                             // Set the user ID so we can display the username
-                            moodEvent.setUserId(userId); // Assuming you've added this field to MoodEvent
+                            moodEvent.setUserId(userId);
 
                             followedUserMoodEvents.add(moodEvent);
                         }
@@ -224,10 +223,6 @@ public class FollowedUserMoodEvents extends Fragment {
             binding.emptyStateMessage.setVisibility(View.VISIBLE);
             binding.followedUsersListView.setVisibility(View.GONE);
         } else {
-            // Sort mood events by time (newest first)
-            Collections.sort(followedUserMoodEvents,
-                    (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
-
             // Update the adapter with username mappings
             moodAdapter.setUserIdToUsernameMap(userIdToUsernameMap);
             moodAdapter.notifyDataSetChanged();
