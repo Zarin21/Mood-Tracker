@@ -21,10 +21,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import com.example.unemployedavengers.databinding.ActivityMainBinding;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private NavController navController;
+    private MaterialToolbar toolbar;
 
     /**
      * Called when the activity is first created.
@@ -41,6 +44,20 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+        toolbar = findViewById(R.id.top_navigation);
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.profileFragment ||
+                    itemId == R.id.notificationsFragment ||
+                    itemId == R.id.settingsFragment) {
+                navController.navigate(itemId);
+                return true;
+            }
+            return false;
+        });
 
         // Handle bottom navigation item selection
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
@@ -59,9 +76,11 @@ public class MainActivity extends AppCompatActivity {
                     destination.getId() == R.id.passwordReset2Fragment ||
                     destination.getId() == R.id.homeFragment) {
                 // Hide bottom navigation when in authentication-related fragments
+                toolbar.setVisibility(View.GONE);
                 binding.bottomNavigation.setVisibility(View.GONE);
             } else {
                 // Show bottom navigation for other fragments
+                toolbar.setVisibility(View.VISIBLE);
                 binding.bottomNavigation.setVisibility(View.VISIBLE);
             }
         });
