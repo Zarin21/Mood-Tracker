@@ -1,48 +1,36 @@
 /*
- * User - Represents a user entity in the Unemployed Avengers application.
+ * User - Model class representing a user in the mood tracking application.
  *
- * This class models a user with essential attributes such as:
- * - A unique userId (retrieved from Firebase Authentication).
- * - A username for display and identification purposes.
- * - A dummyEmail used for Firebase Authentication (generated from the username).
- * - A password (stored temporarily for local operations, not recommended for long-term storage).
- *
+ * Purpose:
+ * - Encapsulates user data including userId, username, email, and password
+ * - Implements Serializable to allow passing User objects between components
+ * - Provides getters and setters for all properties
+ * - Used throughout the app for authentication, profile management, and social features
  */
 package com.example.unemployedavengers.models;
 
 import java.io.Serializable;
 
-import java.io.Serializable;
-
-/**
- * Represents a user in the system.
- * <p>
- * This class includes:
- * - A unique userId (from Firebase Auth).
- * - A username for display.
- * - A dummyEmail used for Firebase Authentication.
- * - A password field (used for authentication, should not be stored long-term).
- * </p>
- */
 public class User implements Serializable {
-    private String userId;
-    private String username;
-    private String dummyEmail;
-    private String password;
+    // Core user identification and authentication properties
+    private String userId;      // Firebase UID for the user
+    private String username;    // Display name shown in the app
+    private String dummyEmail;  // Email address constructed from username for Firebase Auth
+    private String password;    // User's password (note: storing in plaintext is not ideal for security)
 
     /**
-     * Default constructor required for Firestore serialization.
+     * Default constructor required for Firestore deserialization
      */
     public User() {
     }
 
     /**
-     * Constructs a new {@link User} with the given attributes.
+     * Constructs a new User with all required fields
      *
-     * @param userId     The unique ID assigned to the user.
-     * @param username   The display username of the user.
-     * @param dummyEmail The dummy email used for Firebase authentication.
-     * @param password   The password associated with the user.
+     * @param userId     The unique identifier for the user
+     * @param username   The display name for the user
+     * @param dummyEmail The email address for Firebase Authentication
+     * @param password   The user's password
      */
     public User(String userId, String username, String dummyEmail, String password) {
         this.userId = userId;
@@ -52,72 +40,56 @@ public class User implements Serializable {
     }
 
     /**
-     * Retrieves the user ID.
-     *
-     * @return The unique user ID.
+     * @return The user's unique identifier
      */
     public String getUserId() {
         return userId;
     }
 
     /**
-     * Sets the user ID.
-     *
-     * @param userId The unique user ID to be set.
+     * @param userId The user's unique identifier to set
      */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
     /**
-     * Retrieves the username.
-     *
-     * @return The username of the user.
+     * @return The user's display name
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * Sets the username.
-     *
-     * @param username The new username to be assigned to the user.
+     * @param username The user's display name to set
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     * Retrieves the dummy email used for Firebase authentication.
-     *
-     * @return The dummy email associated with the user.
+     * @return The dummy email used for Firebase Authentication
      */
     public String getDummyEmail() {
         return dummyEmail;
     }
 
     /**
-     * Sets the dummy email.
-     *
-     * @param dummyEmail The new dummy email to be assigned to the user.
+     * @param dummyEmail The dummy email to set
      */
     public void setDummyEmail(String dummyEmail) {
         this.dummyEmail = dummyEmail;
     }
 
     /**
-     * Retrieves the user's password.
-     *
-     * @return The user's password.
+     * @return The user's password
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * Sets the user's password.
-     *
-     * @param password The new password to be assigned to the user.
+     * @param password The user's password to set
      */
     public void setPassword(String password) {
         this.password = password;
