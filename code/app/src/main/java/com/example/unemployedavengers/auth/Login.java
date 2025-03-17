@@ -1,3 +1,15 @@
+/*
+ * Login Fragment for the Unemployed Avengers Android application.
+ *
+ * This file handles user authentication, including:
+ * - Inflating the login layout using view binding.
+ * - Validating user input for login credentials.
+ * - Authenticating the user via a DAO.
+ * - Storing user credentials in SharedPreferences.
+ * - Navigating to the Dashboard on successful login.
+ * - Providing navigation options to Home and Password Reset screens.
+ */
+
 package com.example.unemployedavengers.auth;
 
 import android.content.Context;
@@ -30,6 +42,7 @@ public class Login extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate the view using view binding
         binding = LogInBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -39,9 +52,11 @@ public class Login extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Initialize the User Data Access Object
         userDAO = new UserDAOImplement();
 
         binding.btnBack.setOnClickListener(v -> {
+            // Navigate back to Home fragment
             Navigation.findNavController(v)
                     .navigate(R.id.action_loginFragment_to_homeFragment);
         });
@@ -51,47 +66,50 @@ public class Login extends Fragment {
             String username = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
 
-            // Validation
+            // Validate input fields
             if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
                 Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Attempt to sign in the user
             userDAO.signInUser(username, password)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(getContext(), "Login successful!", Toast.LENGTH_SHORT).show();
-
-                        // Log to ensure username is correct before navigating
                         Log.d("Login", "Username before passing: " + username);
 
+                        // Save username in SharedPreferences
                         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", username);
-                        editor.apply();  // Use apply() to save asynchronously
-                        Log.d("SharedPreferences", "Username saved: " + username);  // Ensure username is being saved
+                        editor.apply();
+                        Log.d("SharedPreferences", "Username saved: " + username);
 
+                        // Retrieve additional user data
                         userDAO.getUserByUsername(username)
                                 .addOnSuccessListener(user -> {
                                     if (user != null) {
-                                        // Retrieve user data (ensure user has a valid userId)
                                         Log.d("Login", "User ID: " + user.getUserId());
                                         String userID = user.getUserId();
-                                        editor.putString("userID", user.getUserId());
+                                        editor.putString("userID", userID);
                                         Log.d("SharedPreferences", "User ID saved: " + userID);
                                         editor.apply();
+                                        // Navigate to Dashboard after successful login
                                         Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_dashboardFragment);
-                                    }});
+                                    }
+                                });
                     })
                     .addOnFailureListener(e -> {
-                        String errorMessage = e.getMessage(); // default message
+                        String errorMessage = e.getMessage();
 
+                        // Customize error messages based on failure reason
                         if (errorMessage != null && errorMessage.contains("no user record")) {
                             errorMessage = "No user record, please sign up first or check your user name again.";
                         } else if (errorMessage != null && errorMessage.contains("does not have a password")) {
                             errorMessage = "The password is invalid, check your password or click on \"Forget password\"";
                         }
 
-                        // Inflate custom toast layout to display the full error message
+                        // Inflate custom toast layout to show the error message
                         LayoutInflater inflater = getLayoutInflater();
                         View layout = inflater.inflate(R.layout.custom_toast, null);
                         TextView toastText = layout.findViewById(R.id.toastText);
@@ -105,6 +123,7 @@ public class Login extends Fragment {
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> {
+            // Navigate to the Password Reset fragment
             Navigation.findNavController(v)
                     .navigate(R.id.action_loginFragment_to_passwordReset1Fragment);
         });
@@ -113,7 +132,7 @@ public class Login extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Prevent memory leaks by nulling out the binding
+        // Avoid memory leaks by nullifying the binding
         binding = null;
     }
 }

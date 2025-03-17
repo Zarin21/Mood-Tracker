@@ -1,3 +1,12 @@
+/*
+ * Dashboard Fragment
+ * --------------------
+ * Purpose:
+ * - Display the main dashboard of the Unemployed Avengers app.
+ * - Load and show mood events from Firestore using MoodEventArrayAdapter.
+ * - Provide navigation to other screens (e.g., friends history, profile, input dialog).
+ * - Handle user interactions such as selecting mood events, editing, and deleting.
+ */
 package com.example.unemployedavengers;
 
 import android.content.Context;
@@ -62,12 +71,6 @@ public class Dashboard extends Fragment{
         username = sharedPreferences.getString("username", null);  // Default to null if not found
         userID = sharedPreferences.getString("userID", null);  // Default to null if not found
 
-        if (username != null) {
-            Log.d("Dashboard", "Username retrieved: " + username);
-        } else {
-            Log.e("Dashboard", "No username found in SharedPreferences");
-        }
-
         //database
         db = FirebaseFirestore.getInstance();
         moodEventRef = db.collection("users").document(userID).collection("moods");
@@ -91,10 +94,10 @@ public class Dashboard extends Fragment{
 
         //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("source", "dashboard");
             Navigation.findNavController(v)
-                    .navigate(R.id.action_dashboardFragment_to_inputDialog);
-
-
+                    .navigate(R.id.action_dashboardFragment_to_inputDialog, args);
         });
 
         //register the listener for the result from InputDialog (Only once)
@@ -106,6 +109,7 @@ public class Dashboard extends Fragment{
 
                 //existed is true if we are updating a mood, else we are adding a mood
                 if ((moodEvent != null)&&(moodEvent.getExisted()==false)) {
+
                     addMoodEvent(moodEvent); //store the mood event in Firestore
                 }else{
                     updateMoodEvent(moodEvent);
@@ -173,7 +177,6 @@ public class Dashboard extends Fragment{
 
         String moodEventId = moodEvent.getId();
 
-        Log.d("Dashboard", "updateMoodEvent: " + moodEventId);
         //get document via id
         DocumentReference moodEventDocRef = moodEventRef.document(moodEventId);
 
@@ -235,12 +238,14 @@ public class Dashboard extends Fragment{
                             //get the selected MoodEvent based on position
                             MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
 
+
                             //create a bundle and put the selected MoodEvent in it
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("selected_mood_event", selectedMoodEvent);
+                            Bundle args = new Bundle();
+                            args.putSerializable("selected_mood_event", selectedMoodEvent);
+                            args.putString("source", "dashboard");
 
                             //navigate to inputdialog and pass the selected mood event
-                            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, bundle);
+                            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, args);
                         });
                         //long click to delete
                         binding.activityList.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -250,7 +255,7 @@ public class Dashboard extends Fragment{
                             dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
 
 
-                            return true; // Indicate the event was handled
+                            return true; //indicate the event was handled
                         });
 
                     } else {
