@@ -7,14 +7,14 @@
     android:background="@android:color/white"
     tools:context=".friendSection.FollowedUserMoodEvents">
 
-    <!-- Header with title and filter button -->
+    <!-- Header with title -->
     <TextView
         android:id="@+id/tvFriendsMoodTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:text="Friends Mood History"
+        android:text="Following Mood History"
         android:textColor="#FF7F7F"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -41,47 +41,24 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
+        app:layout_constraintBottom_toTopOf="@+id/backButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvFriendsMoodTitle" />
 
-    <!-- Bottom buttons -->
-    <LinearLayout
-        android:id="@+id/buttonLayout"
-        android:layout_width="0dp"
+    <!-- Back button -->
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:orientation="horizontal"
+        android:backgroundTint="#F88379"
+        android:text="Back"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/addFriendButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="Add Friend"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/mapButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="Map"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Loading and empty state -->
     <ProgressBar
@@ -98,7 +75,7 @@
         android:id="@+id/emptyStateMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No mood events from friends"
+        android:text="No mood events from followed users"
         android:textColor="#808080"
         android:textSize="18sp"
         android:visibility="gone"
@@ -106,19 +83,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Back button (hidden by default) -->
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:text="Back"
-        android:textColor="#FF7F7F"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

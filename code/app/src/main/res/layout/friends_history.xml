@@ -8,16 +8,26 @@
     android:background="@android:color/white"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/add_friend_button"
+    <TextView
+        android:id="@+id/friends_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Following"
+        android:textColor="#F88379"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/friends_history_mood_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:backgroundTint="#F88379"
-        android:text="Add Friend"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Friends History Mood"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -27,11 +37,7 @@
         <ListView
             android:id="@+id/friends_history_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" >
-
-        </ListView>
+            android:layout_height="match_parent" />
 
     </FrameLayout>
-
 </LinearLayout>
