@@ -9,7 +9,10 @@
 package com.example.unemployedavengers;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -40,9 +44,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.unemployedavengers.databinding.InputDialogBinding;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -62,8 +70,14 @@ public class InputDialog extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private double selectedLatitude;
+    private double selectedLongitude;
+    private boolean locationSet = false;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -274,6 +288,14 @@ public class InputDialog extends DialogFragment {
             imagePickerLauncher.launch(new Intent(MediaStore.ACTION_PICK_IMAGES));
         });
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+        // Set up the "Use Current Location" button
+        view.findViewById(R.id.use_current_location_button).setOnClickListener(v -> {
+            setCurrentLocation();
+        });
+
+
         //get the selected MoodEvent passed from Dashboard
         if (getArguments() != null) {
             moodEvent = (MoodEvent) getArguments().getSerializable("selected_mood_event");
@@ -345,6 +367,7 @@ public class InputDialog extends DialogFragment {
             String situation = binding.editSocialSituation.getText().toString();
             long time = System.currentTimeMillis();
 
+
             // Check if radioPublicStatus exists before accessing it
             boolean publicStatus = false;
             if (binding.radioPublicStatus != null) {
@@ -403,6 +426,62 @@ public class InputDialog extends DialogFragment {
             }
         });
     }
+    // Method to use current location
+    private void setCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this.requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this.requireActivity(),
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+        try {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            selectedLatitude = location.getLatitude();
+                            selectedLongitude = location.getLongitude();
+                            locationSet = true;
+                            Toast.makeText(getContext(), "Current location set.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("CurrentLocation", "Error retrieving location", e);
+                        Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
+                    });
+        } catch (Exception e) {
+            Log.e("CurrentLocation", "Exception during getLastLocation", e);
+            Toast.makeText(getContext(), "Exception occurred while retrieving location", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+    // Handle the permission request result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, try setting current location again
+                setCurrentLocation();
+            } else {
+                Toast.makeText(getContext(), "Location permission is required", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 
     // Helper method to send result
     private void sendResultToParent(MoodEvent event) {
@@ -413,75 +492,67 @@ public class InputDialog extends DialogFragment {
 
     private void uploadNewEvent(String mood, String reason,
                                 String situation, long time, String radioSituation, boolean publicStatus) {
-        // Create a new MoodEvent with empty image URL initially
         final MoodEvent newMoodEvent;
-
         try {
-            // Try to create MoodEvent with public status parameter
             newMoodEvent = new MoodEvent(mood, reason, situation, time, radioSituation, "", publicStatus);
         } catch (NoSuchMethodError methodError) {
-            // Fallback to constructor without public status
             final MoodEvent tempMoodEvent = new MoodEvent(mood, reason, situation, time, radioSituation, "");
-
-            // Try to set public status via setter if available
             try {
                 tempMoodEvent.setPublicStatus(publicStatus);
             } catch (Exception ex) {
                 Log.d("InputDialog", "Public status not supported in this MoodEvent model");
             }
-
-            // Send the result without image if there's no image to upload
+            // Update location if it was set
+            if (locationSet) {
+                tempMoodEvent.setLatitude(selectedLatitude);
+                tempMoodEvent.setLongitude(selectedLongitude);
+                tempMoodEvent.setHasLocation(true);
+            }
             if (imageUri == null) {
                 sendResultToParent(tempMoodEvent);
                 return;
             }
-
-            // Continue with image upload for the temporary MoodEvent
+            // Image upload code remains unchanged...
             StorageReference storageRef = storage.getReference();
             StorageReference imageRef = storageRef.child("mood_images/" + UUID.randomUUID() + ".jpg");
-
             imageRef.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot ->
                             imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                // Update the image URL and send result
                                 tempMoodEvent.setImageUri(uri.toString());
                                 sendResultToParent(tempMoodEvent);
                             }))
                     .addOnFailureListener(uploadError -> {
                         Toast.makeText(getContext(), "Image upload failed: " + uploadError.getMessage(), Toast.LENGTH_SHORT).show();
-                        // Still send the event, just without an image
                         sendResultToParent(tempMoodEvent);
                     });
             return;
         }
-
-        // If we reach this point, we successfully created the MoodEvent with the public status parameter
-
-        // Send the result without image if there's no image to upload
+        // For the successfully created newMoodEvent, update location if set:
+        if (locationSet) {
+            newMoodEvent.setLatitude(selectedLatitude);
+            newMoodEvent.setLongitude(selectedLongitude);
+            newMoodEvent.setHasLocation(true);
+        }
         if (imageUri == null) {
             sendResultToParent(newMoodEvent);
             return;
         }
-
-        // Otherwise continue with image upload
+        // Continue with image upload (code remains unchanged)
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("mood_images/" + UUID.randomUUID() + ".jpg");
-
-        final MoodEvent finalMoodEvent = newMoodEvent; // Create a final copy for the lambda
-
+        final MoodEvent finalMoodEvent = newMoodEvent;
         imageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot ->
                         imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            // Update the image URL and send result
                             finalMoodEvent.setImageUri(uri.toString());
                             sendResultToParent(finalMoodEvent);
                         }))
                 .addOnFailureListener(uploadError -> {
                     Toast.makeText(getContext(), "Image upload failed: " + uploadError.getMessage(), Toast.LENGTH_SHORT).show();
-                    // Still send the event, just without an image
                     sendResultToParent(finalMoodEvent);
                 });
     }
+
 
     private void uploadImage(MoodEvent moodEvent) {
         if (imageUri != null) {
