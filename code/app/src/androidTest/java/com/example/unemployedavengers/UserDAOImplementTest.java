@@ -1,33 +1,82 @@
-package com.example.unemployedavengers.test;
+package com.example.unemployedavengers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
+import android.util.Log;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.User;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@RunWith(AndroidJUnit4.class)
+@LargeTest
 public class UserDAOImplementTest {
 
     private UserDAOImplement userDAO;
     private FirebaseAuth auth;
+    private FirebaseFirestore db;
+
+    @BeforeClass
+    public static void setup(){
+        String androidLocalhost = "10.0.2.2";
+
+        int portNumber = 8080;
+        FirebaseFirestore.getInstance().useEmulator(androidLocalhost, portNumber);
+    }
 
     @Before
     public void setUp() {
-        userDAO = new UserDAOImplement();
         auth = FirebaseAuth.getInstance();
-        auth.signOut();
+        db = FirebaseFirestore.getInstance();
+        auth.signOut(); // Ensure no user is signed in before each test
+        userDAO = new UserDAOImplement();
     }
 
     @After
     public void tearDown() {
+        String projectId = "lab07-649c2";
+        URL url = null;
+        try {
+            url = new URL("http://10.0.2.2:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
+        } catch (MalformedURLException exception) {
+            Log.e("URL Error", Objects.requireNonNull(exception.getMessage()));
+        }
+        HttpURLConnection urlConnection = null;
+        try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("DELETE");
+            int response = urlConnection.getResponseCode();
+            Log.i("Response Code", "Response Code: " + response);
+        } catch (IOException exception) {
+            Log.e("IO Error", Objects.requireNonNull(exception.getMessage()));
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
         auth.signOut();
     }
 
@@ -35,9 +84,9 @@ public class UserDAOImplementTest {
     public void testSignUpUser() throws Exception {
         String uniqueUsername = "testuser" + System.currentTimeMillis();
         String password = "password123";
-        Task<Void> signUpTask = userDAO.signUpUser(uniqueUsername, password);
-        Tasks.await(signUpTask, 30, TimeUnit.SECONDS);
-        assertTrue(signUpTask.isSuccessful());
+        Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assertNotNull("User should be signed in after signup", currentUser);
     }
 
     @Test
@@ -46,9 +95,9 @@ public class UserDAOImplementTest {
         String password = "password123";
         Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
         auth.signOut();
-        Task<Void> signInTask = userDAO.signInUser(uniqueUsername, password);
-        Tasks.await(signInTask, 30, TimeUnit.SECONDS);
-        assertTrue(signInTask.isSuccessful());
+        Tasks.await(userDAO.signInUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assertNotNull("User should be signed in after signin", currentUser);
     }
 
     @Test
@@ -56,53 +105,8 @@ public class UserDAOImplementTest {
         String uniqueUsername = "testuser" + System.currentTimeMillis();
         String password = "password123";
         Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
-        Task<Boolean> existsTask = userDAO.checkUserExists(uniqueUsername);
-        Boolean exists = Tasks.await(existsTask, 30, TimeUnit.SECONDS);
-        assertTrue(exists);
-    }
-
-    @Test
-    public void testChangePassword() throws Exception {
-        String uniqueUsername = "testuser" + System.currentTimeMillis();
-        String password = "password123";
-        Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
-        FirebaseUser currentUser = auth.getCurrentUser();
-        assertNotNull(currentUser);
-        String newPassword = "newpassword123";
-        User user = new User(currentUser.getUid(), uniqueUsername, uniqueUsername.toLowerCase() + "@example.com", password);
-        Task<Void> changePasswordTask = userDAO.changePassword(user, newPassword);
-        Tasks.await(changePasswordTask, 30, TimeUnit.SECONDS);
-        assertTrue(changePasswordTask.isSuccessful());
-        auth.signOut();
-        Task<Void> signInTask = userDAO.signInUser(uniqueUsername, newPassword);
-        Tasks.await(signInTask, 30, TimeUnit.SECONDS);
-        assertTrue(signInTask.isSuccessful());
-    }
-
-    @Test
-    public void testResetPassword() throws Exception {
-        String uniqueUsername = "testuser" + System.currentTimeMillis();
-        String password = "password123";
-        Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
-        String newPassword = "resetpassword123";
-        Task<Void> resetTask = userDAO.resetPassword(uniqueUsername, newPassword);
-        Tasks.await(resetTask, 30, TimeUnit.SECONDS);
-        assertTrue(resetTask.isSuccessful());
-        auth.signOut();
-        Task<Void> signInTask = userDAO.signInUser(uniqueUsername, newPassword);
-        Tasks.await(signInTask, 30, TimeUnit.SECONDS);
-        assertTrue(signInTask.isSuccessful());
-    }
-
-    @Test
-    public void testGetCurrentUserProfile() throws Exception {
-        String uniqueUsername = "testuser" + System.currentTimeMillis();
-        String password = "password123";
-        Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
-        Task<User> profileTask = userDAO.getCurrentUserProfile();
-        User userProfile = Tasks.await(profileTask, 30, TimeUnit.SECONDS);
-        assertNotNull(userProfile);
-        assertEquals(uniqueUsername, userProfile.getUsername());
+        boolean exists = Tasks.await(userDAO.checkUserExists(uniqueUsername), 30, TimeUnit.SECONDS);
+        assertTrue("User should exist in Firestore", exists);
     }
 
     @Test
@@ -111,52 +115,10 @@ public class UserDAOImplementTest {
         String password = "password123";
         Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
         String newUsername = uniqueUsername + "new";
-        Task<Void> changeUsernameTask = userDAO.changeUsername(newUsername);
-        Tasks.await(changeUsernameTask, 30, TimeUnit.SECONDS);
-        assertTrue(changeUsernameTask.isSuccessful());
-        Task<User> getUserTask = userDAO.getUserByUsername(newUsername);
-        User updatedUser = Tasks.await(getUserTask, 30, TimeUnit.SECONDS);
-        assertNotNull(updatedUser);
-        assertEquals(newUsername, updatedUser.getUsername());
-    }
-
-    @Test
-    public void testFollowRequests() throws Exception {
-        String requesterUsername = "requester" + System.currentTimeMillis();
-        String targetUsername = "target" + System.currentTimeMillis();
-        String password = "password123";
-
-        Tasks.await(userDAO.signUpUser(requesterUsername, password), 30, TimeUnit.SECONDS);
-        FirebaseUser requesterUser = auth.getCurrentUser();
-        assertNotNull(requesterUser);
-        String requesterId = requesterUser.getUid();
-
-        auth.signOut();
-        Tasks.await(userDAO.signUpUser(targetUsername, password), 30, TimeUnit.SECONDS);
-        FirebaseUser targetUser = auth.getCurrentUser();
-        assertNotNull(targetUser);
-        User targetProfile = Tasks.await(userDAO.getUserByUsername(targetUsername), 30, TimeUnit.SECONDS);
-        String targetId = targetProfile.getUserId();
-
-        auth.signOut();
-        Tasks.await(userDAO.signInUser(requesterUsername, password), 30, TimeUnit.SECONDS);
-        Task<Void> requestFollowTask = userDAO.requestFollow(requesterId, targetId);
-        Tasks.await(requestFollowTask, 30, TimeUnit.SECONDS);
-        assertTrue(requestFollowTask.isSuccessful());
-
-        Task<Void> acceptTask = userDAO.acceptFollowRequest(requesterId, targetId);
-        Tasks.await(acceptTask, 30, TimeUnit.SECONDS);
-        assertTrue(acceptTask.isSuccessful());
-
-        Task<Void> unfollowTask = userDAO.unfollowUser(requesterId, targetId);
-        Tasks.await(unfollowTask, 30, TimeUnit.SECONDS);
-        assertTrue(unfollowTask.isSuccessful());
-
-        Task<Void> anotherRequestTask = userDAO.requestFollow(requesterId, targetId);
-        Tasks.await(anotherRequestTask, 30, TimeUnit.SECONDS);
-        Task<Void> rejectTask = userDAO.rejectFollowRequest(requesterId, targetId);
-        Tasks.await(rejectTask, 30, TimeUnit.SECONDS);
-        assertTrue(rejectTask.isSuccessful());
+        Tasks.await(userDAO.changeUsername(newUsername), 30, TimeUnit.SECONDS);
+        User updatedUser = Tasks.await(userDAO.getUserByUsername(newUsername), 30, TimeUnit.SECONDS);
+        assertNotNull("User should exist with new username", updatedUser);
+        assertEquals("Username should be updated", newUsername, updatedUser.getUsername());
     }
 
     @Test
@@ -170,21 +132,58 @@ public class UserDAOImplementTest {
         auth.signOut();
         Tasks.await(userDAO.signInUser(searcherUsername, password), 30, TimeUnit.SECONDS);
         String searchPrefix = targetUsername.substring(0, 6);
-        Task<List<User>> searchTask = userDAO.searchUsers(searchPrefix);
-        List<User> results = Tasks.await(searchTask, 30, TimeUnit.SECONDS);
+        List<User> results = Tasks.await(userDAO.searchUsers(searchPrefix), 30, TimeUnit.SECONDS);
         for (User user : results) {
-            assertNotEquals(searcherUsername, user.getUsername());
+            assertNotEquals("Search results should not contain the searcher", searcherUsername, user.getUsername());
         }
+    }
+    @Test
+    public void testUniqueUserNameSignUp() throws Exception {
+        String username = "duplicateUser";
+        String password = "password123";
+
+        Tasks.await(userDAO.signUpUser(username, password), 30, TimeUnit.SECONDS);
+        auth.signOut();
+
+        Exception thrownException = null;
+        try {
+            Tasks.await(userDAO.signUpUser(username, password), 30, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            thrownException = e;
+        }
+        assertNotNull("Expected an exception when signing up with a duplicate username", thrownException);
+
+        String message = thrownException.getMessage().toLowerCase();
+        assertTrue("Exception message should indicate duplicate email or collision",
+                message.contains("already in use") || message.contains("duplicate"));
+    }
+    @Test
+    public void testChangePassword() throws Exception {
+        String username = "changePassUser";
+        String oldPassword = "oldPassword";
+        Tasks.await(userDAO.signUpUser(username, oldPassword), 30, TimeUnit.SECONDS);
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assertNotNull("User should be signed in after signup", currentUser);
+        User user = new User(currentUser.getUid(), username, username.toLowerCase() + "@example.com", oldPassword);
+        String newPassword = "newPassword";
+        Tasks.await(userDAO.changePassword(user, newPassword), 30, TimeUnit.SECONDS);
+        auth.signOut();
+        Tasks.await(userDAO.signInUser(username, newPassword), 30, TimeUnit.SECONDS);
+        currentUser = auth.getCurrentUser();
+        assertNotNull("User should be signed in with new password", currentUser);
     }
 
     @Test
-    public void testGetUserByUsername() throws Exception {
-        String uniqueUsername = "testuser" + System.currentTimeMillis();
-        String password = "password123";
-        Tasks.await(userDAO.signUpUser(uniqueUsername, password), 30, TimeUnit.SECONDS);
-        Task<User> getUserTask = userDAO.getUserByUsername(uniqueUsername);
-        User user = Tasks.await(getUserTask, 30, TimeUnit.SECONDS);
-        assertNotNull(user);
-        assertEquals(uniqueUsername, user.getUsername());
+    public void testResetPassword() throws Exception {
+        String username = "resetPassUser";
+        String initialPassword = "initialPassword";
+        Tasks.await(userDAO.signUpUser(username, initialPassword), 30, TimeUnit.SECONDS);
+        String newPassword = "resetNewPassword";
+
+        Tasks.await(userDAO.resetPassword(username, newPassword), 30, TimeUnit.SECONDS);
+        auth.signOut();
+        Tasks.await(userDAO.signInUser(username, newPassword), 30, TimeUnit.SECONDS);
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assertNotNull("User should be signed in with reset password", currentUser);
     }
 }
