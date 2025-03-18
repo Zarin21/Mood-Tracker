@@ -20,7 +20,7 @@ public class Filter extends DialogFragment {
     private EditText editReasonFilter;
 
     public interface FilterListener{
-        void onFilterApplied(boolean filterReason, String reasonText);
+        void onFilterApplied(boolean filterReason, String reasonText,boolean seeAll);
     }
 
     private FilterListener listener;
@@ -41,17 +41,20 @@ public class Filter extends DialogFragment {
         builder.setView(view)
                 .setTitle("Filter Options")
                 .setPositiveButton("Apply", null) //set null for the action here so the button doesn't close the dialog when invalid text is entered
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .setNeutralButton("See All",null);
 
         AlertDialog dialog = builder.create();
 
         dialog.setOnShowListener(d -> {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
 
             //set button text to pink
             positiveButton.setTextColor(Color.parseColor("#F08080"));
             negativeButton.setTextColor(Color.parseColor("#F08080"));
+            neutralButton.setTextColor(Color.parseColor("#F08080"));
 
             //implement the logic for positive button
             positiveButton.setOnClickListener(v -> {
@@ -62,7 +65,8 @@ public class Filter extends DialogFragment {
 
                             listener.onFilterApplied(
                                     filterReason.isChecked(),
-                                    editReasonFilter.getText().toString().trim()
+                                    editReasonFilter.getText().toString().trim(),
+                                    false
                             );
                         }
                         dialog.dismiss();
@@ -70,7 +74,15 @@ public class Filter extends DialogFragment {
                         //show error
                         editReasonFilter.setError("Must contain only 1 word and cannot be empty!");
                     }
+                }else{
+                    dialog.dismiss();
                 }
+            });
+            neutralButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onFilterApplied(false,"",true);
+                }
+                dialog.dismiss();
             });
         });
 
