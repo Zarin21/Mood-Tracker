@@ -85,7 +85,7 @@ public class Dashboard extends Fragment{
 
         binding.friendsButton.setOnClickListener(v ->
                 Navigation.findNavController(v)
-                        .navigate(R.id.action_dashboardFragment_to_friendsHistoryFragment)
+                        .navigate(R.id.action_dashboardFragment_to_userSearchFragment)
         );
         binding.profileButton.setOnClickListener(v ->
                 Navigation.findNavController(v)
