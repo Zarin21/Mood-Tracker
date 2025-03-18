@@ -64,8 +64,8 @@
         android:name="com.example.unemployedavengers.Dashboard"
         android:label="dashboardFragment">
         <action
-            android:id="@+id/action_dashboardFragment_to_friendsHistoryFragment"
-            app:destination="@id/friendsHistoryFragment" />
+            android:id="@+id/action_dashboardFragment_to_userSearchFragment"
+            app:destination="@id/userSearch" />
         <action
             android:id="@+id/action_dashboardFragment_to_profileFragment"
             app:destination="@id/profileFragment" />

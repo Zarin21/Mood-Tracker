@@ -69,10 +69,10 @@ public class FriendsHistory extends Fragment {
         // Load friends list
         loadFriendsList();
 
-        // Setup add friend button
-        binding.addFriendButton.setOnClickListener(v ->
+        // Only keep the Friends History Mood button click handler
+        binding.friendsHistoryMoodButton.setOnClickListener(v ->
                 Navigation.findNavController(v)
-                        .navigate(R.id.action_friendsHistoryFragment_to_userSearchFragment)
+                        .navigate(R.id.action_friendsHistoryFragment_to_followedUserMoodEventsFragment)
         );
     }
 
@@ -82,6 +82,11 @@ public class FriendsHistory extends Fragment {
                 .collection("following")
                 .get()
                 .addOnCompleteListener(task -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
                     if (task.isSuccessful()) {
                         if (task.getResult().isEmpty()) {
                             updateUIForEmptyFriendsList();
@@ -120,6 +125,11 @@ public class FriendsHistory extends Fragment {
 
         Tasks.whenAllComplete(tasks)
                 .addOnSuccessListener(taskResults -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
                     followedUsers.clear();
                     friendsAdapter.clear();
 
@@ -151,16 +161,31 @@ public class FriendsHistory extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
                     updateUIForEmptyFriendsList();
                 });
     }
 
     private void updateUIForEmptyFriendsList() {
+        // Check if the fragment is still active
+        if (getContext() == null || binding == null) {
+            return;
+        }
+
         friendsAdapter.clear();
         Toast.makeText(getContext(), "You haven't followed any users yet", Toast.LENGTH_SHORT).show();
     }
 
     private void updateUIWithFriendsList() {
+        // Check if the fragment is still active
+        if (binding == null) {
+            return;
+        }
+
         friendsAdapter.notifyDataSetChanged();
 
         // Set click listener to view friend's mood events

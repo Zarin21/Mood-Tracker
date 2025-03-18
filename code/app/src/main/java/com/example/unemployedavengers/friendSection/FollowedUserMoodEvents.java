@@ -1,11 +1,3 @@
-/*
- * FollowedUserMoodEvents - Fragment for displaying mood events from followed users
- *
- * Purpose:
- * - Shows a list of mood events from users the current user is following
- * - Fetches mood event data from Firestore
- * - Handles UI display and interactions
- */
 package com.example.unemployedavengers.friendSection;
 
 import android.content.Context;
@@ -74,29 +66,36 @@ public class FollowedUserMoodEvents extends Fragment {
         // Load mood events from followed users
         loadFollowedUsers();
 
-        // Setup buttons
-        binding.addFriendButton.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_followedUserMoodEventsFragment_to_userSearchFragment)
-        );
-
-        binding.mapButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Map view coming soon", Toast.LENGTH_SHORT).show();
-        });
-
+        // Setup filter button
         binding.filterButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Filter functionality coming soon", Toast.LENGTH_SHORT).show();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "Filter functionality coming soon", Toast.LENGTH_SHORT).show();
+            }
         });
+
+        // Setup back button to return to friends list
+        binding.backButton.setOnClickListener(v ->
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_followedUserMoodEventsFragment_to_friendsHistoryFragment)
+        );
     }
 
     /**
      * Loads the list of users that the current user follows
      */
     private void loadFollowedUsers() {
+        if (binding == null) {
+            return;
+        }
+
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.emptyStateMessage.setVisibility(View.GONE);
 
         if (currentUserId == null) {
+            if (binding == null) {
+                return;
+            }
+
             binding.progressBar.setVisibility(View.GONE);
             binding.emptyStateMessage.setText("Please log in to view following");
             binding.emptyStateMessage.setVisibility(View.VISIBLE);
@@ -108,6 +107,11 @@ public class FollowedUserMoodEvents extends Fragment {
                 .collection("following")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
                     List<String> followedUserIds = new ArrayList<>();
 
                     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
@@ -118,6 +122,8 @@ public class FollowedUserMoodEvents extends Fragment {
                     }
 
                     if (followedUserIds.isEmpty()) {
+                        if (binding == null) return;
+
                         binding.progressBar.setVisibility(View.GONE);
                         binding.emptyStateMessage.setText("You're not following anyone yet");
                         binding.emptyStateMessage.setVisibility(View.VISIBLE);
@@ -128,10 +134,17 @@ public class FollowedUserMoodEvents extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
                     binding.progressBar.setVisibility(View.GONE);
                     binding.emptyStateMessage.setText("Error loading following data");
                     binding.emptyStateMessage.setVisibility(View.VISIBLE);
-                    Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -147,6 +160,11 @@ public class FollowedUserMoodEvents extends Fragment {
                     .document(userId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
+                        // Check if the fragment is still active
+                        if (binding == null) {
+                            return;
+                        }
+
                         User user = documentSnapshot.toObject(User.class);
                         if (user != null && user.getUsername() != null) {
                             // Store username mapping
@@ -161,6 +179,11 @@ public class FollowedUserMoodEvents extends Fragment {
                         }
                     })
                     .addOnFailureListener(e -> {
+                        // Check if the fragment is still active
+                        if (binding == null) {
+                            return;
+                        }
+
                         completedCount[0]++;
 
                         // Continue loading even if some usernames fail
@@ -176,6 +199,11 @@ public class FollowedUserMoodEvents extends Fragment {
      * @param userIds List of user IDs to load mood events for
      */
     private void loadMoodEvents(List<String> userIds) {
+        // Check if the fragment is still active
+        if (binding == null) {
+            return;
+        }
+
         followedUserMoodEvents.clear();
         int[] completedCount = {0}; // Use array to allow modification in lambda
 
@@ -185,6 +213,11 @@ public class FollowedUserMoodEvents extends Fragment {
                     .collection("moods")
                     .get()
                     .addOnSuccessListener(querySnapshot -> {
+                        // Check if the fragment is still active
+                        if (binding == null) {
+                            return;
+                        }
+
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             MoodEvent moodEvent = doc.toObject(MoodEvent.class);
 
@@ -202,6 +235,11 @@ public class FollowedUserMoodEvents extends Fragment {
                         }
                     })
                     .addOnFailureListener(e -> {
+                        // Check if the fragment is still active
+                        if (binding == null) {
+                            return;
+                        }
+
                         completedCount[0]++;
 
                         // Continue updating UI even if some mood events fail to load
@@ -216,6 +254,11 @@ public class FollowedUserMoodEvents extends Fragment {
      * Updates the UI with loaded mood events
      */
     private void updateUI() {
+        // Check if the fragment is still active
+        if (binding == null) {
+            return;
+        }
+
         binding.progressBar.setVisibility(View.GONE);
 
         if (followedUserMoodEvents.isEmpty()) {
@@ -238,3 +281,4 @@ public class FollowedUserMoodEvents extends Fragment {
         binding = null;
     }
 }
+
