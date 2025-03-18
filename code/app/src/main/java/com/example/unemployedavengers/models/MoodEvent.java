@@ -25,6 +25,34 @@ public class MoodEvent implements Serializable {
     private String userId; // Track which user created the mood event
     private boolean publicStatus = true;
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public boolean isHasLocation() {
+        return hasLocation;
+    }
+
+    public void setHasLocation(boolean hasLocation) {
+        this.hasLocation = hasLocation;
+    }
+
+    private double latitude;
+    private double longitude;
+    private boolean hasLocation = false;
+
     //Constructor
     // Constructor without publicStatus parameter (for backward compatibility)
     public MoodEvent(String mood, String reason, String situation, long time, String radioSituation, String imageUri) {
