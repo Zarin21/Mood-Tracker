@@ -75,13 +75,25 @@
         <action
             android:id="@+id/action_dashboardFragment_to_inputDialog"
             app:destination="@id/inputDialog" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.unemployedavengers.maps.Map"
         android:label="mapFragment"
-        tools:layout="@layout/map" />
+        tools:layout="@layout/map" >
+        <action
+            android:id="@+id/action_mapFragment_to_personalMapFragment"
+            app:destination="@id/personalMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/personalMapFragment"
+        android:name="com.example.unemployedavengers.maps.PersonalMap"
+        android:label="personalMapFragment">
+    </fragment>
 
     <fragment
         android:id="@+id/historyFragment"

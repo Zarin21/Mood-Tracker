@@ -82,7 +82,6 @@ public class Dashboard extends Fragment{
         //load mood event function
         loadMoodEvents();
 
-
         binding.friendsButton.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_dashboardFragment_to_friendsHistoryFragment)
@@ -195,7 +194,6 @@ public class Dashboard extends Fragment{
     }
 
     //delete function
-
     public void onDeleteConfirmed(MoodEvent moodEvent) {
         moodEventRef.document(moodEvent.getId()).delete() //using the id to delete
                 .addOnSuccessListener(aVoid -> {

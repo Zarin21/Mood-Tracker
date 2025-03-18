@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -11,10 +12,12 @@ import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.databinding.MapBinding;
-import com.example.unemployedavengers.databinding.StartScreenBinding;
+import com.example.unemployedavengers.models.MoodEvent;
+
+import java.util.ArrayList;
 
 public class Map extends Fragment {
-
+    private ArrayList<MoodEvent> moodEvents;
     private MapBinding binding;
 
     @Override
@@ -30,13 +33,9 @@ public class Map extends Fragment {
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Navigate to the Sign-Up screen when "Start" button is clicked
-        binding.personalMapButton.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_homeFragment_to_signUpFragment)
-        );
-
+        binding.personalMapButton.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_mapFragment_to_personalMapFragment);
+        });
     }
 
     @Override
