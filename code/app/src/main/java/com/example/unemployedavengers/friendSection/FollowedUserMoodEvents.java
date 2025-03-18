@@ -20,9 +20,12 @@ import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,9 +211,12 @@ public class FollowedUserMoodEvents extends Fragment {
         int[] completedCount = {0}; // Use array to allow modification in lambda
 
         for (String userId : userIds) {
+            // Modified query to get only the 3 most recent mood events for each user, sorted by time
             db.collection("users")
                     .document(userId)
                     .collection("moods")
+                    .orderBy("time", Query.Direction.DESCENDING) // Sort by time descending (newest first)
+                    .limit(3) // Limit to 3 items
                     .get()
                     .addOnSuccessListener(querySnapshot -> {
                         // Check if the fragment is still active
@@ -231,6 +237,15 @@ public class FollowedUserMoodEvents extends Fragment {
 
                         // When all mood events are loaded, update the UI
                         if (completedCount[0] >= userIds.size()) {
+                            // Sort all mood events by time in reverse chronological order
+                            Collections.sort(followedUserMoodEvents, new Comparator<MoodEvent>() {
+                                @Override
+                                public int compare(MoodEvent event1, MoodEvent event2) {
+                                    // Compare in reverse order for descending sort (newest first)
+                                    return Long.compare(event2.getTime(), event1.getTime());
+                                }
+                            });
+
                             updateUI();
                         }
                     })
@@ -281,4 +296,3 @@ public class FollowedUserMoodEvents extends Fragment {
         binding = null;
     }
 }
-
