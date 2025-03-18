@@ -41,7 +41,7 @@ public class MoodEvent implements Serializable {
         this.longitude = longitude;
     }
 
-    public boolean isHasLocation() {
+    public boolean getHasLocation() {
         return hasLocation;
     }
 
