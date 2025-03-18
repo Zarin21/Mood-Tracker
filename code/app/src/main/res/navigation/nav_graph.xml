@@ -79,7 +79,7 @@
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.unemployedavengers.Map"
+        android:name="com.example.unemployedavengers.maps.Map"
         android:label="mapFragment"
         tools:layout="@layout/map" />
 
