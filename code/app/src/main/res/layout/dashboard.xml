@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#ffdfde"
-                android:letterSpacing="0.9"
+                android:letterSpacing="0.8"
                 android:text="😠 😕 🤢 😨 😄 😔 😳 😯" />
 
             <Button
@@ -65,6 +65,13 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#F88379"
                 android:text="Profile" />
+
+            <Button
+                android:id="@+id/notificationsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F88379"
+                android:text="Notifications" />
 
             <LinearLayout
                 android:layout_width="match_parent"
