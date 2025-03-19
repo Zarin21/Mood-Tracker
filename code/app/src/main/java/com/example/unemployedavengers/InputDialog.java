@@ -14,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -27,6 +28,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +47,9 @@ import com.bumptech.glide.Glide;
 import com.example.unemployedavengers.databinding.InputDialogBinding;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -428,15 +433,9 @@ public class InputDialog extends DialogFragment {
     }
     // Method to use current location
     private void setCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this.requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(this.requireActivity(),
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
                     new String[]{
                             android.Manifest.permission.ACCESS_FINE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -444,28 +443,26 @@ public class InputDialog extends DialogFragment {
                     LOCATION_PERMISSION_REQUEST_CODE);
             return;
         }
-        try {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(location -> {
-                        if (location != null) {
-                            selectedLatitude = location.getLatitude();
-                            selectedLongitude = location.getLongitude();
-                            locationSet = true;
-                            Toast.makeText(getContext(), "Current location set.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("CurrentLocation", "Error retrieving location", e);
-                        Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
-                    });
-        } catch (Exception e) {
-            Log.e("CurrentLocation", "Exception during getLastLocation", e);
-            Toast.makeText(getContext(), "Exception occurred while retrieving location", Toast.LENGTH_SHORT).show();
-        }
 
+        // Use getCurrentLocation for a faster, one-time location fetch.
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        selectedLatitude = location.getLatitude();
+                        selectedLongitude = location.getLongitude();
+                        locationSet = true;
+                        Toast.makeText(getContext(), "Current location set.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CurrentLocation", "Error retrieving location", e);
+                    Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
+                });
     }
+
+
 
 
     // Handle the permission request result
