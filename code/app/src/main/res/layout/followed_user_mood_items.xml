@@ -2,18 +2,17 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="8dp"
+    android:paddingVertical="12dp"
     android:paddingHorizontal="16dp">
 
-    <!-- Emoji for mood -->
+    <!-- Mood emoji -->
     <TextView
         android:id="@+id/moodEmoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="😊"
+        android:text=""
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,25 +23,31 @@
         android:id="@+id/mood_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:text="Happy"
         android:textSize="16sp"
-        android:textColor="#00BCD4"
         app:layout_constraintStart_toEndOf="@+id/moodEmoji"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- User profile circle -->
+    <!-- User profile circle - FIXED POSITION -->
     <ImageView
         android:id="@+id/profileCircle"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginStart="48dp"
         android:background="@drawable/circle_background"
         android:backgroundTint="#9C27B0"
-        app:layout_constraintStart_toEndOf="@+id/mood_text"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guidelineCenter" />
+
+    <!-- Guideline at 60% of width to align profile icons consistently -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.60" />
 
     <!-- User profile icon -->
     <ImageView
@@ -56,33 +61,31 @@
         app:layout_constraintStart_toStartOf="@+id/profileCircle"
         app:layout_constraintTop_toTopOf="@+id/profileCircle" />
 
-    <!-- Friend ID/Username -->
+    <!-- Friend ID/Username - FIXED POSITION -->
     <TextView
         android:id="@+id/usernameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Friend ID"
+        android:text="Username"
         android:textColor="#000000"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/profileCircle"
         app:layout_constraintTop_toTopOf="@+id/profileCircle"
         app:layout_constraintBottom_toBottomOf="@+id/profileCircle" />
 
-    <!-- Date -->
+    <!-- Date - Below username for better layout -->
     <TextView
         android:id="@+id/date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="02/11/25"
+        android:text="2025-03-19 11:14"
         android:textColor="#808080"
         android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/usernameText"
-        app:layout_constraintTop_toTopOf="@+id/usernameText"
-        app:layout_constraintBottom_toBottomOf="@+id/usernameText" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameText"
+        app:layout_constraintStart_toStartOf="@+id/usernameText" />
 
-    <!-- We'll hide these as they're not visible in the screenshot design -->
+    <!-- Other views that should be hidden -->
     <TextView
         android:id="@+id/reasonText"
         android:layout_width="0dp"

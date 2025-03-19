@@ -57,14 +57,11 @@ public class Login extends BaseFragment {
         userDAO = new UserDAOImplement();
 
         binding.btnBack.setOnClickListener(v -> {
-            if (isClickTooSoon()) return;
-            safeNavigate(v, R.id.action_loginFragment_to_homeFragment);
+            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_homeFragment);
         });
 
         // Set up the click listener for the Login button
         binding.btnLogin.setOnClickListener(v -> {
-            if (isClickTooSoon()) return;
-
             String username = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
 
@@ -145,8 +142,7 @@ public class Login extends BaseFragment {
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> {
-            if (isClickTooSoon()) return;
-            safeNavigate(v, R.id.action_loginFragment_to_passwordReset1Fragment);
+            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_passwordReset1Fragment);
         });
     }
 
