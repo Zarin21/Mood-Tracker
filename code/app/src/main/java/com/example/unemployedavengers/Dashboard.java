@@ -29,12 +29,15 @@ import com.example.unemployedavengers.DAO.IUserDAO;
 import com.example.unemployedavengers.arrayadapters.MoodEventArrayAdapter;
 import com.example.unemployedavengers.databinding.DashboardBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
+import com.example.unemployedavengers.models.FriendMoodEventsViewModel;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.MoodEventsViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,6 +83,7 @@ public class Dashboard extends Fragment{
         moodList = new ArrayList<>();
         moodAdapter = new MoodEventArrayAdapter(requireContext(), moodList);
         binding.activityList.setAdapter(moodAdapter);
+        loadFollowedMoodEvents();
 
         //load mood event function
         loadMoodEvents();
@@ -148,6 +152,8 @@ public class Dashboard extends Fragment{
 
                                     //set the id in the local object
                                     moodEvent.setId(id);
+                                    moodEvent.setUserId(userID);
+                                    moodEvent.setUserName((username));
 
                                     //update user
                                     //NEED TO RELOAD DATABASE CAUSE FIREBASE IS AN IDIOT (crashes if you add a moodEvent and tries to update it right away cause "cannot find id")
@@ -199,7 +205,56 @@ public class Dashboard extends Fragment{
 
         loadMoodEvents(); //reload mood events
     }
+    public void loadFollowedMoodEvents() {
+        // Create an empty list to collect mood events.
+        List<MoodEvent> followedEventsList = new ArrayList<>();
+        FriendMoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(FriendMoodEventsViewModel.class);
+
+
+        // Query the current user's "following" subcollection to get followed user IDs.
+        db.collection("users")
+                .document(userID)
+                .collection("following")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<String> followedUserIds = new ArrayList<>();
+
+                    // Extract each followed user ID from the "following" documents.
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        String followedId = document.getString("followedId");
+                        if (followedId != null) {
+                            followedUserIds.add(followedId);
+                        }
+                    }
+                    if (followedUserIds.isEmpty()) {
+                        vm.setMoodEvents(followedEventsList);
+                        return;
+                    }
+
+                    // For each followed user, query the 3 most recent mood events.
+                    for (String followedId : followedUserIds) {
+                        db.collection("users")
+                                .document(followedId)
+                                .collection("moods")
+                                .orderBy("time", Query.Direction.DESCENDING) // sort by time (newest first)
+                                .limit(3)
+                                .get()
+                                .addOnSuccessListener(querySnapshot1 -> {
+                                    for (QueryDocumentSnapshot doc : querySnapshot1) {
+                                        MoodEvent moodEvent = doc.toObject(MoodEvent.class);
+                                        followedEventsList.add(moodEvent);
+                                    }
+                                });
+
+                    }
+                    vm.setMoodEvents(followedEventsList);
+                });
+    }
     private void loadMoodEvents() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String currentUserId = sharedPreferences.getString("userID", null);
+        assert currentUserId != null;
+
 
         moodEventRef.get()
                 .addOnCompleteListener(task -> {
@@ -216,6 +271,9 @@ public class Dashboard extends Fragment{
                         MoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
                         vm.setMoodEvents(moodEvents);
                         Log.d("MapDebug", "size dashboard" +moodEvents.size() );
+
+
+
                         //sort the mood events by time in descending order (most recent first)
                         Collections.sort(moodEvents, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
 
