@@ -43,10 +43,10 @@ public class PersonalMap extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         Log.d("MapDebug", "reached");
         // Get the shared ViewModel from the Activity
-        MoodEventsViewModel viewModel = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
+        MoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
 
         // Observe the mood events LiveData
-        viewModel.getMoodEvents().observe(getViewLifecycleOwner(), events -> {
+        vm.getMoodEvents().observe(getViewLifecycleOwner(), events -> {
             if (events != null) {
                 Log.d("MapDebug", "reached");
                 // Update the local list (creating a copy if needed)
