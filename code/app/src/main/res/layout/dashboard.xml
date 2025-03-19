@@ -17,12 +17,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/dashboard_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="36dp"
                 android:text="Dashboard"
                 android:textColor="#F88379"
                 android:textSize="32dp"
@@ -32,8 +33,10 @@
                 android:id="@+id/mood_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:text="How are you feeling today?"
-                android:textColor="#ffdfde"
+                android:textColor="#ffafae"
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
@@ -42,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#ffdfde"
-                android:letterSpacing="0.9"
+                android:letterSpacing="0.8"
                 android:text="😠 😕 🤢 😨 😄 😔 😳 😯" />
 
             <Button
@@ -62,6 +65,13 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#F88379"
                 android:text="Profile" />
+
+            <Button
+                android:id="@+id/notificationsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F88379"
+                android:text="Notifications" />
 
             <LinearLayout
                 android:layout_width="match_parent"
