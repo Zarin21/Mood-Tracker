@@ -135,6 +135,8 @@ public class History extends Fragment {
 
                     filteredMoodList.clear();
                     filteredMoodList.addAll(filterMoodList);
+                    MoodEventsViewModel viewModel = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
+                    viewModel.setMoodEvents(filterMoodList);
                     binding.historyList.setAdapter(filteredMoodAdapter);
                     filteredMoodAdapter.notifyDataSetChanged();
                 }
