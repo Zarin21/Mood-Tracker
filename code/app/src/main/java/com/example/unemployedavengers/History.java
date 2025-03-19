@@ -43,7 +43,9 @@ public class History extends Fragment {
 
     private HistoryBinding binding;
     private ArrayList<MoodEvent> moodList;
+    private ArrayList<MoodEvent> filteredMoodList;
     private MoodEventArrayAdapter moodAdapter;
+    private MoodEventArrayAdapter filteredMoodAdapter;
     private FirebaseFirestore db;
     private CollectionReference moodEventRef;
     private String userID;
@@ -71,7 +73,9 @@ public class History extends Fragment {
         moodEventRef = db.collection("users").document(userID).collection("moods");
 
         moodList = new ArrayList<>();
+        filteredMoodList = new ArrayList<>();
         moodAdapter = new MoodEventArrayAdapter(requireContext(), moodList);
+        filteredMoodAdapter = new MoodEventArrayAdapter(requireContext(), filteredMoodList);
         binding.historyList.setAdapter(moodAdapter);
 
         loadHistoryMoodEvents(); //load all mood events
@@ -104,8 +108,39 @@ public class History extends Fragment {
             }
         });
 
+        //Filter
 
+        binding.filterButton.setOnClickListener(v -> {
+            //create filter dialog
+            Filter filterDialog = new Filter();
 
+            filterDialog.setFilterListener((reason,reasonText,seeAll)->{
+                //create an arraylist containing all of moodList (all mood events)
+                ArrayList<MoodEvent> filterMoodList = new ArrayList<>(moodList);
+                if(seeAll){
+                    loadHistoryMoodEvents();
+                }else {
+
+                    if (reason) {
+                        ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
+                        //filter through all of filterMoodList so see if mood event contain reason, if so add to filteredByReason
+                        for (int i = 0; i < filterMoodList.size(); i++) {
+                            if (filterMoodList.get(i).getReason().contains(reasonText)) {
+                                filteredByReason.add(filterMoodList.get(i));
+                            }
+                        }
+                        //set filterMoodList as filteredByReason
+                        filterMoodList = filteredByReason;
+                    }
+
+                    filteredMoodList.clear();
+                    filteredMoodList.addAll(filterMoodList);
+                    binding.historyList.setAdapter(filteredMoodAdapter);
+                    filteredMoodAdapter.notifyDataSetChanged();
+                }
+            });
+            filterDialog.show(getParentFragmentManager(), "FilterDialog");
+        });
     }
 
     private void updateMoodEvent(MoodEvent moodEvent) {
@@ -153,12 +188,17 @@ public class History extends Fragment {
                             moodList.add(moodEvent);
                         }
                         //sort by time (latest first)
+                        // Sort mood events (latest first)
                         Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
-                        // apply filter logic
+
                         MoodEventsViewModel viewModel = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
                         viewModel.setMoodEvents(moodList);
                         Log.d("MapDebug", "size:" + moodList.size());
-                        moodAdapter.notifyDataSetChanged(); //update UI
+
+                        // Set the adapter for the ListView and refresh it
+                        binding.historyList.setAdapter(moodAdapter);
+                        moodAdapter.notifyDataSetChanged(); // update UI
+
 
                         binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
                             MoodEvent selectedEvent = moodList.get(position);
