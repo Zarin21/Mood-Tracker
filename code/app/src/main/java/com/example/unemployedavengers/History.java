@@ -22,11 +22,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.arrayadapters.MoodEventArrayAdapter;
 import com.example.unemployedavengers.databinding.HistoryBinding;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.example.unemployedavengers.models.MoodEventsViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -186,10 +188,17 @@ public class History extends Fragment {
                             moodList.add(moodEvent);
                         }
                         //sort by time (latest first)
+                        // Sort mood events (latest first)
                         Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
 
+                        MoodEventsViewModel viewModel = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
+                        viewModel.setMoodEvents(moodList);
+                        Log.d("MapDebug", "size:" + moodList.size());
+
+                        // Set the adapter for the ListView and refresh it
                         binding.historyList.setAdapter(moodAdapter);
-                        moodAdapter.notifyDataSetChanged(); //update UI
+                        moodAdapter.notifyDataSetChanged(); // update UI
+
 
                         binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
                             MoodEvent selectedEvent = moodList.get(position);

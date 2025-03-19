@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@android:color/white"
     android:padding="24dp">
 
     <TextView
@@ -10,6 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Change Username"
+        android:textStyle="bold"
+        android:textColor="#F88379"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <EditText
@@ -22,6 +25,7 @@
         android:id="@+id/btnSubmitUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit" />
+        android:backgroundTint="#F88379"
+        android:text="Confirm" />
 
 </LinearLayout>
