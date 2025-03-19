@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.DAO.IUserDAO;
@@ -29,6 +30,7 @@ import com.example.unemployedavengers.arrayadapters.MoodEventArrayAdapter;
 import com.example.unemployedavengers.databinding.DashboardBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.example.unemployedavengers.models.MoodEventsViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -206,7 +208,6 @@ public class Dashboard extends Fragment{
         loadMoodEvents(); //reload mood events
     }
     private void loadMoodEvents() {
-        //get all moodevent from firebase
 
         moodEventRef.get()
                 .addOnCompleteListener(task -> {
@@ -218,7 +219,11 @@ public class Dashboard extends Fragment{
                             MoodEvent moodEvent = document.toObject(MoodEvent.class); //convert to MoodEvent class
                             moodEvents.add(moodEvent); //add to array
                         }
-
+                        Log.d("MapDebug", "dashboard reached" );
+                        // query first in upper space for map to draw markers
+                        MoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
+                        vm.setMoodEvents(moodEvents);
+                        Log.d("MapDebug", "size dashboard" +moodEvents.size() );
                         //sort the mood events by time in descending order (most recent first)
                         Collections.sort(moodEvents, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
 
