@@ -59,20 +59,6 @@
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/profileButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#F88379"
-                android:text="Profile" />
-
-            <Button
-                android:id="@+id/notificationsButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#F88379"
-                android:text="Notifications" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
