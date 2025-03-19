@@ -19,7 +19,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            app:menu="@menu/top_navigation_menu" />
+            android:background="@color/white"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            app:navigationIcon="@drawable/outline_account_circle_24"
+            app:menu="@menu/top_navigation_menu"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
