@@ -36,6 +36,9 @@ public class Map extends Fragment {
         binding.personalMapButton.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_mapFragment_to_personalMapFragment);
         });
+        binding.friendsMapButton.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_mapFragment_to_friendsMap);
+        });
     }
 
     @Override

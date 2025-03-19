@@ -13,7 +13,16 @@ import java.io.Serializable;
  * This is a class that represents MoodEvent Objects
  */
 public class MoodEvent implements Serializable {
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     //Attribute
+    private String userName;
     private String mood;
     private String imageUri;
     private String reason;
