@@ -25,7 +25,7 @@ public class Filter extends DialogFragment {
 
     private FilterListener listener;
 
-    public void setEditReasonFilter(FilterListener listener){
+    public void setFilterListener(FilterListener listener){
         this.listener = listener;
     }
 

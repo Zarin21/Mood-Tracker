@@ -104,8 +104,30 @@ public class History extends Fragment {
             }
         });
 
+        //Filter
 
+        binding.filterButton.setOnClickListener(v -> {
+            //create filter dialog
+            Filter filterDialog = new Filter();
 
+            filterDialog.setFilterListener((reason,reasonText)->{
+                //create an arraylist containing all of moodList (all mood events)
+                ArrayList<MoodEvent> filterMoodList = new ArrayList<>(moodList);
+
+                if(reason){
+                    ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
+                    //filter through all of filterMoodList so see if mood event contain reason, if so add to filteredByReason
+                    for (int i = 0; i<filterMoodList.size();i++){
+                        if (filterMoodList.get(i).getReason().contains(reasonText)){
+                            filteredByReason.add(filterMoodList.get(i));
+                        }
+                    }
+                    //set filterMoodList as filteredByReason
+                    filterMoodList = filteredByReason;
+                }
+            });
+            filterDialog.show(getParentFragmentManager(), "FilterDialog");
+        });
     }
 
     private void updateMoodEvent(MoodEvent moodEvent) {
