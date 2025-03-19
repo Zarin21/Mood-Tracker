@@ -11,6 +11,7 @@ package com.example.unemployedavengers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,18 +34,26 @@ import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.FriendMoodEventsViewModel;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.MoodEventsViewModel;
+import com.example.unemployedavengers.models.WithinFiveKmViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Dashboard extends Fragment{
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private FusedLocationProviderClient fusedLocationClient;
     private DashboardBinding binding;
     private ArrayList<MoodEvent> moodList;
     //private ListView moodListView;
@@ -53,6 +63,9 @@ public class Dashboard extends Fragment{
     private IUserDAO userDAO;
     private String userID;
     private String username;
+
+    private double currentLatitude;
+    private double currentLongitude;
 
     private MoodEvent selectedMoodForDeletion;
 
@@ -71,7 +84,7 @@ public class Dashboard extends Fragment{
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         userDAO = new UserDAOImplement();
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         username = sharedPreferences.getString("username", null);  // Default to null if not found
         userID = sharedPreferences.getString("userID", null);  // Default to null if not found
@@ -208,47 +221,92 @@ public class Dashboard extends Fragment{
     public void loadFollowedMoodEvents() {
         // Create an empty list to collect mood events.
         List<MoodEvent> followedEventsList = new ArrayList<>();
+        List<MoodEvent> withinFiveEventsList = new ArrayList<>();
         FriendMoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(FriendMoodEventsViewModel.class);
+        WithinFiveKmViewModel withinFiveKmViewModel = new ViewModelProvider(requireActivity()).get(WithinFiveKmViewModel.class);
 
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
 
-        // Query the current user's "following" subcollection to get followed user IDs.
-        db.collection("users")
-                .document(userID)
-                .collection("following")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<String> followedUserIds = new ArrayList<>();
-
-                    // Extract each followed user ID from the "following" documents.
-                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        String followedId = document.getString("followedId");
-                        if (followedId != null) {
-                            followedUserIds.add(followedId);
-                        }
+        // Request the current location
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        currentLatitude = location.getLatitude();
+                        currentLongitude = location.getLongitude();
+                        Toast.makeText(getContext(), "Current location set.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
                     }
-                    if (followedUserIds.isEmpty()) {
-                        vm.setMoodEvents(followedEventsList);
-                        return;
-                    }
+                    LatLng currentLocation = new LatLng(currentLatitude, currentLongitude);
+                    // Query the current user's "following" subcollection to get followed user IDs.
+                    db.collection("users")
+                            .document(userID)
+                            .collection("following")
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                List<String> followedUserIds = new ArrayList<>();
 
-                    // For each followed user, query the 3 most recent mood events.
-                    for (String followedId : followedUserIds) {
-                        db.collection("users")
-                                .document(followedId)
-                                .collection("moods")
-                                .orderBy("time", Query.Direction.DESCENDING) // sort by time (newest first)
-                                .limit(3)
-                                .get()
-                                .addOnSuccessListener(querySnapshot1 -> {
-                                    for (QueryDocumentSnapshot doc : querySnapshot1) {
-                                        MoodEvent moodEvent = doc.toObject(MoodEvent.class);
-                                        followedEventsList.add(moodEvent);
+                                // Extract each followed user ID from the "following" documents.
+                                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                    String followedId = document.getString("followedId");
+                                    if (followedId != null) {
+                                        followedUserIds.add(followedId);
                                     }
-                                });
+                                }
+                                if (followedUserIds.isEmpty()) {
+                                    vm.setMoodEvents(followedEventsList);
+                                    return;
+                                }
 
-                    }
-                    vm.setMoodEvents(followedEventsList);
+                                // For each followed user, query the 3 most recent mood events.
+                                for (String followedId : followedUserIds) {
+                                    db.collection("users")
+                                            .document(followedId)
+                                            .collection("moods")
+                                            .orderBy("time", Query.Direction.DESCENDING) // sort by time (newest first)
+                                            .limit(3)
+                                            .get()
+                                            .addOnSuccessListener(querySnapshot1 -> {
+                                                for (QueryDocumentSnapshot doc : querySnapshot1) {
+                                                    MoodEvent moodEvent = doc.toObject(MoodEvent.class);
+                                                    followedEventsList.add(moodEvent);
+                                                    LatLng eventLocation = new LatLng(moodEvent.getLatitude(), moodEvent.getLongitude());
+                                                    Log.d("five", "Placing marker at lat=" + moodEvent.getLatitude() + ", lng=" +  moodEvent.getLongitude());
+                                                    Log.d("five", "current location at lat=" + currentLatitude + ", lng=" +  currentLongitude);
+
+                                                    double distanceInMeters = SphericalUtil.computeDistanceBetween(currentLocation, eventLocation);
+                                                    if (distanceInMeters <= 5000){
+                                                        withinFiveEventsList.add(moodEvent);
+                                                    }
+
+                                                }
+                                            });
+
+                                }
+                                vm.setMoodEvents(followedEventsList);
+                                withinFiveKmViewModel.setMoodEvents(withinFiveEventsList);
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CurrentLocation", "Error retrieving location", e);
+                    Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
                 });
+
+
+
+
+
+
+
     }
     private void loadMoodEvents() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);

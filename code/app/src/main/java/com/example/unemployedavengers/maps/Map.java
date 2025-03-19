@@ -39,6 +39,9 @@ public class Map extends Fragment {
         binding.friendsMapButton.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_mapFragment_to_friendsMap);
         });
+        binding.nearMapButton.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_mapFragment_to_WithInFiveKm);
+        });
     }
 
     @Override
