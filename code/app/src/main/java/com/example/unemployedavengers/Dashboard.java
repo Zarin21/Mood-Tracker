@@ -22,7 +22,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -51,12 +50,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Dashboard extends Fragment{
+public class Dashboard extends BaseFragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private FusedLocationProviderClient fusedLocationClient;
     private DashboardBinding binding;
     private ArrayList<MoodEvent> moodList;
-    //private ListView moodListView;
     private MoodEventArrayAdapter moodAdapter;
     private FirebaseFirestore db;
     private CollectionReference moodEventRef;
@@ -68,8 +66,6 @@ public class Dashboard extends Fragment{
     private double currentLongitude;
 
     private MoodEvent selectedMoodForDeletion;
-
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -85,13 +81,23 @@ public class Dashboard extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         userDAO = new UserDAOImplement();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+
+        if (!isValidFragment()) return;
+
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         username = sharedPreferences.getString("username", null);  // Default to null if not found
         userID = sharedPreferences.getString("userID", null);  // Default to null if not found
 
         //database
         db = FirebaseFirestore.getInstance();
-        moodEventRef = db.collection("users").document(userID).collection("moods");
+        if (userID != null) {
+            moodEventRef = db.collection("users").document(userID).collection("moods");
+        } else {
+            if (isValidFragment()) {
+                Toast.makeText(requireContext(), "User ID not found, please login again", Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
 
         moodList = new ArrayList<>();
         moodAdapter = new MoodEventArrayAdapter(requireContext(), moodList);
@@ -101,31 +107,32 @@ public class Dashboard extends Fragment{
         //load mood event function
         loadMoodEvents();
 
-        binding.friendsButton.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_dashboardFragment_to_userSearchFragment)
-        );
+        binding.friendsButton.setOnClickListener(v -> {
+            if (isClickTooSoon() || !isValidFragment()) return;
+            safeNavigate(v, R.id.action_dashboardFragment_to_userSearchFragment);
+        });
 
         //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
+            if (isClickTooSoon() || !isValidFragment()) return;
             Bundle args = new Bundle();
             args.putString("source", "dashboard");
-            Navigation.findNavController(v)
-                    .navigate(R.id.action_dashboardFragment_to_inputDialog, args);
+            safeNavigate(v, R.id.action_dashboardFragment_to_inputDialog, args);
         });
 
         //register the listener for the result from InputDialog (Only once)
         getParentFragmentManager().setFragmentResultListener("input_dialog_result", getViewLifecycleOwner(), new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                if (binding == null || !isValidFragment()) return;
+
                 //retrieve the MoodEvent object
                 MoodEvent moodEvent = (MoodEvent) result.getSerializable("mood_event_key");
 
                 //existed is true if we are updating a mood, else we are adding a mood
-                if ((moodEvent != null)&&(moodEvent.getExisted()==false)) {
-
+                if ((moodEvent != null) && (!moodEvent.getExisted())) {
                     addMoodEvent(moodEvent); //store the mood event in Firestore
-                }else{
+                } else if (moodEvent != null) {
                     updateMoodEvent(moodEvent);
                 }
             }
@@ -135,63 +142,68 @@ public class Dashboard extends Fragment{
         getParentFragmentManager().setFragmentResultListener("delete_mood_event", getViewLifecycleOwner(), new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                if (binding == null || !isValidFragment()) return;
+
                 boolean deleteConfirmed = result.getBoolean("DeleteConfirmed", false);
-                if (deleteConfirmed) {
+                if (deleteConfirmed && selectedMoodForDeletion != null) {
                     //proceed with the deletion
                     onDeleteConfirmed(selectedMoodForDeletion);
                     loadMoodEvents(); //reload the mood events after deletion
                 }
             }
         });
-
-
     }
 
     //adds a new mood event to the database
-
     public void addMoodEvent(MoodEvent moodEvent) {
+        if (binding == null || moodEventRef == null || !isValidFragment()) return;
+
         moodEvent.setExisted(true); //mark it as an existing mood event
 
-        if (moodEventRef != null) {
-            //add the mood event without the ID first
-            moodEventRef.add(moodEvent)
-                    .addOnSuccessListener(documentReference -> {
-                        //get the unique ID generated by Firestore
-                        String id = documentReference.getId();
+        //add the mood event without the ID first
+        moodEventRef.add(moodEvent)
+                .addOnSuccessListener(documentReference -> {
+                    if (binding == null || !isValidFragment()) return;
 
-                        //update the document with the ID field
-                        documentReference.update("id", id)
-                                .addOnSuccessListener(aVoid -> {
+                    //get the unique ID generated by Firestore
+                    String id = documentReference.getId();
 
-                                    //set the id in the local object
-                                    moodEvent.setId(id);
-                                    moodEvent.setUserId(userID);
-                                    moodEvent.setUserName((username));
+                    //update the document with the ID field
+                    documentReference.update("id", id)
+                            .addOnSuccessListener(aVoid -> {
+                                if (binding == null || !isValidFragment()) return;
 
-                                    //update user
-                                    //NEED TO RELOAD DATABASE CAUSE FIREBASE IS AN IDIOT (crashes if you add a moodEvent and tries to update it right away cause "cannot find id")
+                                //set the id in the local object
+                                moodEvent.setId(id);
+                                moodEvent.setUserId(userID);
+                                moodEvent.setUserName((username));
 
-                                    updateMoodEvent(moodEvent);
-                                    Toast.makeText(getContext(), "Mood added successfully", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(getContext(), "Failed to update ID in Firestore", Toast.LENGTH_SHORT).show();
-                                });
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Failed to add mood", Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            Toast.makeText(getContext(), "Database reference is null", Toast.LENGTH_SHORT).show();
-        }
-
+                                //update user
+                                updateMoodEvent(moodEvent);
+                                Toast.makeText(getContext(), "Mood added successfully", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                if (binding == null || !isValidFragment()) return;
+                                Toast.makeText(getContext(), "Failed to update ID in Firestore", Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    if (binding == null || !isValidFragment()) return;
+                    Toast.makeText(getContext(), "Failed to add mood", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void updateMoodEvent(MoodEvent moodEvent) {
+        if (binding == null || moodEventRef == null || !isValidFragment() || moodEvent == null) return;
+
         //NEED TO RELOAD DATABASE CAUSE FIREBASE IS AN IDIOT (crashes if you add a moodEvent and tries to update it right away cause "cannot find id")
         loadMoodEvents();
 
         String moodEventId = moodEvent.getId();
+        if (moodEventId == null) {
+            Log.e("Dashboard", "Mood event ID is null");
+            return;
+        }
 
         //get document via id
         DocumentReference moodEventDocRef = moodEventRef.document(moodEventId);
@@ -199,35 +211,44 @@ public class Dashboard extends Fragment{
         //set the new values for the document
         moodEventDocRef.set(moodEvent)  //use set() to update or create the document if it doesn't exist
                 .addOnSuccessListener(aVoid -> {
+                    if (binding == null || !isValidFragment()) return;
                     Toast.makeText(getContext(), "Mood updated successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
+                    if (binding == null || !isValidFragment()) return;
                     Toast.makeText(getContext(), "Failed to update mood", Toast.LENGTH_SHORT).show();
                 });
     }
 
     //delete function
     public void onDeleteConfirmed(MoodEvent moodEvent) {
+        if (binding == null || moodEventRef == null || !isValidFragment() || moodEvent == null || moodEvent.getId() == null) return;
+
         moodEventRef.document(moodEvent.getId()).delete() //using the id to delete
                 .addOnSuccessListener(aVoid -> {
+                    if (binding == null || !isValidFragment()) return;
                     Toast.makeText(getContext(), "Mood deleted successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
+                    if (binding == null || !isValidFragment()) return;
                     Toast.makeText(getContext(), "Failed to delete mood", Toast.LENGTH_SHORT).show();
                 });
 
         loadMoodEvents(); //reload mood events
     }
+
     public void loadFollowedMoodEvents() {
+        if (binding == null || !isValidFragment()) return;
+
         // Create an empty list to collect mood events.
         List<MoodEvent> followedEventsList = new ArrayList<>();
         List<MoodEvent> withinFiveEventsList = new ArrayList<>();
         FriendMoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(FriendMoodEventsViewModel.class);
         WithinFiveKmViewModel withinFiveKmViewModel = new ViewModelProvider(requireActivity()).get(WithinFiveKmViewModel.class);
 
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
+        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{
                             android.Manifest.permission.ACCESS_FINE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -239,6 +260,8 @@ public class Dashboard extends Fragment{
         // Request the current location
         fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener(location -> {
+                    if (binding == null || !isValidFragment()) return;
+
                     if (location != null) {
                         currentLatitude = location.getLatitude();
                         currentLongitude = location.getLongitude();
@@ -246,13 +269,19 @@ public class Dashboard extends Fragment{
                     } else {
                         Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
                     }
+
+                    if (binding == null || !isValidFragment() || userID == null) return;
+
                     LatLng currentLocation = new LatLng(currentLatitude, currentLongitude);
+
                     // Query the current user's "following" subcollection to get followed user IDs.
                     db.collection("users")
                             .document(userID)
                             .collection("following")
                             .get()
                             .addOnSuccessListener(querySnapshot -> {
+                                if (binding == null || !isValidFragment()) return;
+
                                 List<String> followedUserIds = new ArrayList<>();
 
                                 // Extract each followed user ID from the "following" documents.
@@ -262,6 +291,7 @@ public class Dashboard extends Fragment{
                                         followedUserIds.add(followedId);
                                     }
                                 }
+
                                 if (followedUserIds.isEmpty()) {
                                     vm.setMoodEvents(followedEventsList);
                                     return;
@@ -276,61 +306,73 @@ public class Dashboard extends Fragment{
                                             .limit(3)
                                             .get()
                                             .addOnSuccessListener(querySnapshot1 -> {
+                                                if (binding == null || !isValidFragment()) return;
+
                                                 for (QueryDocumentSnapshot doc : querySnapshot1) {
                                                     MoodEvent moodEvent = doc.toObject(MoodEvent.class);
-                                                    followedEventsList.add(moodEvent);
-                                                    LatLng eventLocation = new LatLng(moodEvent.getLatitude(), moodEvent.getLongitude());
-                                                    Log.d("five", "Placing marker at lat=" + moodEvent.getLatitude() + ", lng=" +  moodEvent.getLongitude());
-                                                    Log.d("five", "current location at lat=" + currentLatitude + ", lng=" +  currentLongitude);
-
-                                                    double distanceInMeters = SphericalUtil.computeDistanceBetween(currentLocation, eventLocation);
-                                                    if (distanceInMeters <= 5000){
-                                                        withinFiveEventsList.add(moodEvent);
+                                                    if (moodEvent != null) {
+                                                        followedEventsList.add(moodEvent);
+                                                        if (moodEvent.getHasLocation()) {
+                                                            LatLng eventLocation = new LatLng(moodEvent.getLatitude(), moodEvent.getLongitude());
+                                                            double distanceInMeters = SphericalUtil.computeDistanceBetween(currentLocation, eventLocation);
+                                                            if (distanceInMeters <= 5000) {
+                                                                withinFiveEventsList.add(moodEvent);
+                                                            }
+                                                        }
                                                     }
-
                                                 }
-                                            });
 
+                                                vm.setMoodEvents(followedEventsList);
+                                                withinFiveKmViewModel.setMoodEvents(withinFiveEventsList);
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                if (binding == null || !isValidFragment()) return;
+                                                Log.e("Dashboard", "Error loading followed mood events", e);
+                                            });
                                 }
-                                vm.setMoodEvents(followedEventsList);
-                                withinFiveKmViewModel.setMoodEvents(withinFiveEventsList);
+                            })
+                            .addOnFailureListener(e -> {
+                                if (binding == null || !isValidFragment()) return;
+                                Log.e("Dashboard", "Error loading following users", e);
                             });
                 })
                 .addOnFailureListener(e -> {
+                    if (binding == null || !isValidFragment()) return;
                     Log.e("CurrentLocation", "Error retrieving location", e);
                     Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
                 });
-
-
-
-
-
-
-
     }
-    private void loadMoodEvents() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-        String currentUserId = sharedPreferences.getString("userID", null);
-        assert currentUserId != null;
 
+    private void loadMoodEvents() {
+        if (binding == null || moodEventRef == null || !isValidFragment()) return;
+
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String currentUserId = sharedPreferences.getString("userID", null);
+        if (currentUserId == null) {
+            Log.e("Dashboard", "User ID is null");
+            return;
+        }
 
         moodEventRef.get()
                 .addOnCompleteListener(task -> {
+                    if (binding == null || !isValidFragment()) return;
+
                     //convert each document to
                     if (task.isSuccessful()) {
                         List<MoodEvent> moodEvents = new ArrayList<>();
                         //each documentSnapsho is a document fethced from task.getResult()
                         for (DocumentSnapshot document : task.getResult()) {
                             MoodEvent moodEvent = document.toObject(MoodEvent.class); //convert to MoodEvent class
-                            moodEvents.add(moodEvent); //add to array
+                            if (moodEvent != null) {
+                                moodEvents.add(moodEvent); //add to array
+                            }
                         }
+
                         Log.d("MapDebug", "dashboard reached" );
                         // query first in upper space for map to draw markers
                         MoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
                         vm.setMoodEvents(moodEvents);
-                        Log.d("MapDebug", "size dashboard" +moodEvents.size() );
-
-
+                        Log.d("MapDebug", "size dashboard" + moodEvents.size() );
 
                         //sort the mood events by time in descending order (most recent first)
                         Collections.sort(moodEvents, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
@@ -347,29 +389,32 @@ public class Dashboard extends Fragment{
                         MoodEventArrayAdapter adapter = new MoodEventArrayAdapter(getContext(), recentMoodEvents);
                         binding.activityList.setAdapter(adapter);
 
-
                         //set item click listener
                         binding.activityList.setOnItemClickListener((parent, view, position, id) -> {
-                            //get the selected MoodEvent based on position
-                            MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
+                            if (isClickTooSoon() || !isValidFragment()) return;
 
+                            if (position >= 0 && position < recentMoodEvents.size()) {
+                                //get the selected MoodEvent based on position
+                                MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
 
-                            //create a bundle and put the selected MoodEvent in it
-                            Bundle args = new Bundle();
-                            args.putSerializable("selected_mood_event", selectedMoodEvent);
-                            args.putString("source", "dashboard");
+                                //create a bundle and put the selected MoodEvent in it
+                                Bundle args = new Bundle();
+                                args.putSerializable("selected_mood_event", selectedMoodEvent);
+                                args.putString("source", "dashboard");
 
-                            //navigate to inputdialog and pass the selected mood event
-                            Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, args);
+                                //navigate to inputdialog and pass the selected mood event
+                                safeNavigate(view, R.id.action_dashboardFragment_to_inputDialog, args);
+                            }
                         });
+
                         //long click to delete
                         binding.activityList.setOnItemLongClickListener((parent, view, position, id) -> {
-                            selectedMoodForDeletion = recentMoodEvents.get(position);
+                            if (position >= 0 && position < recentMoodEvents.size()) {
+                                selectedMoodForDeletion = recentMoodEvents.get(position);
 
-                            ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(selectedMoodForDeletion.getId());
-                            dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
-
-
+                                ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(selectedMoodForDeletion.getId());
+                                dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
+                            }
                             return true; //indicate the event was handled
                         });
 
@@ -379,15 +424,9 @@ public class Dashboard extends Fragment{
                 });
     }
 
-
-
-
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
-
-
 }

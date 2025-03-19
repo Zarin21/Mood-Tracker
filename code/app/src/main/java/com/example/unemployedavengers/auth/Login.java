@@ -25,15 +25,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.example.unemployedavengers.BaseFragment;
 import com.example.unemployedavengers.DAO.IUserDAO;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.databinding.LogInBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 
-public class Login extends Fragment {
+public class Login extends BaseFragment {
 
     private LogInBinding binding;
     private IUserDAO userDAO;
@@ -56,13 +57,14 @@ public class Login extends Fragment {
         userDAO = new UserDAOImplement();
 
         binding.btnBack.setOnClickListener(v -> {
-            // Navigate back to Home fragment
-            Navigation.findNavController(v)
-                    .navigate(R.id.action_loginFragment_to_homeFragment);
+            if (isClickTooSoon()) return;
+            safeNavigate(v, R.id.action_loginFragment_to_homeFragment);
         });
 
         // Set up the click listener for the Login button
         binding.btnLogin.setOnClickListener(v -> {
+            if (isClickTooSoon()) return;
+
             String username = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
 
@@ -75,11 +77,13 @@ public class Login extends Fragment {
             // Attempt to sign in the user
             userDAO.signInUser(username, password)
                     .addOnSuccessListener(aVoid -> {
+                        if (binding == null || !isValidFragment()) return;
+
                         Toast.makeText(getContext(), "Login successful!", Toast.LENGTH_SHORT).show();
                         Log.d("Login", "Username before passing: " + username);
 
                         // Save username in SharedPreferences
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", username);
                         editor.apply();
@@ -88,18 +92,36 @@ public class Login extends Fragment {
                         // Retrieve additional user data
                         userDAO.getUserByUsername(username)
                                 .addOnSuccessListener(user -> {
+                                    if (binding == null || !isValidFragment()) return;
+
                                     if (user != null) {
                                         Log.d("Login", "User ID: " + user.getUserId());
                                         String userID = user.getUserId();
                                         editor.putString("userID", userID);
                                         Log.d("SharedPreferences", "User ID saved: " + userID);
                                         editor.apply();
-                                        // Navigate to Dashboard after successful login
-                                        Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_dashboardFragment);
+
+                                        // Fixed navigation code
+                                        try {
+                                            NavController navController = Navigation.findNavController(v);
+                                            // Check if we're already at the dashboard
+                                            if (navController.getCurrentDestination().getId() != R.id.dashboardFragment) {
+                                                navController.navigate(R.id.action_loginFragment_to_dashboardFragment);
+                                            }
+                                        } catch (Exception e) {
+                                            Log.e("Login", "Navigation error: " + e.getMessage(), e);
+                                        }
                                     }
+                                })
+                                .addOnFailureListener(e -> {
+                                    if (binding == null || !isValidFragment()) return;
+                                    Log.e("Login", "Error retrieving user data: " + e.getMessage());
+                                    Toast.makeText(getContext(), "Error retrieving user data", Toast.LENGTH_SHORT).show();
                                 });
                     })
                     .addOnFailureListener(e -> {
+                        if (binding == null || !isValidFragment()) return;
+
                         String errorMessage = e.getMessage();
 
                         // Customize error messages based on failure reason
@@ -123,9 +145,8 @@ public class Login extends Fragment {
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> {
-            // Navigate to the Password Reset fragment
-            Navigation.findNavController(v)
-                    .navigate(R.id.action_loginFragment_to_passwordReset1Fragment);
+            if (isClickTooSoon()) return;
+            safeNavigate(v, R.id.action_loginFragment_to_passwordReset1Fragment);
         });
     }
 
