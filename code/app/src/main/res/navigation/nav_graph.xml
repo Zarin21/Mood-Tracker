@@ -91,11 +91,19 @@
         <action
             android:id="@+id/action_mapFragment_to_friendsMap"
             app:destination="@id/friends_map" />
+        <action
+            android:id="@+id/action_mapFragment_to_WithInFiveKm"
+            app:destination="@id/withInFiveKm" />
     </fragment>
     <fragment
         android:id="@+id/personalMapFragment"
         android:name="com.example.unemployedavengers.maps.PersonalMap"
         android:label="personalMapFragment">
+    </fragment>
+    <fragment
+        android:id="@+id/withInFiveKm"
+        android:name="com.example.unemployedavengers.maps.WithinFiveKmMap"
+        android:label="withInFiveKm">
     </fragment>
 
     <fragment
