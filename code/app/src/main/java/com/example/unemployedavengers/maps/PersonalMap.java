@@ -1,10 +1,15 @@
 package com.example.unemployedavengers.maps;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -71,9 +77,13 @@ public class PersonalMap extends Fragment implements OnMapReadyCallback {
                     double lat = event.getLatitude();
                     double lng = event.getLongitude();
                     Log.d("MapDebug", "Placing marker at lat=" + lat + ", lng=" + lng);
+
+                    // Create a custom marker bitmap with the mood string
+                    Bitmap markerBitmap = createCustomMarker(getContext(), event.getMood());
+
                     googleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(lat, lng))
-                            .title(event.getMood()));
+                            .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
                 }
             }
             // Optionally adjust the camera to the first event's location
@@ -85,9 +95,37 @@ public class PersonalMap extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+    private Bitmap createCustomMarker(Context context, String mood) {
+        // Inflate with a dummy parent to help with layout measurement
+        FrameLayout dummyParent = new FrameLayout(context);
+        View markerView = LayoutInflater.from(context)
+                .inflate(R.layout.marker_layout, dummyParent, false);
+
+        // Set the mood text on the TextView
+        TextView markerText = markerView.findViewById(R.id.marker_text);
+        markerText.setText(mood);
+
+        // Measure and layout the view properly
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        markerView.measure(widthSpec, heightSpec);
+        int measuredWidth = markerView.getMeasuredWidth();
+        int measuredHeight = markerView.getMeasuredHeight();
+        markerView.layout(0, 0, measuredWidth, measuredHeight);
+
+        // Create the bitmap and draw the view into the canvas
+        Bitmap bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        markerView.draw(canvas);
+        return bitmap;
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Prevent memory leaks by nullifying the binding
         binding = null;
     }
+
+
 }

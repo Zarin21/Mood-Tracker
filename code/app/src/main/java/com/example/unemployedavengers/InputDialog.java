@@ -38,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -433,6 +434,24 @@ public class InputDialog extends DialogFragment {
     }
     // Method to use current location
     private void setCurrentLocation() {
+        // Ensure the fragment's view is available
+        View view = getView();
+        if (view == null) {
+            Log.e("CurrentLocation", "Fragment view is null");
+            return;
+        }
+
+        // Get a reference to the ProgressBar
+        ProgressBar progressBar = view.findViewById(R.id.input_address_progress_bar);
+        if (progressBar == null) {
+            Log.e("CurrentLocation", "ProgressBar not found in layout");
+            return;
+        }
+
+        // Show the ProgressBar (animation starts automatically with indeterminate style)
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Check location permissions
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(),
@@ -441,12 +460,15 @@ public class InputDialog extends DialogFragment {
                             android.Manifest.permission.ACCESS_COARSE_LOCATION
                     },
                     LOCATION_PERMISSION_REQUEST_CODE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
-        // Use getCurrentLocation for a faster, one-time location fetch.
+        // Request the current location
         fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener(location -> {
+                    // Hide the progress bar once a response is received
+                    progressBar.setVisibility(View.GONE);
                     if (location != null) {
                         selectedLatitude = location.getLatitude();
                         selectedLongitude = location.getLongitude();
@@ -457,10 +479,13 @@ public class InputDialog extends DialogFragment {
                     }
                 })
                 .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
                     Log.e("CurrentLocation", "Error retrieving location", e);
                     Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
 
 
 
