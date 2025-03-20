@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -120,6 +122,15 @@ public class WithinFiveKmMap extends Fragment implements OnMapReadyCallback {
         // Set the mood text on the TextView
         TextView markerText = markerView.findViewById(R.id.marker_text);
         markerText.setText(mood);
+        String lowerMood = mood.toLowerCase();
+        if (lowerMood.contains("anger")) markerText.setTextColor(Color.RED);
+        if (lowerMood.contains("confusion")) markerText.setTextColor( ContextCompat.getColor(context, R.color.orange));
+        if (lowerMood.contains("disgust")) markerText.setTextColor( Color.GREEN);
+        if (lowerMood.contains("fear")) markerText.setTextColor(Color.BLUE);
+        if (lowerMood.contains("happiness")) markerText.setTextColor( ContextCompat.getColor(context, R.color.baby_blue));
+        if (lowerMood.contains("sadness")) markerText.setTextColor(Color.GRAY);
+        if (lowerMood.contains("shame")) markerText.setTextColor( ContextCompat.getColor(context, R.color.yellow));
+        if (lowerMood.contains("surprise")) markerText.setTextColor( ContextCompat.getColor(context, R.color.pink));
 
         // Measure and layout the view properly
         int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
