@@ -76,24 +76,32 @@ public class FollowedUserMoodEventAdapter extends ArrayAdapter<MoodEvent> {
         if (moodEvent == null) return view;
 
         // Get references to views
-        TextView usernameText = view.findViewById(R.id.usernameText);
+        TextView moodEmoji = view.findViewById(R.id.moodEmoji);
         TextView moodText = view.findViewById(R.id.mood_text);
         TextView dateText = view.findViewById(R.id.date_text);
-        TextView reasonText = view.findViewById(R.id.reasonText);
-        TextView situationText = view.findViewById(R.id.situationText);
-        ImageView moodImageView = view.findViewById(R.id.moodImageView);
+        TextView usernameText = view.findViewById(R.id.usernameText);
 
-        // Set the username - use the mapping or a default value
-        // Note: You'll need to ensure the mapping is populated with usernames
-        // The MoodEvent should have a userId field or other way to identify the owner
-        String userId = moodEvent.getUserId(); // Assuming MoodEvent has a getUserId method
-        String username = "Unknown User";
-
-        if (userId != null && userIdToUsernameMap.containsKey(userId)) {
-            username = userIdToUsernameMap.get(userId);
+        // Set appropriate emoji based on mood
+        String mood = moodEvent.getMood().toLowerCase();
+        if (mood.contains("anger")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("confusion")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("disgust")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("fear")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("happiness")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("sadness")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("shame")) {
+            moodEmoji.setText("");
+        } else if (mood.contains("surprise")) {
+            moodEmoji.setText("");
+        } else {
+            moodEmoji.setText("😊"); // Default emoji
         }
-
-        usernameText.setText(username);
 
         // Set the mood text and apply color
         moodText.setText(moodEvent.getMood());
@@ -104,31 +112,13 @@ public class FollowedUserMoodEventAdapter extends ArrayAdapter<MoodEvent> {
         String formattedTime = sdf.format(new Date(moodEvent.getTime()));
         dateText.setText(formattedTime);
 
-        // Set reason and situation texts
-        String reason = moodEvent.getReason();
-        reasonText.setText(TextUtils.isEmpty(reason) ? "None" : reason);
-
-        String situation;
-        if (!TextUtils.isEmpty(moodEvent.getRadioSituation()) &&
-                !moodEvent.getRadioSituation().equals("Not Set") &&
-                !moodEvent.getRadioSituation().equals("None")) {
-            situation = moodEvent.getRadioSituation();
-        } else if (!TextUtils.isEmpty(moodEvent.getSituation())) {
-            situation = moodEvent.getSituation();
-        } else {
-            situation = "Not specified";
+        // Set username
+        String userId = moodEvent.getUserId();
+        String username = "Unknown User";
+        if (userId != null && userIdToUsernameMap.containsKey(userId)) {
+            username = userIdToUsernameMap.get(userId);
         }
-        situationText.setText(situation);
-
-        // Load and display the image if available
-        if (moodEvent.getImageUri() != null && !moodEvent.getImageUri().isEmpty()) {
-            moodImageView.setVisibility(View.VISIBLE);
-            Glide.with(context)
-                    .load(moodEvent.getImageUri())
-                    .into(moodImageView);
-        } else {
-            moodImageView.setVisibility(View.GONE);
-        }
+        usernameText.setText(username);
 
         return view;
     }

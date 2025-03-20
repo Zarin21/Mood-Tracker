@@ -108,16 +108,14 @@ public class Dashboard extends BaseFragment {
         loadMoodEvents();
 
         binding.friendsButton.setOnClickListener(v -> {
-            if (isClickTooSoon() || !isValidFragment()) return;
-            safeNavigate(v, R.id.action_dashboardFragment_to_userSearchFragment);
+            Navigation.findNavController(v).navigate(R.id.action_dashboardFragment_to_userSearchFragment);
         });
 
         //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
-            if (isClickTooSoon() || !isValidFragment()) return;
             Bundle args = new Bundle();
             args.putString("source", "dashboard");
-            safeNavigate(v, R.id.action_dashboardFragment_to_inputDialog, args);
+            Navigation.findNavController(v).navigate(R.id.action_dashboardFragment_to_inputDialog, args);
         });
 
         //register the listener for the result from InputDialog (Only once)
@@ -391,8 +389,6 @@ public class Dashboard extends BaseFragment {
 
                         //set item click listener
                         binding.activityList.setOnItemClickListener((parent, view, position, id) -> {
-                            if (isClickTooSoon() || !isValidFragment()) return;
-
                             if (position >= 0 && position < recentMoodEvents.size()) {
                                 //get the selected MoodEvent based on position
                                 MoodEvent selectedMoodEvent = recentMoodEvents.get(position);
@@ -403,7 +399,7 @@ public class Dashboard extends BaseFragment {
                                 args.putString("source", "dashboard");
 
                                 //navigate to inputdialog and pass the selected mood event
-                                safeNavigate(view, R.id.action_dashboardFragment_to_inputDialog, args);
+                                Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_inputDialog, args);
                             }
                         });
 

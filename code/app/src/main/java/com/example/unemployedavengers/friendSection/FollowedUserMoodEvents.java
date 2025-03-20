@@ -81,6 +81,26 @@ public class FollowedUserMoodEvents extends Fragment {
                 Navigation.findNavController(v)
                         .navigate(R.id.action_followedUserMoodEventsFragment_to_friendsHistoryFragment)
         );
+
+        // Setup item click to navigate to mood detail view with comments
+        binding.followedUsersListView.setOnItemClickListener((parent, itemView, position, id) -> {
+            if (position >= 0 && position < followedUserMoodEvents.size()) {
+                MoodEvent selectedMoodEvent = followedUserMoodEvents.get(position);
+
+                // Make sure the mood event has a username set
+                if (selectedMoodEvent.getUserName() == null && selectedMoodEvent.getUserId() != null) {
+                    selectedMoodEvent.setUserName(userIdToUsernameMap.get(selectedMoodEvent.getUserId()));
+                }
+
+                // Create bundle and add the selected mood event
+                Bundle args = new Bundle();
+                args.putSerializable("selected_mood_event", selectedMoodEvent);
+
+                // Navigate to the mood detail fragment
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_followedUserMoodEventsFragment_to_moodDetailFragment, args);
+            }
+        });
     }
 
     /**
@@ -229,6 +249,11 @@ public class FollowedUserMoodEvents extends Fragment {
 
                             // Set the user ID so we can display the username
                             moodEvent.setUserId(userId);
+
+                            // Set username for the mood event for easier access later
+                            if (userIdToUsernameMap.containsKey(userId)) {
+                                moodEvent.setUserName(userIdToUsernameMap.get(userId));
+                            }
 
                             followedUserMoodEvents.add(moodEvent);
                         }
