@@ -190,6 +190,10 @@
         <action
             android:id="@+id/action_followedUserMoodEventsFragment_to_userSearchFragment"
             app:destination="@id/userSearch" />
+        <!-- New action to navigate to MoodDetailFragment -->
+        <action
+            android:id="@+id/action_followedUserMoodEventsFragment_to_moodDetailFragment"
+            app:destination="@id/moodDetailFragment" />
     </fragment>
 
     <fragment
@@ -202,5 +206,16 @@
         <action
             android:id="@+id/action_inputDialog_to_historyFragment"
             app:destination="@id/historyFragment" />
+    </fragment>
+
+    <!-- New MoodDetailFragment for showing mood details with comments -->
+    <fragment
+        android:id="@+id/moodDetailFragment"
+        android:name="com.example.unemployedavengers.friendSection.MoodDetailFragment"
+        android:label="MoodDetailFragment"
+        tools:layout="@layout/mood_detail">
+        <argument
+            android:name="selected_mood_event"
+            app:argType="com.example.unemployedavengers.models.MoodEvent" />
     </fragment>
 </navigation>
