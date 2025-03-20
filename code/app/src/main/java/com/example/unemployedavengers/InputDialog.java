@@ -376,12 +376,12 @@ public class InputDialog extends DialogFragment {
                 }
           
                 //pass the updated MoodEvent back to dashboard
-                Bundle result = new Bundle();
-                result.putSerializable("mood_event_key", moodEvent);
-                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
-
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
+//                Bundle result = new Bundle();
+//                result.putSerializable("mood_event_key", moodEvent);
+//                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
+//
+//                Navigation.findNavController(v)
+//                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
 
         });
 
