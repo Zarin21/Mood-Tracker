@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class Filter extends DialogFragment {
-    private CheckBox  filterMood, filterReason, filterWeek;
+    private CheckBox filterReason , filterWeek;
     private Spinner spinner;
     private EditText editReasonFilter;
 
@@ -41,7 +41,7 @@ public class Filter extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.filter, null);
 
-        filterMood = view.findViewById(R.id.filterMood);
+
         filterReason = view.findViewById(R.id.filterReason);
         filterWeek = view.findViewById(R.id.filterWeek);
         spinner = view.findViewById(R.id.spinner);
