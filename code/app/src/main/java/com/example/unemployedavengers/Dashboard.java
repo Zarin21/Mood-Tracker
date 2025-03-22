@@ -42,6 +42,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.android.SphericalUtil;
@@ -90,6 +91,11 @@ public class Dashboard extends BaseFragment {
 
         //database
         db = FirebaseFirestore.getInstance();
+        db.setFirestoreSettings(
+                new FirebaseFirestoreSettings.Builder()
+                        .setPersistenceEnabled(true)
+                        .build()
+        );
         if (userID != null) {
             moodEventRef = db.collection("users").document(userID).collection("moods");
         } else {
