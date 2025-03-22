@@ -9,8 +9,12 @@
 package com.example.unemployedavengers;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -18,11 +22,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -40,13 +47,18 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.unemployedavengers.databinding.InputDialogBinding;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,8 +76,14 @@ public class InputDialog extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private double selectedLatitude;
+    private double selectedLongitude;
+    private boolean locationSet = false;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -232,7 +250,6 @@ public class InputDialog extends DialogFragment {
         spinnerEmotion.setAdapter(adapter);
 
         return binding.getRoot();
-
     }
 
     private void setupImagePickerLaunchers() {
@@ -273,7 +290,6 @@ public class InputDialog extends DialogFragment {
                 });
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
@@ -282,6 +298,14 @@ public class InputDialog extends DialogFragment {
         btnUploadImage.setOnClickListener(v -> {
             imagePickerLauncher.launch(new Intent(MediaStore.ACTION_PICK_IMAGES));
         });
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+        // Set up the "Use Current Location" button
+        view.findViewById(R.id.use_current_location_button).setOnClickListener(v -> {
+            setCurrentLocation();
+        });
+
 
         //get the selected MoodEvent passed from Dashboard
         if (getArguments() != null) {
@@ -299,7 +323,6 @@ public class InputDialog extends DialogFragment {
             //if we are updating
             if (moodEvent != null) {
                 //populate the fields with the data from the selected MoodEvent
-                EditText triggerEditText = view.findViewById(R.id.editTrigger);
                 EditText situationEditText = view.findViewById(R.id.editSocialSituation);
                 EditText reasonEditText = view.findViewById(R.id.editReason);
                 Spinner spinner = view.findViewById(R.id.spinnerEmotion);
@@ -319,6 +342,21 @@ public class InputDialog extends DialogFragment {
                     ((RadioButton) view.findViewById(R.id.radioNone)).setChecked(true);
                 }
 
+                // Check if the view exists before using it
+                RadioButton publicRadio = view.findViewById(R.id.radioPublicStatus);
+                RadioButton privateRadio = view.findViewById(R.id.radioPrivateStatus);
+
+                if (publicRadio != null && privateRadio != null) {
+                    try {
+                        if (moodEvent.getPublicStatus()){
+                            publicRadio.setChecked(true);
+                        } else {
+                            privateRadio.setChecked(true);
+                        }
+                    } catch (Exception e) {
+                        Log.d("InputDialog", "Public status not supported in this MoodEvent model");
+                    }
+                }
 
                 //using the adapter in onCreateview
                 ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
@@ -337,54 +375,58 @@ public class InputDialog extends DialogFragment {
 
         //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
-                //get all relevant information
-                String mood = (String) binding.spinnerEmotion.getSelectedItem();
-                String reason = binding.editReason.getText().toString();
-                String trigger = binding.editTrigger.getText().toString();
-                String situation = binding.editSocialSituation.getText().toString();
-                long time = System.currentTimeMillis();
+            //get all relevant information
+            String mood = (String) binding.spinnerEmotion.getSelectedItem();
+            String reason = binding.editReason.getText().toString();
+            String situation = binding.editSocialSituation.getText().toString();
+            long time = System.currentTimeMillis();
 
-                String radioSituation = "Not Set";
+
+            // Check if radioPublicStatus exists before accessing it
+            boolean publicStatus = false;
+            if (binding.radioPublicStatus != null) {
+                publicStatus = binding.radioPublicStatus.isChecked();
+            }
+
+            String radioSituation = "Not Set";
+            try {
+                radioSituation = ((RadioButton) v.getRootView().findViewById(binding.radioGroupSocial.getCheckedRadioButtonId())).getText().toString();
+            }
+            catch (Exception e) {
+                Log.d("Radio Group", "User did not pick a situation category");
+            }
+
+            reason = reason.trim();
+            situation = situation.trim();
+
+            //if moodEvent exists, update it otherwise create a new one
+            if (moodEvent != null) {
+                moodEvent.setMood(mood);
+                moodEvent.setReason(reason);
+                moodEvent.setSituation(situation);
+                moodEvent.setRadioSituation(radioSituation);
+
+                // Only set public status if the model supports it
                 try {
-                    radioSituation = ((RadioButton) v.getRootView().findViewById(binding.radioGroupSocial.getCheckedRadioButtonId())).getText().toString();
+                    moodEvent.setPublicStatus(publicStatus);
+                } catch (Exception e) {
+                    Log.d("InputDialog", "Public status not supported in this MoodEvent model");
                 }
-                catch (Exception e) {
-                    Log.d("Radio Group", "User did not pick a situation category");
-                }
 
-                reason = reason.trim();
-                trigger = trigger.trim();
-                situation = situation.trim();
+                //no need to change the time because we are editing the existing event
+                uploadImage(moodEvent);
+            } else {
+                uploadNewEvent(mood, reason, situation, time, radioSituation, publicStatus);
+            }
 
-                //if moodEvent exists, update it otherwise create a new one
-                if (moodEvent != null) {
-                    moodEvent.setMood(mood);
-                    moodEvent.setReason(reason);
-                    moodEvent.setTrigger(trigger);
-                    moodEvent.setSituation(situation);
-                    moodEvent.setRadioSituation(radioSituation);
-                    //no need to change the time because we are editing the existing event
-                    uploadImage(moodEvent);
-                } else uploadNewEvent(moodEvent, mood, reason, trigger, situation, time, radioSituation);
-
-                if (Objects.equals(source, "dashboard")) {
-                    Navigation.findNavController(v)
-                            .navigate(R.id.action_inputDialog_to_dashboardFragment);
-                } else if (Objects.equals(source, "history")){
-                    Navigation.findNavController(v)
-                            .navigate(R.id.action_inputDialog_to_historyFragment);
-                }
-          
-                //pass the updated MoodEvent back to dashboard
-//                Bundle result = new Bundle();
-//                result.putSerializable("mood_event_key", moodEvent);
-//                getParentFragmentManager().setFragmentResult("input_dialog_result", result);
-//
-//                Navigation.findNavController(v)
-//                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
-
+            if (Objects.equals(source, "dashboard")) {
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_inputDialog_to_dashboardFragment);
+            } else if (Objects.equals(source, "history")){
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_inputDialog_to_historyFragment);
+            }
         });
-
 
         //go right back to dashboard
         binding.buttonCancel.setOnClickListener(v ->{
@@ -398,30 +440,74 @@ public class InputDialog extends DialogFragment {
             }
         });
     }
+    // Method to use current location
+    private void setCurrentLocation() {
+        // Ensure the fragment's view is available
+        View view = getView();
+        if (view == null) {
+            Log.e("CurrentLocation", "Fragment view is null");
+            return;
+        }
 
-    private void uploadNewEvent(MoodEvent moodEvent, String mood, String reason, String trigger,
-                                String situation, long time, String radioSituation) {
-        // Create a new MoodEvent with empty image URL initially
-        MoodEvent newMoodEvent = new MoodEvent(mood, reason, trigger, situation, time, radioSituation, "");
+        // Get a reference to the ProgressBar
+        ProgressBar progressBar = view.findViewById(R.id.input_address_progress_bar);
+        if (progressBar == null) {
+            Log.e("CurrentLocation", "ProgressBar not found in layout");
+            return;
+        }
 
-        if (imageUri != null) {
-            StorageReference storageRef = storage.getReference();
-            StorageReference imageRef = storageRef.child("mood_images/" + UUID.randomUUID() + ".jpg");
+        // Show the ProgressBar (animation starts automatically with indeterminate style)
+        progressBar.setVisibility(View.VISIBLE);
 
-            // Show loading indicator if needed
+        // Check location permissions
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    LOCATION_PERMISSION_REQUEST_CODE);
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
 
-            imageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot ->
-                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                // Update the image URL and send result
-                                newMoodEvent.setImageUri(uri.toString());
-                                sendResultToParent(newMoodEvent);
-                            }))
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        // Still send the event, just without an image
-                        sendResultToParent(newMoodEvent);
-                    });
+        // Request the current location
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    // Hide the progress bar once a response is received
+                    progressBar.setVisibility(View.GONE);
+                    if (location != null) {
+                        selectedLatitude = location.getLatitude();
+                        selectedLongitude = location.getLongitude();
+                        locationSet = true;
+                        Toast.makeText(getContext(), "Current location set.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Log.e("CurrentLocation", "Error retrieving location", e);
+                    Toast.makeText(getContext(), "Error retrieving location", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+
+
+
+
+    // Handle the permission request result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, try setting current location again
+                setCurrentLocation();
+            } else {
+                Toast.makeText(getContext(), "Location permission is required", Toast.LENGTH_SHORT).show();
+            }
         } else {
             // No image to upload, send result immediately
             sendResultToParent(newMoodEvent);

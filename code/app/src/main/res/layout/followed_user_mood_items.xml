@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="16dp">
+
+    <!-- Mood emoji -->
+    <TextView
+        android:id="@+id/moodEmoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Mood text -->
+    <TextView
+        android:id="@+id/mood_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Happy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/moodEmoji"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- User profile circle - FIXED POSITION -->
+    <ImageView
+        android:id="@+id/profileCircle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/circle_background"
+        android:backgroundTint="#9C27B0"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guidelineCenter" />
+
+    <!-- Guideline at 60% of width to align profile icons consistently -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.60" />
+
+    <!-- User profile icon -->
+    <ImageView
+        android:id="@+id/profileIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_person"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/profileCircle"
+        app:layout_constraintEnd_toEndOf="@+id/profileCircle"
+        app:layout_constraintStart_toStartOf="@+id/profileCircle"
+        app:layout_constraintTop_toTopOf="@+id/profileCircle" />
+
+    <!-- Friend ID/Username - FIXED POSITION -->
+    <TextView
+        android:id="@+id/usernameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Username"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/profileCircle"
+        app:layout_constraintTop_toTopOf="@+id/profileCircle"
+        app:layout_constraintBottom_toBottomOf="@+id/profileCircle" />
+
+    <!-- Date - Below username for better layout -->
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2025-03-19 11:14"
+        android:textColor="#808080"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@+id/usernameText"
+        app:layout_constraintStart_toStartOf="@+id/usernameText" />
+
+    <!-- Other views that should be hidden -->
+    <TextView
+        android:id="@+id/reasonText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situationText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/moodImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

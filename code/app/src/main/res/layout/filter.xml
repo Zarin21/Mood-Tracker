@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <CheckBox
+        android:id="@+id/filterReason"
+        android:layout_width="116dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        android:text="Reason"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <CheckBox
+        android:id="@+id/filterMood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mood"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/filterMood"
+        app:layout_constraintTop_toTopOf="@id/filterMood"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp" />
+
+     <CheckBox
+        android:id="@+id/filterWeek"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recent Week"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterReason"
+        android:layout_marginTop="16dp" />
+
+
+
+    <EditText
+        android:id="@+id/editReasonFilter"
+        android:layout_width="174dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="684dp"
+        android:background="@android:drawable/editbox_background"
+        android:ems="10"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/filterReason" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

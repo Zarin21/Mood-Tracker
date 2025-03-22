@@ -59,6 +59,11 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation("com.google.firebase:firebase-storage:20.2.1")
 
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.maps.android:android-maps-utils:3.4.0")
+
+
     // Test Dependencies
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:4.11.0")

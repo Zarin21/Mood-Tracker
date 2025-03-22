@@ -17,7 +17,6 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
-
     <!-- Sign up Fragment -->
     <fragment
         android:id="@+id/signUpFragment"
@@ -65,21 +64,47 @@
         android:name="com.example.unemployedavengers.Dashboard"
         android:label="dashboardFragment">
         <action
-            android:id="@+id/action_dashboardFragment_to_friendsHistoryFragment"
-            app:destination="@id/friendsHistory" />
+            android:id="@+id/action_dashboardFragment_to_userSearchFragment"
+            app:destination="@id/userSearch" />
         <action
             android:id="@+id/action_dashboardFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
         <action
+            android:id="@+id/action_dashboardFragment_to_notificationsFragment"
+            app:destination="@id/notificationsFragment" />
+        <action
             android:id="@+id/action_dashboardFragment_to_inputDialog"
             app:destination="@id/inputDialog" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.unemployedavengers.Map"
+        android:name="com.example.unemployedavengers.maps.Map"
         android:label="mapFragment"
-        tools:layout="@layout/map" />
+        tools:layout="@layout/map" >
+        <action
+            android:id="@+id/action_mapFragment_to_personalMapFragment"
+            app:destination="@id/personalMapFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_friendsMap"
+            app:destination="@id/friends_map" />
+        <action
+            android:id="@+id/action_mapFragment_to_WithInFiveKm"
+            app:destination="@id/withInFiveKm" />
+    </fragment>
+    <fragment
+        android:id="@+id/personalMapFragment"
+        android:name="com.example.unemployedavengers.maps.PersonalMap"
+        android:label="personalMapFragment">
+    </fragment>
+    <fragment
+        android:id="@+id/withInFiveKm"
+        android:name="com.example.unemployedavengers.maps.WithinFiveKmMap"
+        android:label="withInFiveKm">
+    </fragment>
 
     <fragment
         android:id="@+id/historyFragment"
@@ -102,8 +127,6 @@
         <action
             android:id="@+id/action_passwordReset1Fragment_to_passwordReset2Fragment"
             app:destination="@id/passwordReset2Fragment" />
-
-
     </fragment>
 
     <!-- PasswordReset2 Fragment -->
@@ -119,15 +142,18 @@
             app:destination="@id/passwordReset1Fragment" />
     </fragment>
 
-    <!-- FriendsHistory Fragment -->
+    <!-- FriendsHistory Fragment - Changed ID to match bottom nav menu item -->
     <fragment
-        android:id="@+id/friendsHistory"
+        android:id="@+id/friendsHistoryFragment"
         android:name="com.example.unemployedavengers.friendSection.FriendsHistory"
-        android:label="friendHistory Fragment">
+        android:label="friendsHistory"
+        tools:layout="@layout/friends_history">
         <action
             android:id="@+id/action_friendsHistoryFragment_to_userSearchFragment"
             app:destination="@id/userSearch" />
-
+        <action
+            android:id="@+id/action_friendsHistoryFragment_to_followedUserMoodEventsFragment"
+            app:destination="@id/followedUserMoodEventsFragment" />
     </fragment>
 
     <!-- Profile Fragment -->
@@ -139,14 +165,37 @@
             android:id="@+id/action_profileFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/friends_map"
+        android:name="com.example.unemployedavengers.maps.FriendsMap"
+        android:label="friendsMap">
+    </fragment>
 
     <!-- UserSearch Fragment -->
     <fragment
         android:id="@+id/userSearch"
         android:name="com.example.unemployedavengers.friendSection.UserSearch"
         android:label="userSearch Fragment">
-
     </fragment>
+
+    <!-- FollowedUserMoodEvents Fragment -->
+    <fragment
+        android:id="@+id/followedUserMoodEventsFragment"
+        android:name="com.example.unemployedavengers.friendSection.FollowedUserMoodEvents"
+        android:label="FollowedUserMoodEvents"
+        tools:layout="@layout/followed_user_mood_events">
+        <action
+            android:id="@+id/action_followedUserMoodEventsFragment_to_friendsHistoryFragment"
+            app:destination="@id/friendsHistoryFragment" />
+        <action
+            android:id="@+id/action_followedUserMoodEventsFragment_to_userSearchFragment"
+            app:destination="@id/userSearch" />
+        <!-- New action to navigate to MoodDetailFragment -->
+        <action
+            android:id="@+id/action_followedUserMoodEventsFragment_to_moodDetailFragment"
+            app:destination="@id/moodDetailFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/inputDialog"
         android:name="com.example.unemployedavengers.InputDialog"
@@ -159,5 +208,14 @@
             app:destination="@id/historyFragment" />
     </fragment>
 
-
+    <!-- New MoodDetailFragment for showing mood details with comments -->
+    <fragment
+        android:id="@+id/moodDetailFragment"
+        android:name="com.example.unemployedavengers.friendSection.MoodDetailFragment"
+        android:label="MoodDetailFragment"
+        tools:layout="@layout/mood_detail">
+        <argument
+            android:name="selected_mood_event"
+            app:argType="com.example.unemployedavengers.models.MoodEvent" />
+    </fragment>
 </navigation>

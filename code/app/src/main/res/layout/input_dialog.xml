@@ -33,8 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Your Emotion State (Required)"
-            android:textColor="#F08080"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="#ffafae"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/spinnerEmotion"
@@ -50,7 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="What was the reason? (Optional)"
-            android:textColor="#F08080"
+            android:textColor="#ffafae"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <EditText
@@ -64,30 +66,14 @@
             android:lines="1"
             android:padding="12dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="How did it trigger? (Optional)"
-            android:textColor="#F08080"
-            android:textSize="16sp" />
-
-        <EditText
-            android:id="@+id/editTrigger"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/editbox_background"
-            android:inputType="textMultiLine"
-            android:lines="1"
-            android:padding="12dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="What was the social situation? (Optional)"
-            android:textColor="#F08080"
+            android:textColor="#ffafae"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <RadioGroup
@@ -105,7 +91,9 @@
                 app:buttonTint="#F08080"
                 android:checked="false"
                 android:text="Alone"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textColor="#ffafae"
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/radioTwoSeveral"
@@ -114,7 +102,9 @@
                 android:layout_marginEnd="8dp"
                 app:buttonTint="#F08080"
                 android:text="Two or Several"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textColor="#ffafae"
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/radioCrowd"
@@ -123,7 +113,9 @@
                 android:layout_marginEnd="8dp"
                 app:buttonTint="#F08080"
                 android:text="A Crowd"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textColor="#ffafae"
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/radioNone"
@@ -133,7 +125,9 @@
                 app:buttonTint="#F08080"
                 android:text="None"
                 android:checked="true"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textColor="#ffafae"
+                android:textStyle="bold" />
         </RadioGroup>
 
         <TextView
@@ -141,7 +135,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="What was the social situation? (Optional)"
-            android:textColor="#F08080"
+            android:textColor="#ffafae"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <EditText
@@ -159,7 +154,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Add a Picture (Optional)"
-            android:textColor="#F08080"
+            android:textColor="#ffafae"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -169,7 +165,7 @@
 
             <ImageView
                 android:id="@+id/imagePreview"
-                android:layout_width="350dp"
+                android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/image_placeholder_background"
@@ -185,6 +181,69 @@
             android:textColor="#FFFFFF"
             android:text="Upload Picture" />
 
+        <TextView
+            android:id="@+id/publicStatusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="What is the public status of this mood event?"
+            android:textColor="#ffafae"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioPublicStatus"
+                android:layout_width="194dp"
+                android:layout_height="wrap_content"
+                android:text="Public"
+                android:layout_marginEnd="8dp"
+                app:buttonTint="#F08080"
+                android:checked="true"
+                android:textSize="12sp"
+                android:textColor="#ffafae"
+                android:textStyle="bold" />
+
+            <RadioButton
+                android:id="@+id/radioPrivateStatus"
+                android:layout_width="194dp"
+                android:layout_height="wrap_content"
+                android:text="Private"
+                android:layout_marginEnd="8dp"
+                app:buttonTint="#F08080"
+                android:checked="true"
+                android:textSize="12sp"
+                android:textColor="#ffafae"
+                android:textStyle="bold" />
+        </RadioGroup>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/locationPickerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/use_current_location_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#F08080"
+                android:text="Click to set current location for this mood event" />
+        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/input_address_progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -199,6 +258,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="#F08080"
                 android:text="Cancel"
+                android:textStyle="bold"
                 android:textColor="#FFFFFF" />
 
             <Button
@@ -209,25 +269,8 @@
                 android:layout_weight="1"
                 android:backgroundTint="#F08080"
                 android:text="Confirm"
+                android:textStyle="bold"
                 android:textColor="#FFFFFF" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="test"
-                android:textColor="#F3F3F3"
-                android:textSize="34sp" />
-
-
         </LinearLayout>
 
 
@@ -236,8 +279,6 @@
         <!-- Emotion State Field -->
 
         <!-- Reason Field -->
-
-        <!-- Trigger Field -->
 
         <!-- Social Situation Radio Buttons -->
 
