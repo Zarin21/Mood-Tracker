@@ -43,6 +43,7 @@ public class Filter extends DialogFragment {
 
 
         filterReason = view.findViewById(R.id.filterReason);
+        filterMood = view.findViewById(R.id.filterMood);
         filterWeek = view.findViewById(R.id.filterWeek);
         spinner = view.findViewById(R.id.spinner);
         editReasonFilter = view.findViewById(R.id.editReasonFilter);
