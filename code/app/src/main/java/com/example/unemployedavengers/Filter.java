@@ -4,23 +4,27 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class Filter extends DialogFragment {
-    private CheckBox  filterReason;
+    private CheckBox filterReason , filterWeek;
+    private Spinner spinner;
     private EditText editReasonFilter;
 
     public interface FilterListener{
-        void onFilterApplied(boolean filterReason, String reasonText,boolean seeAll);
+        void onFilterApplied(boolean filterMood, boolean filterReason, boolean filterRecentWeek,
+                    String reasonText, String spinnerSelection, boolean seeAll);
     }
 
     private FilterListener listener;
@@ -36,8 +40,21 @@ public class Filter extends DialogFragment {
 
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.filter, null);
+
+
         filterReason = view.findViewById(R.id.filterReason);
+        filterWeek = view.findViewById(R.id.filterWeek);
+        spinner = view.findViewById(R.id.spinner);
         editReasonFilter = view.findViewById(R.id.editReasonFilter);
+
+        String[] moodOptions = new String[]{"Happy", "Sadness", "Angry", "Confused","Scared","Shame","Disgust","Surprise"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, moodOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+
+
         builder.setView(view)
                 .setTitle("Filter Options")
                 .setPositiveButton("Apply", null) //set null for the action here so the button doesn't close the dialog when invalid text is entered
@@ -59,23 +76,40 @@ public class Filter extends DialogFragment {
             //implement the logic for positive button
             positiveButton.setOnClickListener(v -> {
                 if(filterReason.isChecked()) {
-                    //if the text is only 1 word and not empty
-                    if (editReasonFilter.getText().toString().trim().split("\\s+").length == 1 && !editReasonFilter.getText().toString().trim().isEmpty()) {
-                        if (listener != null) {
+                    String inputText = editReasonFilter.getText().toString().trim();
 
+                    if (inputText.split("\\s+").length == 1 && !inputText.isEmpty()) {
+                        if (listener != null) {
+                            Log.d("Filter Dialog", "passed");
                             listener.onFilterApplied(
+                                    filterMood.isChecked(),
                                     filterReason.isChecked(),
-                                    editReasonFilter.getText().toString().trim(),
+                                    filterWeek.isChecked(),
+                                    inputText,
+                                    spinner.getSelectedItem().toString(),
                                     false
                             );
                         }
                         dialog.dismiss();
                     } else {
-                        //show error
+                        Log.d("Filter Dialog", "did not pass");
                         editReasonFilter.setError("Must contain only 1 word and cannot be empty!");
                     }
-                }else{
-                    dialog.dismiss();
+                } else {
+                        if (listener != null) {
+                            Log.d("Filter Dialog", "passed");
+
+                            listener.onFilterApplied(
+                                    filterMood.isChecked(),
+                                    filterReason.isChecked(),
+                                    filterWeek.isChecked(),
+                                    editReasonFilter.getText().toString().trim(),
+                                    spinner.getSelectedItem().toString(),
+                                    false
+                            );
+
+                        dialog.dismiss();
+                    }
                 }
             });
             neutralButton.setOnClickListener(v -> {
