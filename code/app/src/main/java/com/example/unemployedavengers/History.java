@@ -108,35 +108,59 @@ public class History extends Fragment {
             }
         });
 
+        getParentFragmentManager().setFragmentResultListener("delete_mood_event", getViewLifecycleOwner(), new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                boolean deleteConfirmed = result.getBoolean("DeleteConfirmed", false);
+                if (deleteConfirmed) {
+                    onDeleteConfirmed(selectedMoodForDeletion);
+                    loadHistoryMoodEvents();
+                }
+            }
+        });
+
         //Filter
 
         binding.filterButton.setOnClickListener(v -> {
             //create filter dialog
             Filter filterDialog = new Filter();
 
-            filterDialog.setFilterListener((reason,reasonText,seeAll)->{
-                //create an arraylist containing all of moodList (all mood events)
+            filterDialog.setFilterListener((mood, reason, recentWeek, reasonText, spinnerSelection, seeAll) -> {
                 ArrayList<MoodEvent> filterMoodList = new ArrayList<>(moodList);
-                if(seeAll){
+                if (seeAll) {
                     loadHistoryMoodEvents();
-                }else {
-
-                    if (reason) {
-                        ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
-                        //filter through all of filterMoodList so see if mood event contain reason, if so add to filteredByReason
-                        for (int i = 0; i < filterMoodList.size(); i++) {
-                            if (filterMoodList.get(i).getReason().contains(reasonText)) {
-                                filteredByReason.add(filterMoodList.get(i));
+                } else {
+                    if (mood) {
+                        ArrayList<MoodEvent> filteredByMood = new ArrayList<>();
+                        for (MoodEvent event : filterMoodList) {
+                            if (event.getMood() != null && event.getMood().equalsIgnoreCase(spinnerSelection)) {
+                                filteredByMood.add(event);
                             }
                         }
-                        //set filterMoodList as filteredByReason
+                        filterMoodList = filteredByMood;
+                    }
+                    if (reason) {
+                        ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
+                        for (MoodEvent event : filterMoodList) {
+                            if (event.getReason().contains(reasonText)) {
+                                filteredByReason.add(event);
+                            }
+                        }
                         filterMoodList = filteredByReason;
                     }
-
+                    if (recentWeek) {
+                        long currentTime = System.currentTimeMillis();
+                        long sevenDaysMillis = 7L * 24 * 60 * 60 * 1000;
+                        ArrayList<MoodEvent> filteredByWeek = new ArrayList<>();
+                        for (MoodEvent event : filterMoodList) {
+                            if (event.getTime() >= (currentTime - sevenDaysMillis)) {
+                                filteredByWeek.add(event);
+                            }
+                        }
+                        filterMoodList = filteredByWeek;
+                    }
                     filteredMoodList.clear();
                     filteredMoodList.addAll(filterMoodList);
-                    MoodEventsViewModel viewModel = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
-                    viewModel.setMoodEvents(filterMoodList);
                     binding.historyList.setAdapter(filteredMoodAdapter);
                     filteredMoodAdapter.notifyDataSetChanged();
                 }
@@ -189,19 +213,9 @@ public class History extends Fragment {
                             MoodEvent moodEvent = document.toObject(MoodEvent.class);
                             moodList.add(moodEvent);
                         }
-                        //sort by time (latest first)
-                        // Sort mood events (latest first)
                         Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
-
-                        MoodEventsViewModel viewModel = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
-                        viewModel.setMoodEvents(moodList);
-                        Log.d("MapDebug", "size:" + moodList.size());
-
-                        // Set the adapter for the ListView and refresh it
                         binding.historyList.setAdapter(moodAdapter);
-                        moodAdapter.notifyDataSetChanged(); // update UI
-
-
+                        moodAdapter.notifyDataSetChanged();
                         binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
                             MoodEvent selectedEvent = moodList.get(position);
                             Bundle args = new Bundle();
@@ -210,16 +224,12 @@ public class History extends Fragment {
                             Navigation.findNavController(view)
                                     .navigate(R.id.action_historyFragment_to_inputDialog, args);
                         });
-
                         binding.historyList.setOnItemLongClickListener((parent, view, position, id) -> {
                             selectedMoodForDeletion = moodList.get(position);
-
                             ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(selectedMoodForDeletion.getId());
                             dialog.show(getParentFragmentManager(), "ConfirmDeleteDialog");
-
-                            return true; // Indicate the event was handled
+                            return true;
                         });
-
                     } else {
                         Log.e("HistoryFragment", "Error fetching mood events", task.getException());
                     }
