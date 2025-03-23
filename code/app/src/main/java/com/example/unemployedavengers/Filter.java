@@ -115,7 +115,7 @@ public class Filter extends DialogFragment {
             });
             neutralButton.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onFilterApplied(false,"",true);
+                    listener.onFilterApplied(false, false, false, "", "", true);
                 }
                 dialog.dismiss();
             });
