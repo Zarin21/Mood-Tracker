@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/homeFragment">
 
-    <!-- Home Fragment -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.unemployedavengers.auth.StartScreen"
@@ -17,7 +16,6 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
-    <!-- Sign up Fragment -->
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.unemployedavengers.auth.SignUp"
@@ -30,7 +28,6 @@
             app:destination="@id/homeFragment" />
     </fragment>
 
-    <!-- LoginFragment -->
     <fragment
         android:id="@+id/loginFragment"
         android:name= "com.example.unemployedavengers.auth.Login"
@@ -58,7 +55,6 @@
         android:label="settingsFragment"
         tools:layout="@layout/settings" />
 
-    <!-- DashBoard Fragment -->
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.example.unemployedavengers.Dashboard"
@@ -95,16 +91,16 @@
             android:id="@+id/action_mapFragment_to_WithInFiveKm"
             app:destination="@id/withInFiveKm" />
     </fragment>
+
     <fragment
         android:id="@+id/personalMapFragment"
         android:name="com.example.unemployedavengers.maps.PersonalMap"
-        android:label="personalMapFragment">
-    </fragment>
+        android:label="personalMapFragment" />
+
     <fragment
         android:id="@+id/withInFiveKm"
         android:name="com.example.unemployedavengers.maps.WithinFiveKmMap"
-        android:label="withInFiveKm">
-    </fragment>
+        android:label="withInFiveKm" />
 
     <fragment
         android:id="@+id/historyFragment"
@@ -116,7 +112,6 @@
             app:destination="@id/inputDialog" />
     </fragment>
 
-    <!-- PasswordReset1 Fragment -->
     <fragment
         android:id="@+id/passwordReset1Fragment"
         android:name="com.example.unemployedavengers.auth.PasswordReset1"
@@ -129,7 +124,6 @@
             app:destination="@id/passwordReset2Fragment" />
     </fragment>
 
-    <!-- PasswordReset2 Fragment -->
     <fragment
         android:id="@+id/passwordReset2Fragment"
         android:name="com.example.unemployedavengers.auth.PasswordReset2"
@@ -142,7 +136,6 @@
             app:destination="@id/passwordReset1Fragment" />
     </fragment>
 
-    <!-- FriendsHistory Fragment - Changed ID to match bottom nav menu item -->
     <fragment
         android:id="@+id/friendsHistoryFragment"
         android:name="com.example.unemployedavengers.friendSection.FriendsHistory"
@@ -156,7 +149,6 @@
             app:destination="@id/followedUserMoodEventsFragment" />
     </fragment>
 
-    <!-- Profile Fragment -->
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.unemployedavengers.auth.Profile"
@@ -165,20 +157,31 @@
             android:id="@+id/action_profileFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/friends_map"
         android:name="com.example.unemployedavengers.maps.FriendsMap"
-        android:label="friendsMap">
-    </fragment>
+        android:label="friendsMap" />
 
-    <!-- UserSearch Fragment -->
     <fragment
         android:id="@+id/userSearch"
         android:name="com.example.unemployedavengers.friendSection.UserSearch"
         android:label="userSearch Fragment">
+        <action
+            android:id="@+id/action_userSearch_to_userProfile"
+            app:destination="@id/userProfile" />
     </fragment>
 
-    <!-- FollowedUserMoodEvents Fragment -->
+    <fragment
+        android:id="@+id/userProfile"
+        android:name="com.example.unemployedavengers.friendSection.UserProfile"
+        android:label="UserProfile"
+        tools:layout="@layout/user_profile">
+        <argument
+            android:name="selectedUsername"
+            app:argType="string" />
+    </fragment>
+
     <fragment
         android:id="@+id/followedUserMoodEventsFragment"
         android:name="com.example.unemployedavengers.friendSection.FollowedUserMoodEvents"
@@ -190,7 +193,6 @@
         <action
             android:id="@+id/action_followedUserMoodEventsFragment_to_userSearchFragment"
             app:destination="@id/userSearch" />
-        <!-- New action to navigate to MoodDetailFragment -->
         <action
             android:id="@+id/action_followedUserMoodEventsFragment_to_moodDetailFragment"
             app:destination="@id/moodDetailFragment" />
@@ -208,7 +210,6 @@
             app:destination="@id/historyFragment" />
     </fragment>
 
-    <!-- New MoodDetailFragment for showing mood details with comments -->
     <fragment
         android:id="@+id/moodDetailFragment"
         android:name="com.example.unemployedavengers.friendSection.MoodDetailFragment"
