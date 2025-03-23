@@ -133,7 +133,7 @@ public class History extends Fragment {
                     if (mood) {
                         ArrayList<MoodEvent> filteredByMood = new ArrayList<>();
                         for (MoodEvent event : filterMoodList) {
-                            if (event.getMood() != null && event.getMood().equalsIgnoreCase(spinnerSelection)) {
+                            if (event.getMood() != null && event.getMood().contains(spinnerSelection)) {
                                 filteredByMood.add(event);
                             }
                         }
