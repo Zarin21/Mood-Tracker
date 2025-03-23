@@ -48,7 +48,7 @@ public class Filter extends DialogFragment {
         spinner = view.findViewById(R.id.spinner);
         editReasonFilter = view.findViewById(R.id.editReasonFilter);
 
-        String[] moodOptions = new String[]{"Happy", "Sadness", "Angry", "Confused","Scared","Shame","Disgust","Surprise"};
+        String[] moodOptions = new String[]{"Happiness", "Sadness", "Anger", "Confusion","Scared","Shame","Disgust","Surprise"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, moodOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
