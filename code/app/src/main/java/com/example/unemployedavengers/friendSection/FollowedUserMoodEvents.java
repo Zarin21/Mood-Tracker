@@ -37,6 +37,9 @@ public class FollowedUserMoodEvents extends Fragment {
     private ArrayList<MoodEvent> followedUserMoodEvents;
     private FollowedUserMoodEventAdapter moodAdapter;
     private Map<String, String> userIdToUsernameMap;
+    private boolean singleUserView;
+    private String singleUserId;
+    private String singleUsername;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -63,11 +66,37 @@ public class FollowedUserMoodEvents extends Fragment {
         moodAdapter = new FollowedUserMoodEventAdapter(getContext(), followedUserMoodEvents);
         binding.followedUsersListView.setAdapter(moodAdapter);
 
-        // Update UI title
-        binding.tvFriendsMoodTitle.setText("Following Mood History");
+        // Check if we're in single user view mode
+        singleUserView = false;
+        singleUserId = null;
+        singleUsername = null;
 
-        // Load mood events from followed users
-        loadFollowedUsers();
+        if (getArguments() != null) {
+            singleUserView = getArguments().getBoolean("singleUserView", false);
+            singleUserId = getArguments().getString("followedUserId");
+            singleUsername = getArguments().getString("followedUsername");
+        }
+
+        // Update UI title based on view mode
+        if (singleUserView && singleUsername != null) {
+            binding.tvFriendsMoodTitle.setText(singleUsername + "'s Mood History");
+        } else {
+            binding.tvFriendsMoodTitle.setText("Following Mood History");
+        }
+
+        // If we're in single user view, load just that user's moods
+        if (singleUserView && singleUserId != null) {
+            // Add the username to our mapping
+            if (singleUsername != null) {
+                userIdToUsernameMap.put(singleUserId, singleUsername);
+            }
+
+            // Load only this user's mood events
+            loadSingleUserMoods(singleUserId);
+        } else {
+            // Load mood events from all followed users
+            loadFollowedUsers();
+        }
 
         // Setup filter button
         binding.filterButton.setOnClickListener(v -> {
@@ -101,6 +130,77 @@ public class FollowedUserMoodEvents extends Fragment {
                         .navigate(R.id.action_followedUserMoodEventsFragment_to_moodDetailFragment, args);
             }
         });
+    }
+
+    /**
+     * Loads mood events from a single user
+     * Only shows public mood events
+     * @param userId The user ID to load mood events for
+     */
+    private void loadSingleUserMoods(String userId) {
+        if (binding == null) {
+            return;
+        }
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.emptyStateMessage.setVisibility(View.GONE);
+
+        followedUserMoodEvents.clear();
+
+        // Get the user's mood events
+        db.collection("users")
+                .document(userId)
+                .collection("moods")
+                .orderBy("time", Query.Direction.DESCENDING) // Sort by time descending (newest first)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        MoodEvent moodEvent = doc.toObject(MoodEvent.class);
+
+                        // Only add public mood events
+                        // If publicStatus doesn't exist or is true, show the mood
+                        Boolean isPublic = doc.contains("publicStatus") ?
+                                doc.getBoolean("publicStatus") : true;
+
+                        if (isPublic != null && isPublic) {
+                            // Set the user ID so we can display the username
+                            moodEvent.setUserId(userId);
+
+                            // Set username for the mood event for easier access later
+                            if (userIdToUsernameMap.containsKey(userId)) {
+                                moodEvent.setUserName(userIdToUsernameMap.get(userId));
+                            }
+
+                            followedUserMoodEvents.add(moodEvent);
+                        }
+                    }
+
+                    // Sort all mood events by time in reverse chronological order
+                    Collections.sort(followedUserMoodEvents, (event1, event2) ->
+                            Long.compare(event2.getTime(), event1.getTime())
+                    );
+
+                    updateUI();
+                })
+                .addOnFailureListener(e -> {
+                    // Check if the fragment is still active
+                    if (binding == null) {
+                        return;
+                    }
+
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.emptyStateMessage.setText("Error loading mood events");
+                    binding.emptyStateMessage.setVisibility(View.VISIBLE);
+
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     /**
@@ -219,6 +319,7 @@ public class FollowedUserMoodEvents extends Fragment {
 
     /**
      * Loads mood events from all followed users
+     * Only shows public mood events
      * @param userIds List of user IDs to load mood events for
      */
     private void loadMoodEvents(List<String> userIds) {
@@ -231,12 +332,12 @@ public class FollowedUserMoodEvents extends Fragment {
         int[] completedCount = {0}; // Use array to allow modification in lambda
 
         for (String userId : userIds) {
-            // Modified query to get only the 3 most recent mood events for each user, sorted by time
+            // Get all mood events and filter client-side if needed
             db.collection("users")
                     .document(userId)
                     .collection("moods")
                     .orderBy("time", Query.Direction.DESCENDING) // Sort by time descending (newest first)
-                    .limit(3) // Limit to 3 items
+                    .limit(10) // Get more than we need in case some are private
                     .get()
                     .addOnSuccessListener(querySnapshot -> {
                         // Check if the fragment is still active
@@ -244,18 +345,32 @@ public class FollowedUserMoodEvents extends Fragment {
                             return;
                         }
 
+                        int count = 0;
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             MoodEvent moodEvent = doc.toObject(MoodEvent.class);
 
-                            // Set the user ID so we can display the username
-                            moodEvent.setUserId(userId);
+                            // Only add public mood events
+                            // If publicStatus doesn't exist or is true, show the mood
+                            Boolean isPublic = doc.contains("publicStatus") ?
+                                    doc.getBoolean("publicStatus") : true;
 
-                            // Set username for the mood event for easier access later
-                            if (userIdToUsernameMap.containsKey(userId)) {
-                                moodEvent.setUserName(userIdToUsernameMap.get(userId));
+                            if (isPublic != null && isPublic) {
+                                // Set the user ID so we can display the username
+                                moodEvent.setUserId(userId);
+
+                                // Set username for the mood event for easier access later
+                                if (userIdToUsernameMap.containsKey(userId)) {
+                                    moodEvent.setUserName(userIdToUsernameMap.get(userId));
+                                }
+
+                                followedUserMoodEvents.add(moodEvent);
+                                count++;
+
+                                // Only take the 3 most recent public moods
+                                if (count >= 3) {
+                                    break;
+                                }
                             }
-
-                            followedUserMoodEvents.add(moodEvent);
                         }
 
                         completedCount[0]++;
@@ -302,7 +417,11 @@ public class FollowedUserMoodEvents extends Fragment {
         binding.progressBar.setVisibility(View.GONE);
 
         if (followedUserMoodEvents.isEmpty()) {
-            binding.emptyStateMessage.setText("No mood events from followed users");
+            if (singleUserView && singleUsername != null) {
+                binding.emptyStateMessage.setText(singleUsername + " has no public mood events");
+            } else {
+                binding.emptyStateMessage.setText("No public mood events from followed users");
+            }
             binding.emptyStateMessage.setVisibility(View.VISIBLE);
             binding.followedUsersListView.setVisibility(View.GONE);
         } else {
