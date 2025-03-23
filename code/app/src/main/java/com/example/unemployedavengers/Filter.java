@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class Filter extends DialogFragment {
-    private CheckBox filterReason , filterWeek;
+    private CheckBox filterMood, filterReason , filterWeek;
     private Spinner spinner;
     private EditText editReasonFilter;
 
