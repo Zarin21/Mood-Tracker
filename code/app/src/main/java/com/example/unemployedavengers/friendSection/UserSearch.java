@@ -1,6 +1,5 @@
 package com.example.unemployedavengers.friendSection;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.DAO.IUserDAO;
 import com.example.unemployedavengers.R;
-
 import com.example.unemployedavengers.databinding.UserSearchBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.User;
@@ -40,6 +38,7 @@ public class UserSearch extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         userDAO = new UserDAOImplement();
+
         binding.searchButton.setOnClickListener(v -> {
             String searchQuery = binding.etUsername.getText().toString().trim();
             if (searchQuery.isEmpty()) {
@@ -53,6 +52,7 @@ public class UserSearch extends Fragment {
                         for (User user : userList) {
                             usernames.add(user.getUsername());
                         }
+
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                                 getContext(),
                                 R.layout.search_item,
@@ -69,42 +69,13 @@ public class UserSearch extends Fragment {
         binding.searchList.setOnItemClickListener((parent, v, position, id) -> {
             String selectedUsername = (String) parent.getItemAtPosition(position);
 
-            userDAO.getCurrentUserProfile()
-                    .addOnSuccessListener(requesterUser -> {
-                        new AlertDialog.Builder(requireContext())
-                                .setTitle("Follow User?")
-                                .setMessage("Do you want to follow " + selectedUsername + "?")
-                                .setPositiveButton("Yes", (dialog, which) -> {
-                                    userDAO.getUserByUsername(selectedUsername)
-                                            .addOnSuccessListener(targetUser -> {
-                                                if (targetUser != null) {
-                                                    userDAO.requestFollow(requesterUser.getUserId(), targetUser.getUserId())
-                                                            .addOnSuccessListener(aVoid -> {
-                                                                Toast.makeText(getContext(), "Follow request sent", Toast.LENGTH_SHORT).show();
-                                                            })
-                                                            .addOnFailureListener(e -> {
-                                                                Toast.makeText(getContext(), "Failed to send request: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                            });
-                                                } else {
-                                                    Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
-                                                }
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(getContext(), "Error retrieving user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            });
-                                })
-                                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
-                                .show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Error retrieving current user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            Bundle bundle = new Bundle();
+            bundle.putString("selectedUsername", selectedUsername);
+
+            Navigation.findNavController(v).navigate(R.id.action_userSearch_to_userProfile, bundle);
         });
-
-
-
-
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
