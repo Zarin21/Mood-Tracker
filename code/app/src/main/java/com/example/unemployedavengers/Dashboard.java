@@ -12,6 +12,8 @@ package com.example.unemployedavengers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +40,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -74,6 +78,8 @@ public class Dashboard extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         binding = DashboardBinding.inflate(inflater, container, false);
         return binding.getRoot();
+
+        // deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @Override
@@ -82,20 +88,84 @@ public class Dashboard extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         userDAO = new UserDAOImplement();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        // Initialize FirebaseFirestore
+        db = FirebaseFirestore.getInstance();
+
+        // Configure offline persistence if needed
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
 
         if (!isValidFragment()) return;
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        // Add this utility method to check network connectivity requireActivity().getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+
+        // Check if user is logged in via SharedPreferences
+        boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
+        // Retrieve values
         username = sharedPreferences.getString("username", null);  // Default to null if not found
         userID = sharedPreferences.getString("userID", null);  // Default to null if not found
 
-        //database
-        db = FirebaseFirestore.getInstance();
-        db.setFirestoreSettings(
-                new FirebaseFirestoreSettings.Builder()
-                        .setPersistenceEnabled(true)
-                        .build()
-        );
+        // Check network connectivity
+        boolean isOnline = isNetworkAvailable();
+        // Handle authentication based on online/offline status
+        if (isOnline) {
+            // Online mode: Use Firebase Auth
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                // Redirect to login if not authenticated through Firebase
+                Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_loginFragment);
+                return;
+            }
+            userID = currentUser.getUid();
+        } else {
+            // Offline mode: Use cached credentials
+            if (!isLoggedIn || userID == null) {
+                // Not logged in offline, redirect to login
+                Toast.makeText(requireContext(), "Please log in. You are offline.", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_loginFragment);
+                return;
+            }
+            // Continue with cached userID and username
+
+        }
+
+        // Only try to fetch username from Firestore if we're online and username isn't cached
+        if (isOnline && (username == null)) {
+            DocumentReference userDocRef = db.collection("users").document(userID);
+            userDocRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    username = task.getResult().getString("username");
+
+                    // Cache the username for offline use
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("username", username);
+                    editor.apply();
+                } else {
+                    if (isValidFragment()) {
+                        Toast.makeText(requireContext(), "User data not available", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+
+        // Get user document reference
+        DocumentReference userDocRef = db.collection("users").document(userID);
+
+        // Fetch username from Firestore (works offline if previously cached)
+        userDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                username = task.getResult().getString("username");
+            } else {
+                if (isValidFragment()) {
+                    Toast.makeText(requireContext(), "User data not available", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         if (userID != null) {
             moodEventRef = db.collection("users").document(userID).collection("moods");
         } else {
@@ -158,11 +228,23 @@ public class Dashboard extends BaseFragment {
         });
     }
 
+    // method to check network connectivity
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     //adds a new mood event to the database
     public void addMoodEvent(MoodEvent moodEvent) {
         if (binding == null || moodEventRef == null || !isValidFragment()) return;
 
         moodEvent.setExisted(true); //mark it as an existing mood event
+        // Set user info from current session
+        moodEvent.setUserId(userID);
+        moodEvent.setUserName(username);
+        moodEvent.setExisted(true);
 
         //add the mood event without the ID first
         moodEventRef.add(moodEvent)
@@ -369,6 +451,9 @@ public class Dashboard extends BaseFragment {
                             MoodEvent moodEvent = document.toObject(MoodEvent.class); //convert to MoodEvent class
                             if (moodEvent != null) {
                                 moodEvents.add(moodEvent); //add to array
+                                // Ensure user info is set from current session
+                                moodEvent.setUserId(userID);
+                                moodEvent.setUserName(username);
                             }
                         }
 
