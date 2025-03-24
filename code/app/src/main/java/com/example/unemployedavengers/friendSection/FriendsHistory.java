@@ -188,7 +188,7 @@ public class FriendsHistory extends Fragment {
 
         friendsAdapter.notifyDataSetChanged();
 
-        // Set click listener to view friend's mood events
+        // Set click listener to view only the selected friend's mood events
         binding.friendsHistoryList.setOnItemClickListener((parent, view, position, id) -> {
             User selectedUser = followedUsers.get(position);
 
@@ -196,6 +196,8 @@ public class FriendsHistory extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putString("followedUserId", selectedUser.getUserId());
             bundle.putString("followedUsername", selectedUser.getUsername());
+            // Add a flag to indicate we want to see only this user's moods
+            bundle.putBoolean("singleUserView", true);
 
             // Navigate to the followed user's mood events fragment
             Navigation.findNavController(view)
