@@ -213,6 +213,8 @@ public class History extends Fragment {
                             MoodEvent moodEvent = document.toObject(MoodEvent.class);
                             moodList.add(moodEvent);
                         }
+                        MoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
+                        vm.setMoodEvents(moodList);
                         Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
                         binding.historyList.setAdapter(moodAdapter);
                         moodAdapter.notifyDataSetChanged();
