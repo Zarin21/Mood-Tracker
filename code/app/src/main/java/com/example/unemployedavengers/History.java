@@ -50,6 +50,7 @@ public class History extends Fragment {
     private CollectionReference moodEventRef;
     private String userID;
     private MoodEvent selectedMoodForDeletion;
+    private boolean isFiltered = false;
 
 
     @Nullable
@@ -129,7 +130,9 @@ public class History extends Fragment {
                 ArrayList<MoodEvent> filterMoodList = new ArrayList<>(moodList);
                 if (seeAll) {
                     loadHistoryMoodEvents();
+                    isFiltered = false;
                 } else {
+                    isFiltered = true;
                     if (mood) {
                         ArrayList<MoodEvent> filteredByMood = new ArrayList<>();
                         for (MoodEvent event : filterMoodList) {
@@ -219,7 +222,12 @@ public class History extends Fragment {
                         binding.historyList.setAdapter(moodAdapter);
                         moodAdapter.notifyDataSetChanged();
                         binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
-                            MoodEvent selectedEvent = moodList.get(position);
+                            MoodEvent selectedEvent;
+                            if(!isFiltered){
+                                selectedEvent = moodList.get(position);
+                            }else{
+                                selectedEvent = filteredMoodLisst.get(position);
+                            }
                             Bundle args = new Bundle();
                             args.putSerializable("selected_mood_event", selectedEvent);
                             args.putString("source", "history");
