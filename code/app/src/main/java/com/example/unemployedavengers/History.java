@@ -163,6 +163,15 @@ public class History extends Fragment {
                     filteredMoodList.addAll(filterMoodList);
                     binding.historyList.setAdapter(filteredMoodAdapter);
                     filteredMoodAdapter.notifyDataSetChanged();
+
+                    binding.historyList.setOnItemClickListener((parent, view1, position, id) -> {
+                        MoodEvent selectedEvent = filteredMoodList.get(position);
+                        Bundle args = new Bundle();
+                        args.putSerializable("selected_mood_event", selectedEvent);
+                        args.putString("source", "history");
+                        Navigation.findNavController(view1)
+                                .navigate(R.id.action_historyFragment_to_inputDialog, args);
+                    });
                 }
             });
             filterDialog.show(getParentFragmentManager(), "FilterDialog");
