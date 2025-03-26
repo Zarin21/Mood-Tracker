@@ -122,11 +122,11 @@ public class CommentManager {
                                 return parentRef.update("replyIds", parentComment.getReplyIds());
                             }
 
-                            return null;
+                            return Tasks.forResult(null);
                         });
                     }
 
-                    return null;
+                    return Tasks.forResult(null);
                 });
     }
 

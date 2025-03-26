@@ -36,6 +36,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
      * @param context Application context
      * @param comments List of top-level comments
      */
+
     public CommentAdapter(Context context, List<Comment> comments) {
         super(context, 0, comments);
         this.context = context;

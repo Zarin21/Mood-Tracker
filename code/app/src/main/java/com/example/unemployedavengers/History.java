@@ -226,7 +226,7 @@ public class History extends Fragment {
                             if(!isFiltered){
                                 selectedEvent = moodList.get(position);
                             }else{
-                                selectedEvent = filteredMoodLisst.get(position);
+                                selectedEvent = filteredMoodList.get(position);
                             }
                             Bundle args = new Bundle();
                             args.putSerializable("selected_mood_event", selectedEvent);

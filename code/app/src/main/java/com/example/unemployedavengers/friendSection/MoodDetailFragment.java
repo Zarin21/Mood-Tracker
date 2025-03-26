@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +111,12 @@ public class MoodDetailFragment extends Fragment {
                 }
             }
         });
+
+        // Set up Reply Listener
+        commentsList.setOnItemClickListener(((adapterView, view1, i, l) -> {
+            enterReplyMode(((Comment) commentsList.getItemAtPosition(i)).getId(), currentUsername);
+        }));
+
     }
 
     private void displayMoodEvent() {
@@ -160,6 +167,9 @@ public class MoodDetailFragment extends Fragment {
             return;
         }
 
+        // To test
+        Log.d("MOOD EVENT", moodEvent.getId());
+
         commentManager.getCommentsForMoodEvent(moodEvent.getId(), false)
                 .addOnSuccessListener(topLevelComments -> {
                     comments.clear();
@@ -191,7 +201,7 @@ public class MoodDetailFragment extends Fragment {
                     commentAdapter.setReplies(commentId, replyList);
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Error loading replies: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("Comment Replies not found", commentId);
                 });
     }
 
