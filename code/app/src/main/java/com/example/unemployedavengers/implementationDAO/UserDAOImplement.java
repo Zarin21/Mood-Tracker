@@ -87,7 +87,7 @@ public class UserDAOImplement implements IUserDAO {
 
                     final String userId = firebaseUser.getUid();
                     // Create a User object
-                    User user = new User(userId, username, dummyEmail, password);
+                    User user = new User(userId, username, dummyEmail, password, "");
 
                     // Store user in Firestore
                     DocumentReference userDoc = db.collection("users").document(userId);
@@ -199,6 +199,33 @@ public class UserDAOImplement implements IUserDAO {
                     return userDoc.update(updates);
                 });
     }
+
+    /**
+     * Updates the avatar URL of the currently logged-in user in Firestore.
+     *
+     * @param avatarUrl The new avatar URL to be set.
+     * @return A {@link Task<Void>} indicating the success or failure of the update operation.
+     */
+    @Override
+    public Task<Void> updateUserAvatar(@NonNull String avatarUrl) {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            return Tasks.forException(new Exception("No user signed in"));
+        }
+        String uid = currentUser.getUid();
+        DocumentReference userDoc = db.collection("users").document(uid);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("avatar", avatarUrl);
+        return userDoc.update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    // Log or perform further operations if needed.
+                    Log.d("UserDAOImplement", "Avatar updated successfully.");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("UserDAOImplement", "Failed to update avatar", e);
+                });
+    }
+
 
     /**
      * Resets the password of a user in Firebase Authentication and updates it in Firestore.

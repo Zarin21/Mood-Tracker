@@ -164,7 +164,7 @@ public class UserDAOImplementTest {
         Tasks.await(userDAO.signUpUser(username, oldPassword), 30, TimeUnit.SECONDS);
         FirebaseUser currentUser = auth.getCurrentUser();
         assertNotNull("User should be signed in after signup", currentUser);
-        User user = new User(currentUser.getUid(), username, username.toLowerCase() + "@example.com", oldPassword);
+        User user = new User(currentUser.getUid(), username, username.toLowerCase() + "@example.com", oldPassword, "");
         String newPassword = "newPassword";
         Tasks.await(userDAO.changePassword(user, newPassword), 30, TimeUnit.SECONDS);
         auth.signOut();

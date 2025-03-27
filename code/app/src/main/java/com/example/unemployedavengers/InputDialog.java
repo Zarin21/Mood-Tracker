@@ -485,11 +485,6 @@ public class InputDialog extends DialogFragment {
                 });
     }
 
-
-
-
-
-
     // Handle the permission request result
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

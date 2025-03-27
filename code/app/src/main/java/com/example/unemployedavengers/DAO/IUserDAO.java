@@ -138,4 +138,12 @@ public interface IUserDAO {
      * @return A {@link Task<User>} containing the user data if found, or {@code null} if no user exists.
      */
     Task<User> getUserByUsername(@NonNull String username);
+
+    /**
+     * Updates the avatar URL of the currently logged-in user in Firestore.
+     *
+     * @param avatarUrl The new avatar URL to be set.
+     * @return A {@link Task<Void>} indicating the success or failure of the update operation.
+     */
+    Task<Void> updateUserAvatar(@NonNull String avatarUrl);
 }
