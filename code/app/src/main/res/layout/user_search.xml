@@ -18,9 +18,20 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="10dp">
+            <TextView
+                android:id="@+id/tvSearchFragmentTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Search Friends"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="@color/thememain"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"/>
 
             <EditText
                 android:id="@+id/etUsername"
+                android:hint="Enter a username..."
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
