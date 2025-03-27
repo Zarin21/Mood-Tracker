@@ -222,6 +222,8 @@ public class History extends Fragment {
                         }
                         MoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(MoodEventsViewModel.class);
                         vm.setMoodEvents(moodList);
+                        FriendMoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(FriendMoodEventsViewModel.class);
+                        vm.setMoodEvents(filteredMoodList);
                         Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
                         binding.historyList.setAdapter(moodAdapter);
                         moodAdapter.notifyDataSetChanged();
