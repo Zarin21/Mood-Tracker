@@ -202,7 +202,6 @@ public class Dashboard extends BaseFragment {
 
                 //retrieve the MoodEvent object
                 MoodEvent moodEvent = (MoodEvent) result.getSerializable("mood_event_key");
-
                 //existed is true if we are updating a mood, else we are adding a mood
                 if ((moodEvent != null) && (!moodEvent.getExisted())) {
                     addMoodEvent(moodEvent); //store the mood event in Firestore
@@ -282,7 +281,8 @@ public class Dashboard extends BaseFragment {
     private void updateMoodEvent(MoodEvent moodEvent) {
         if (binding == null || moodEventRef == null || !isValidFragment() || moodEvent == null) return;
 
-        //NEED TO RELOAD DATABASE CAUSE FIREBASE IS AN IDIOT (crashes if you add a moodEvent and tries to update it right away cause "cannot find id")
+        // NEED TO RELOAD DATABASE CAUSE FIREBASE IS AN IDIOT (crashes if you add a moodEvent and tries to update it right away cause "cannot find id")
+
         loadMoodEvents();
 
         String moodEventId = moodEvent.getId();
@@ -291,10 +291,10 @@ public class Dashboard extends BaseFragment {
             return;
         }
 
-        //get document via id
+        // Get document via id
         DocumentReference moodEventDocRef = moodEventRef.document(moodEventId);
 
-        //set the new values for the document
+        // Set the new values for the document
         moodEventDocRef.set(moodEvent)  //use set() to update or create the document if it doesn't exist
                 .addOnSuccessListener(aVoid -> {
                     if (binding == null || !isValidFragment()) return;

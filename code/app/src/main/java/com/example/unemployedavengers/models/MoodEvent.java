@@ -8,6 +8,7 @@
 package com.example.unemployedavengers.models;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * This is a class that represents MoodEvent Objects
@@ -62,7 +63,7 @@ public class MoodEvent implements Serializable {
     private double longitude;
     private boolean hasLocation = false;
 
-    //Constructor
+    // Constructor
     // Constructor without publicStatus parameter (for backward compatibility)
     public MoodEvent(String mood, String reason, String situation, long time, String radioSituation, String imageUri) {
         this.mood = mood;
@@ -72,6 +73,7 @@ public class MoodEvent implements Serializable {
         this.radioSituation = radioSituation;
         this.imageUri = imageUri;
         this.publicStatus = true; // Default to public
+        this.id = String.valueOf(UUID.randomUUID());
     }
 
     // Constructor with publicStatus parameter
@@ -83,6 +85,7 @@ public class MoodEvent implements Serializable {
         this.radioSituation = radioSituation;
         this.imageUri = imageUri;
         this.publicStatus = publicStatus;
+        this.id = String.valueOf(UUID.randomUUID());
     }
 
     public MoodEvent(){

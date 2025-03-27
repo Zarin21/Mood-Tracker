@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@drawable/blurred_map"
     tools:context=".MainActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:padding="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="100dp"
-            android:gravity="center_horizontal">
+            android:gravity="center"
+            android:padding="16dp">
 
             <Button
                 android:id="@+id/personalMapButton"
@@ -29,12 +29,9 @@
                 android:text="Personal Map"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:textStyle="bold"
+                android:elevation="4dp"
+                android:fontFamily="sans-serif-medium" />
 
             <Button
                 android:id="@+id/friendsMapButton"
@@ -45,12 +42,10 @@
                 android:text="Friends Map"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:textStyle="bold"
+                android:elevation="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="16dp" />
 
             <Button
                 android:id="@+id/nearMapButton"
@@ -61,7 +56,10 @@
                 android:text="Users Near You"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:elevation="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="16dp" />
         </LinearLayout>
     </FrameLayout>
 
