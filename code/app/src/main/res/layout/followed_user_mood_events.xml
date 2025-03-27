@@ -16,7 +16,7 @@
         android:layout_marginTop="24dp"
         android:text="Following Mood History"
         android:textColor="#FF7F7F"
-        android:textSize="24sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,12 +26,12 @@
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/rounded_button"
-        android:backgroundTint="#F88379"
+        android:backgroundTint="#FF7F7F"
         android:paddingHorizontal="16dp"
         android:text="Filter"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
+
         app:layout_constraintBottom_toBottomOf="@+id/tvFriendsMoodTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvFriendsMoodTitle" />

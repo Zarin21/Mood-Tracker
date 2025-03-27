@@ -405,7 +405,7 @@ public class InputDialog extends DialogFragment {
                     Log.d("InputDialog", "Public status not supported in this MoodEvent model");
                 }
 
-                //no need to change the time because we are editing the existing event
+                // No need to change the time because we are editing the existing event
                 uploadImage(moodEvent);
             } else {
                 uploadNewEvent(mood, reason, situation, time, radioSituation, publicStatus);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Hovered state -->
+    <item android:state_hovered="true">
+        <color android:color="@color/themelight"/> <!-- Hovered color -->
+    </item>
+    <!-- Pressed state -->
+    <item android:state_pressed="true">
+        <color android:color="#D9B3B2"/> <!-- Pressed color -->
+    </item>
+    <!-- Default state -->
+    <item>
+        <color android:color="#FFFFFF"/> <!-- Default color -->
+    </item>
+</selector>

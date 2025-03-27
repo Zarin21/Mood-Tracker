@@ -3,20 +3,24 @@
         android:id="@+id/dashboardFragment"
         android:enabled="true"
         android:icon="@drawable/outline_home_24"
+        android:iconTint="@drawable/icon_hover"
         android:title="Dashboard"/>
     <item
         android:id="@+id/mapFragment"
         android:enabled="true"
         android:icon="@drawable/outline_add_location_alt_24"
+        android:iconTint="@drawable/icon_hover"
         android:title="Map"/>
     <item
         android:id="@+id/historyFragment"
         android:enabled="true"
         android:icon="@drawable/outline_access_time_24"
+        android:iconTint="@drawable/icon_hover"
         android:title="History"/>
     <item
         android:id="@+id/friendsHistoryFragment"
         android:enabled="true"
         android:icon="@drawable/ic_friend"
+        android:iconTint="@drawable/icon_hover"
         android:title="Following"/>
 </menu>

@@ -6,5 +6,7 @@
     <color name="baby_blue">#89CFF0</color>
     <color name="pink">#FF69B4</color>
     <color name="yellow">#BA8E23</color>
+    <color name="themelight">#ffdfde</color>
+    <color name="thememain">#F88379</color>
 
 </resources>

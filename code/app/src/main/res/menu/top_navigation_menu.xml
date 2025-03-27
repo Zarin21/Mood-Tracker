@@ -6,13 +6,13 @@
         android:enabled="true"
         android:icon="@drawable/outline_notifications_24"
         android:title="Notifications"
-        android:iconTint="@color/black"
+        android:iconTint="@drawable/icon_hover"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/settingsFragment"
         android:enabled="true"
         android:icon="@drawable/outline_app_settings_alt_24"
         android:title="Settings"
-        android:iconTint="@color/black"
+        android:iconTint="@drawable/icon_hover"
         app:showAsAction="ifRoom" />
 </menu>
