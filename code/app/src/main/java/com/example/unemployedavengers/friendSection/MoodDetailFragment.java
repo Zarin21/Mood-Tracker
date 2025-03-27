@@ -1,5 +1,8 @@
 package com.example.unemployedavengers.friendSection;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -134,31 +137,31 @@ public class MoodDetailFragment extends Fragment {
         // Set reason if available
         if (moodEvent.getReason() != null && !moodEvent.getReason().isEmpty()) {
             binding.tvMoodReason.setText(moodEvent.getReason());
-            binding.tvMoodReason.setVisibility(View.VISIBLE);
-            binding.tvReasonLabel.setVisibility(View.VISIBLE);
+            binding.tvMoodReason.setVisibility(VISIBLE);
+            binding.tvReasonLabel.setVisibility(VISIBLE);
         } else {
-            binding.tvMoodReason.setVisibility(View.GONE);
-            binding.tvReasonLabel.setVisibility(View.GONE);
+            binding.tvMoodReason.setVisibility(GONE);
+            binding.tvReasonLabel.setVisibility(GONE);
         }
 
         // Set situation if available
         if (moodEvent.getSituation() != null && !moodEvent.getSituation().isEmpty()) {
             binding.tvMoodSituation.setText(moodEvent.getSituation());
-            binding.tvMoodSituation.setVisibility(View.VISIBLE);
-            binding.tvSituationLabel.setVisibility(View.VISIBLE);
+            binding.tvMoodSituation.setVisibility(VISIBLE);
+            binding.tvSituationLabel.setVisibility(VISIBLE);
         } else {
-            binding.tvMoodSituation.setVisibility(View.GONE);
-            binding.tvSituationLabel.setVisibility(View.GONE);
+            binding.tvMoodSituation.setVisibility(GONE);
+            binding.tvSituationLabel.setVisibility(GONE);
         }
 
         // Load image if available
         if (moodEvent.getImageUri() != null && !moodEvent.getImageUri().isEmpty()) {
-            binding.ivMoodImage.setVisibility(View.VISIBLE);
+            binding.ivMoodImage.setVisibility(VISIBLE);
             Glide.with(requireContext())
                     .load(moodEvent.getImageUri())
                     .into(binding.ivMoodImage);
         } else {
-            binding.ivMoodImage.setVisibility(View.GONE);
+            binding.ivMoodImage.setVisibility(GONE);
         }
     }
 
@@ -247,32 +250,20 @@ public class MoodDetailFragment extends Fragment {
     }
 
     private void enterReplyMode(String commentId, String username) {
+        getActivity().findViewById(R.id.reply_section).setVisibility(VISIBLE);
+
         replyingToCommentId = commentId;
-        commentInput.setHint("Reply to " + username + "...");
+        // Find views in the new layout
+        TextView replyUsername = getActivity().findViewById(R.id.reply_username);
+        TextView cancelReply = getActivity().findViewById(R.id.cancel_reply);
 
-        // Show indicator that we're in reply mode
-        if (replyView == null) {
-            replyView = LayoutInflater.from(requireContext()).inflate(R.layout.reply_indicator, null, false);
-            ViewGroup inputContainer = (ViewGroup) commentInput.getParent();
-            inputContainer.addView(replyView, 0);
-
-            // Set up cancel reply button
-            replyView.findViewById(R.id.cancel_reply).setOnClickListener(v -> exitReplyMode());
-        }
+        replyUsername.setText("Replying to " + username);
+        cancelReply.setOnClickListener(v -> exitReplyMode());
     }
 
     private void exitReplyMode() {
         replyingToCommentId = null;
-        commentInput.setHint("Add comment...");
-
-        // Remove reply indicator
-        if (replyView != null) {
-            ViewGroup parent = (ViewGroup) replyView.getParent();
-            if (parent != null) {
-                parent.removeView(replyView);
-            }
-            replyView = null;
-        }
+        getActivity().findViewById(R.id.reply_section).setVisibility(GONE);
     }
 
     @Override
