@@ -10,16 +10,20 @@
 package com.example.unemployedavengers;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
@@ -79,7 +83,7 @@ public class History extends Fragment {
         filteredMoodAdapter = new MoodEventArrayAdapter(requireContext(), filteredMoodList);
         binding.historyList.setAdapter(moodAdapter);
 
-        loadHistoryMoodEvents(); //load all mood events
+        loadHistoryMoodEvents(); // Load all mood events
 
 
         //register the listener for the result from InputDialog (Only once)
@@ -221,19 +225,53 @@ public class History extends Fragment {
                         Collections.sort(moodList, (e1, e2) -> Long.compare(e2.getTime(), e1.getTime()));
                         binding.historyList.setAdapter(moodAdapter);
                         moodAdapter.notifyDataSetChanged();
+
                         binding.historyList.setOnItemClickListener((parent, view, position, id) -> {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
                             MoodEvent selectedEvent;
                             if(!isFiltered){
                                 selectedEvent = moodList.get(position);
-                            }else{
+                            } else{
                                 selectedEvent = filteredMoodList.get(position);
                             }
-                            Bundle args = new Bundle();
-                            args.putSerializable("selected_mood_event", selectedEvent);
-                            args.putString("source", "history");
-                            Navigation.findNavController(view)
-                                    .navigate(R.id.action_historyFragment_to_inputDialog, args);
+
+                            builder.setPositiveButton("Edit", (dialog, id1) -> {
+                                Bundle args = new Bundle();
+                                args.putSerializable("selected_mood_event", selectedEvent);
+                                args.putString("source", "history");
+                                Navigation.findNavController(view)
+                                        .navigate(R.id.action_historyFragment_to_inputDialog, args);
+                            });
+                            builder.setNegativeButton("View", (dialog, id2) -> {
+                                Bundle args = new Bundle();
+                                args.putSerializable("selected_mood_event", selectedEvent);
+
+                                // Navigate to the mood detail fragment
+                                Navigation.findNavController(view)
+                                        .navigate(R.id.action_historyFragment_to_moodDetailFragment, args);
+                            });
+                            builder.setNeutralButton("Cancel", ((dialogInterface, i) -> {
+                                dialogInterface.dismiss();
+                            }));
+                            builder.setTitle("Choose Action");
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+
+                            // Accessing buttons and changing colors
+                            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                            Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+                            // Change text color
+                            positiveButton.setTextColor(ContextCompat.getColor(requireActivity(), R.color.thememain));
+                            negativeButton.setTextColor(ContextCompat.getColor(requireActivity(), R.color.thememain));
+                            neutralButton.setTextColor(ContextCompat.getColor(requireActivity(), R.color.thememain));
+
+
                         });
+
                         binding.historyList.setOnItemLongClickListener((parent, view, position, id) -> {
                             selectedMoodForDeletion = moodList.get(position);
                             ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(selectedMoodForDeletion.getId());
