@@ -116,6 +116,9 @@
         <action
             android:id="@+id/action_historyFragment_to_inputDialog"
             app:destination="@id/inputDialog" />
+        <action
+            android:id="@+id/action_historyFragment_to_moodDetailFragment"
+            app:destination="@id/moodDetailFragment" />
     </fragment>
 
     <fragment
