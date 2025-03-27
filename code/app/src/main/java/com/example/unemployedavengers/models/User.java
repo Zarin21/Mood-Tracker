@@ -17,6 +17,9 @@ public class User implements Serializable {
     private String username;    // Display name shown in the app
     private String dummyEmail;  // Email address constructed from username for Firebase Auth
     private String password;    // User's password (note: storing in plaintext is not ideal for security)
+    private String avatar; // User's avatar
+
+
 
     /**
      * Default constructor required for Firestore deserialization
@@ -31,12 +34,14 @@ public class User implements Serializable {
      * @param username   The display name for the user
      * @param dummyEmail The email address for Firebase Authentication
      * @param password   The user's password
+     * @param avatar     The user's avatar
      */
-    public User(String userId, String username, String dummyEmail, String password) {
+    public User(String userId, String username, String dummyEmail, String password, String avatar) {
         this.userId = userId;
         this.username = username;
         this.dummyEmail = dummyEmail;
         this.password = password;
+        this.avatar = avatar;
     }
 
     /**
@@ -93,5 +98,13 @@ public class User implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

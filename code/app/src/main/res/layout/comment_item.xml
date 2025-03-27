@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -12,12 +13,18 @@
         android:orientation="horizontal">
 
         <!-- User avatar -->
-        <ImageView
-            android:id="@+id/comment_avatar"
+        <androidx.cardview.widget.CardView
             android:layout_width="40dp"
             android:layout_height="40dp"
+            app:cardCornerRadius="20dp">
+        <ImageView
+            android:id="@+id/comment_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             android:background="@drawable/circle_background"
             android:src="@drawable/ic_person" />
+        </androidx.cardview.widget.CardView>
 
         <!-- Username and timestamp -->
         <LinearLayout
