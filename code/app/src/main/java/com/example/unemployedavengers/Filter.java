@@ -7,14 +7,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 public class Filter extends DialogFragment {
@@ -47,11 +50,94 @@ public class Filter extends DialogFragment {
         filterWeek = view.findViewById(R.id.filterWeek);
         spinner = view.findViewById(R.id.spinner);
         editReasonFilter = view.findViewById(R.id.editReasonFilter);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getContext(),
+                R.array.spinner_items,
+                android.R.layout.simple_spinner_item
+        );
+        // Customize the dropdown view and spinner item appearance
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Style for the dropdown view
 
-        String[] moodOptions = new String[]{"Happiness", "Sadness", "Anger", "Confusion","Scared","Shame","Disgust","Surprise"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, moodOptions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Override getView to customize the selected item view
+        adapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.spinner_items)) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view;
+
+                // Change the text color based on the item position
+                switch (position) {
+                    case 0: // Anger
+                        textView.setTextColor(Color.RED);
+                        break;
+                    case 1: // Confusion
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.orange));
+                        break;
+                    case 2: // Disgust
+                        textView.setTextColor(Color.GREEN);
+                        break;
+                    case 3: // Fear
+                        textView.setTextColor(Color.BLUE);
+                        break;
+                    case 4: // Happiness
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.baby_blue));
+                        break;
+                    case 5: // Sadness
+                        textView.setTextColor(Color.GRAY);
+                        break;
+                    case 6: // Shame
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.yellow));
+                        break;
+                    case 7: // Surprise
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.pink));
+                        break;
+                    default:
+                        textView.setTextColor(Color.BLACK);
+                        break;
+                }
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView textView = (TextView) view;
+
+                // You can change the color for the dropdown items as well
+                switch (position) {
+                    case 0:
+                        textView.setTextColor(Color.RED);
+                        break;
+                    case 1:
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.orange));
+                        break;
+                    case 2:
+                        textView.setTextColor(Color.GREEN);
+                        break;
+                    case 3:
+                        textView.setTextColor(Color.BLUE);
+                        break;
+                    case 4:
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.baby_blue));
+                        break;
+                    case 5:
+                        textView.setTextColor(Color.GRAY);
+                        break;
+                    case 6:
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.yellow));
+                        break;
+                    case 7:
+                        textView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.pink));
+                        break;
+                    default:
+                        textView.setTextColor(Color.BLACK);
+                        break;
+                }
+                return view;
+            }
+        };
+
+        //set the adapter to the spinner
         spinner.setAdapter(adapter);
 
 
