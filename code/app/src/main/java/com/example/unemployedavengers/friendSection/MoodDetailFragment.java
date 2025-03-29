@@ -98,7 +98,8 @@ public class MoodDetailFragment extends Fragment {
 
         // Set up back button
         binding.btnBack.setOnClickListener(v ->
-                Navigation.findNavController(v).navigateUp()
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_moodDetailFragment_to_followedUserMoodEventsFragment)
         );
 
         // Set up comment submission
