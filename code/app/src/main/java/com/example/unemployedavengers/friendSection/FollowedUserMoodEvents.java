@@ -40,6 +40,8 @@ public class FollowedUserMoodEvents extends Fragment {
     private boolean singleUserView;
     private String singleUserId;
     private String singleUsername;
+    private ArrayList<MoodEvent> filteredMoodList;
+    private FollowedUserMoodEventAdapter filteredMoodAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -100,9 +102,51 @@ public class FollowedUserMoodEvents extends Fragment {
 
         // Setup filter button
         binding.filterButton.setOnClickListener(v -> {
-            if (getContext() != null) {
-                Toast.makeText(getContext(), "Filter functionality coming soon", Toast.LENGTH_SHORT).show();
-            }
+            Filter filterDialog = new Filter();
+            filterDialog.setFilterListener((mood, reason, recentWeek, reasonText, spinnerSelection, seeAll) -> {
+                ArrayList<MoodEvent> filterList = new ArrayList<>(followedUserMoodEvents);
+                if (seeAll) {
+                    loadFollowedUsers();
+                } else {
+                    if (mood) {
+                        ArrayList<MoodEvent> filteredByMood = new ArrayList<>();
+                        for (MoodEvent event : filterList) {
+                            if (event.getMood() != null && event.getMood().contains(spinnerSelection)) {
+                                filteredByMood.add(event);
+                            }
+                        }
+                        filterList = filteredByMood;
+                    }
+                    if (reason) {
+                        ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
+                        for (MoodEvent event : filterList) {
+                            if (event.getReason().contains(reasonText)) {
+                                filteredByReason.add(event);
+                            }
+                        }
+                        filterList = filteredByReason;
+                    }
+                    if (recentWeek) {
+                        long currentTime = System.currentTimeMillis();
+                        long sevenDaysMillis = 7L * 24 * 60 * 60 * 1000;
+                        ArrayList<MoodEvent> filteredByWeek = new ArrayList<>();
+                        for (MoodEvent event : filterList) {
+                            if (event.getTime() >= (currentTime - sevenDaysMillis)) {
+                                filteredByWeek.add(event);
+                            }
+                        }
+                        filterList = filteredByWeek;
+                    }
+                    filteredFollowedMoodEvents.clear();
+                    filteredFollowedMoodEvents.addAll(filterList);
+                    FriendMoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(FriendMoodEventsViewModel.class);
+                    vm.setMoodEvents(filteredFollowedMoodEvents);
+                    FollowedUserMoodEventAdapter filteredAdapter = new FollowedUserMoodEventAdapter(getContext(), filteredFollowedMoodEvents);
+                    binding.followedUsersListView.setAdapter(filteredAdapter);
+                    filteredAdapter.notifyDataSetChanged();
+                }
+            });
+            filterDialog.show(getParentFragmentManager(), "FilterDialog");
         });
 
         // Setup back button to return to friends list
