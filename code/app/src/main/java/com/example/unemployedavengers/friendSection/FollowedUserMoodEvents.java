@@ -151,8 +151,12 @@ public class FollowedUserMoodEvents extends Fragment {
                     if (reason) {
                         ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
                         for (MoodEvent event : filterMoodList) {
-                            if (event.getReason().contains(reasonText)) {
-                                filteredByReason.add(event);
+                            String[] reasonWords = event.getReason().split("\\s+");
+                            for(String word: reasonWords){
+                                if (word.equalsIgnoreCase(reasonText)){
+                                    filteredByReason.add(event);
+                                    break;
+                                }
                             }
                         }
                         filterMoodList = filteredByReason;
