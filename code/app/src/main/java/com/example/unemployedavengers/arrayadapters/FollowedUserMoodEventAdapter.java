@@ -11,21 +11,25 @@ package com.example.unemployedavengers.arrayadapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -114,11 +118,42 @@ public class FollowedUserMoodEventAdapter extends ArrayAdapter<MoodEvent> {
 
         // Set username
         String userId = moodEvent.getUserId();
-        String username = "Unknown User";
-        if (userId != null && userIdToUsernameMap.containsKey(userId)) {
-            username = userIdToUsernameMap.get(userId);
+        final String[] username = new String[]{"Unknown User"}; // Use array to allow modification within listener
+
+        if (userId != null) {
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userDocRef = db.collection("users").document(userId);
+
+            userDocRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                // Get the username from the document
+                                String fetchedUsername = documentSnapshot.getString("username");
+                                if (fetchedUsername != null) {
+                                    username[0] = fetchedUsername;
+                                } else {
+                                    Log.d("GetUserID", "Username not found in document");
+                                }
+                            } else {
+                                Log.d("GetUserID", "No document found for userId: " + userId);
+                            }
+                            usernameText.setText(username[0]);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d("GetUserID", "Error getting document: " + e.getMessage());
+                            // On failure, set the default username
+                            usernameText.setText(username[0]);
+                        }
+                    });
+        } else {
+            usernameText.setText(username[0]);
         }
-        usernameText.setText(username);
 
         return view;
     }
