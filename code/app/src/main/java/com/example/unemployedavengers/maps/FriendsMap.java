@@ -1,3 +1,20 @@
+/**
+ * FriendsMap is a Fragment that displays a map with mood event markers for friends.
+ * It retrieves mood events from a shared ViewModel and places custom markers
+ * on the map based on the events' locations and moods.
+ *
+ * Key Features:
+ * - Observes mood events from a ViewModel and updates the map with markers.
+ * - Each marker represents a mood event with mood text and username.
+ * - Custom markers are created based on the mood of the event.
+ * - The map camera zooms to the first event’s location if available.
+ *
+ * Methods:
+ * - onViewCreated: Observes the mood events and triggers the map update.
+ * - onMapReady: Adds markers for mood events on the map.
+ * - createCustomMarker: Creates a custom bitmap marker with the mood and username.
+ */
+
 package com.example.unemployedavengers.maps;
 
 import android.content.Context;

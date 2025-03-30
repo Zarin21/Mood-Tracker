@@ -1,3 +1,15 @@
+/**
+ * UserProfile Fragment displays the profile of a selected user and allows the current user to follow them.
+ *
+ * This fragment:
+ * - Retrieves the current user's profile and the selected user's profile from the database.
+ * - Displays the selected user's username.
+ * - Allows the current user to send a follow request to the selected user.
+ * - Provides navigation functionality to go back to the previous screen.
+ *
+ * The follow button is shown if the user exists, and a follow request is sent upon clicking the button.
+ */
+
 package com.example.unemployedavengers.friendSection;
 
 import android.os.Bundle;
@@ -10,7 +22,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.unemployedavengers.DAO.IUserDAO;
-import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.databinding.UserProfileBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.User;

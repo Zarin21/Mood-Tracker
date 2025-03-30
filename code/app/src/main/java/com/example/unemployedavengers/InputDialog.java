@@ -1,10 +1,30 @@
-/*
- * InputDialog - DialogFragment for adding or editing mood events.
+/**
+ * InputDialog - A DialogFragment for creating and editing mood entries.
  *
- * Purpose:
- * - Collects user inputs including mood, reason, situation, and an image.
- * - Provides UI elements such as a spinner with custom styling, image upload, and text inputs.
- * - Sends the new or updated MoodEvent back to the parent fragment via FragmentResult.
+ * Primary Responsibilities:
+ * - Provides a form interface for mood event data entry/editing
+ * - Handles image uploads to Firebase Storage
+ * - Manages location data collection
+ * - Validates user inputs before submission
+ * - Communicates mood events back to parent fragments
+ *
+ * Key Features:
+ * - Custom mood spinner with emotion-specific coloring
+ * - Image upload capability with size validation
+ * - Current location capture functionality
+ * - Social situation radio group selection
+ * - Public/private visibility toggle
+ *
+ * Integration Points:
+ * - Receives existing MoodEvent objects for editing
+ * - Sends completed MoodEvents back via FragmentResult API
+ * - Works with both DashboardFragment and HistoryFragment
+ * - Coordinates with Firebase Storage for image uploads
+ *
+ * Design Patterns:
+ * - Uses Factory Method pattern via newInstance()
+ * - Follows DialogFragment best practices
+ * - Implements Result API for fragment communication
  */
 package com.example.unemployedavengers;
 

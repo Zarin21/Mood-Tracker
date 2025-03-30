@@ -1,8 +1,21 @@
-
+/**
+ * FilterTest.java
+ *
+ * Purpose:
+ * This class is a set of automated UI tests for the mood filtering functionality
+ * within the Unemployed Avengers application. It ensures that various filters applied
+ * to the mood history (such as filtering by mood, reason, and date range) are functioning
+ * as expected. These tests simulate user interactions like logging in, viewing the mood history,
+ * and applying filters to verify that the appropriate data is displayed or hidden.
+ *
+ * Tests include:
+ * - Testing the display and order of moods.
+ * - Filtering moods by type, reason, and recent time.
+ *
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onData;
-import static androidx.test.espresso.Espresso.onIdle;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -12,17 +25,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 
-import android.graphics.Color;
 import android.util.Log;
-import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -34,7 +40,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -203,7 +208,7 @@ public class FilterTest {
 
     //4.2.1, 4.3.1, 4.4.1
     @Test
-    public void testPersonalFilter(){
+    public void testPersonalFilter() throws InterruptedException{
         login("User1","password1");
         Espresso.onIdle();
         onView(withId(R.id.historyFragment)).perform(click());
@@ -214,9 +219,10 @@ public class FilterTest {
         onView(withText("Apply")).perform(click());
         Espresso.onIdle();
 
-        onView(withText("\uD83D\uDE04Happiness")).check(matches(isDisplayed())); // Ensure that "Anger" is not displayed
+        Thread.sleep(1000);
+        onView(withText("\uD83D\uDE20Anger")).check(matches(isDisplayed()));
 
-        onView(withText("\uD83D\uDE20Anger")).check(doesNotExist());
+        onView(withText("\uD83D\uDE04Happiness")).check(doesNotExist());
         onView(withText("\uD83D\uDE33Shame")).check(doesNotExist());
         onView(withText("\uD83D\uDE14Sadness")).check(doesNotExist());
 

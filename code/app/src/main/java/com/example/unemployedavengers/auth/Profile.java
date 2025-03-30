@@ -1,11 +1,12 @@
-/*
+/**
  * Profile Fragment for the Unemployed Avengers Android application.
  *
- * This file handles user profile management, including:
- * - Navigating back to the Dashboard.
- * - Allowing the user to change their username via a dialog.
- * - Allowing the user to change their password via a dialog.
- * - Navigating to the login screen (possibly for avatar change, as per app design).
+ * Purpose:
+ * - Manages user profile interactions, including username changes, password updates, and avatar selection.
+ * - Retrieves and displays user profile information.
+ * - Provides secure authentication operations using the UserDAO.
+ * - Integrates Firebase Storage for handling profile pictures.
+ *
  */
 
 package com.example.unemployedavengers.auth;
@@ -38,7 +39,6 @@ import com.example.unemployedavengers.DAO.IUserDAO;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.databinding.ProfileBinding;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
-import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;

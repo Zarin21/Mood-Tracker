@@ -1,4 +1,20 @@
-
+/**
+ * InputTest.java
+ *
+ * This class contains instrumented UI tests for the mood tracking functionality in the Unemployed Avengers app.
+ * It tests various user stories related to mood input, including adding, editing, and deleting moods,
+ * as well as verifying proper display of mood elements and their attributes.
+ *
+ * The tests use Espresso for UI testing and Firebase Emulator Suite for local database operations.
+ *
+ * Key Tested Features:
+ * - US 1.1.1: Adding a mood with all required fields
+ * - US 1.2.1/1.3.1/1.4.1: Emotion spinner with colors and emoticons
+ * - US 1.5.1: Editing an existing mood
+ * - US 1.6.1: Deleting a mood
+ * - US 1.7.1: Mood privacy settings
+ * - US 2.1.1/2.4.1: Social situation and reason text fields
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -102,33 +118,6 @@ public class InputTest {
         auth.signOut(); // Ensure no user is signed in before each test
 
     }
-/*
-    @Before
-    public void seedDatabase() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);  // Initialize latch with 1
-
-
-        Map<String, Object> testUser = new HashMap<>();
-        testUser.put("username", "testUser");
-        testUser.put("password","123456");
-        testUser.put("email", "testuser@example.com");
-
-        db.collection("users")
-                .add(testUser)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Testing test", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    latch.countDown();  // Decrement latch when operation is complete
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("Firebase", "Error adding document", e);
-                    latch.countDown();  // Ensure latch is decremented even on failure
-                });
-
-        latch.await();  // Wait for the operation to finish before proceeding
-    }
-
-
- */
 
 
     @Before

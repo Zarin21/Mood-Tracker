@@ -1,4 +1,4 @@
-/*
+/**
  * IUserDAO - Data Access Object (DAO) interface for user-related operations.
  *
  * This interface defines methods for user authentication, profile management,
