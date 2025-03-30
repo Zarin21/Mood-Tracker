@@ -11,11 +11,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.example.unemployedavengers.Filter;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.arrayadapters.FollowedUserMoodEventAdapter;
 import com.example.unemployedavengers.databinding.FollowedUserMoodEventsBinding;
+import com.example.unemployedavengers.models.FriendMoodEventsViewModel;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.User;
 import com.google.firebase.firestore.DocumentSnapshot;
