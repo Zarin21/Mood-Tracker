@@ -3,9 +3,11 @@ package com.example.unemployedavengers.friendSection;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,10 +19,15 @@ import androidx.navigation.Navigation;
 import com.example.unemployedavengers.Filter;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.arrayadapters.FollowedUserMoodEventAdapter;
+
 import com.example.unemployedavengers.databinding.FollowedUserMoodEventsBinding;
 import com.example.unemployedavengers.models.FriendMoodEventsViewModel;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.example.unemployedavengers.models.MoodEventsViewModel;
 import com.example.unemployedavengers.models.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -45,6 +52,9 @@ public class FollowedUserMoodEvents extends Fragment {
     private String singleUsername;
     private ArrayList<MoodEvent> filteredMoodList;
     private FollowedUserMoodEventAdapter filteredMoodAdapter;
+    private List<String> followedUserIds;
+    private boolean isFiltered = false;
+    private boolean isMood, isReason,isWeek, seeAllSelect;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -69,6 +79,8 @@ public class FollowedUserMoodEvents extends Fragment {
         // Initialize mood events list and adapter
         followedUserMoodEvents = new ArrayList<>();
         moodAdapter = new FollowedUserMoodEventAdapter(getContext(), followedUserMoodEvents);
+        filteredMoodList = new ArrayList<>();
+        filteredMoodAdapter = new FollowedUserMoodEventAdapter(requireContext(), filteredMoodList);
         binding.followedUsersListView.setAdapter(moodAdapter);
 
         // Check if we're in single user view mode
@@ -80,6 +92,15 @@ public class FollowedUserMoodEvents extends Fragment {
             singleUserView = getArguments().getBoolean("singleUserView", false);
             singleUserId = getArguments().getString("followedUserId");
             singleUsername = getArguments().getString("followedUsername");
+        }
+
+        //hide the button if we are in single view
+        if (singleUserView) {
+            binding.filterButton.setVisibility(View.GONE);
+            binding.filterButton.setEnabled(false);
+        } else {
+            binding.filterButton.setVisibility(View.VISIBLE);
+            binding.filterButton.setEnabled(true);
         }
 
         // Update UI title based on view mode
@@ -98,6 +119,7 @@ public class FollowedUserMoodEvents extends Fragment {
 
             // Load only this user's mood events
             loadSingleUserMoods(singleUserId);
+
         } else {
             // Load mood events from all followed users
             loadFollowedUsers();
@@ -105,48 +127,91 @@ public class FollowedUserMoodEvents extends Fragment {
 
         // Setup filter button
         binding.filterButton.setOnClickListener(v -> {
-            Filter filterDialog = new Filter();
+            //create filter dialog
+            com.example.unemployedavengers.Filter filterDialog = new Filter();
+
+            //exact same logic from history
             filterDialog.setFilterListener((mood, reason, recentWeek, reasonText, spinnerSelection, seeAll) -> {
-                ArrayList<MoodEvent> filterList = new ArrayList<>(followedUserMoodEvents);
-                if (seeAll) {
-                    loadFollowedUsers();
+                ArrayList<MoodEvent> filterMoodList = new ArrayList<>(followedUserMoodEvents);
+                if (seeAll||(!mood&&!reason&&!recentWeek)) {
+                    isFiltered = false;
+                    loadMoodEvents(followedUserIds);
                 } else {
+                    isFiltered = true;
                     if (mood) {
                         ArrayList<MoodEvent> filteredByMood = new ArrayList<>();
-                        for (MoodEvent event : filterList) {
+                        for (MoodEvent event : filterMoodList) {
                             if (event.getMood() != null && event.getMood().contains(spinnerSelection)) {
                                 filteredByMood.add(event);
                             }
                         }
-                        filterList = filteredByMood;
+                        filterMoodList = filteredByMood;
                     }
                     if (reason) {
                         ArrayList<MoodEvent> filteredByReason = new ArrayList<>();
-                        for (MoodEvent event : filterList) {
-                            if (event.getReason().contains(reasonText)) {
-                                filteredByReason.add(event);
+                        for (MoodEvent event : filterMoodList) {
+                            String[] reasonWords = event.getReason().split("\\s+");
+                            for(String word: reasonWords){
+                                if (word.equalsIgnoreCase(reasonText)){
+                                    filteredByReason.add(event);
+                                    break;
+                                }
                             }
                         }
-                        filterList = filteredByReason;
+                        filterMoodList = filteredByReason;
                     }
                     if (recentWeek) {
                         long currentTime = System.currentTimeMillis();
                         long sevenDaysMillis = 7L * 24 * 60 * 60 * 1000;
                         ArrayList<MoodEvent> filteredByWeek = new ArrayList<>();
-                        for (MoodEvent event : filterList) {
+                        for (MoodEvent event : filterMoodList) {
                             if (event.getTime() >= (currentTime - sevenDaysMillis)) {
                                 filteredByWeek.add(event);
                             }
                         }
-                        filterList = filteredByWeek;
+                        filterMoodList = filteredByWeek;
                     }
-                    filteredFollowedMoodEvents.clear();
-                    filteredFollowedMoodEvents.addAll(filterList);
+
+                    // Get the username for each mood event
+                    for (MoodEvent event : filterMoodList) {
+                        if (event.getUserId() != null) {
+                            String userId = event.getUserId();
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference userDocRef = db.collection("users").document(userId);
+
+                            userDocRef.get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if (documentSnapshot.exists()) {
+                                                String username = documentSnapshot.getString("username");
+                                                if (username != null) {
+                                                    event.setUserName(username);
+                                                    Log.d("GetUserID", "Fetched username: " + username);
+                                                } else {
+                                                    Log.d("GetUserID", "Username not found in document");
+                                                }
+                                            } else {
+                                                Log.d("GetUserID", "No document found for userId: " + userId);
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            Log.d("GetUserID", "Error getting document: " + e.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+
+                    //link to follow map
+                    filteredMoodList.clear();
+                    filteredMoodList.addAll(filterMoodList);
                     FriendMoodEventsViewModel vm = new ViewModelProvider(requireActivity()).get(FriendMoodEventsViewModel.class);
-                    vm.setMoodEvents(filteredFollowedMoodEvents);
-                    FollowedUserMoodEventAdapter filteredAdapter = new FollowedUserMoodEventAdapter(getContext(), filteredFollowedMoodEvents);
-                    binding.followedUsersListView.setAdapter(filteredAdapter);
-                    filteredAdapter.notifyDataSetChanged();
+                    vm.setMoodEvents(filteredMoodList);
+                    binding.followedUsersListView.setAdapter(filteredMoodAdapter);
+                    filteredMoodAdapter.notifyDataSetChanged();
                 }
             });
             filterDialog.show(getParentFragmentManager(), "FilterDialog");
@@ -160,8 +225,16 @@ public class FollowedUserMoodEvents extends Fragment {
 
         // Setup item click to navigate to mood detail view with comments
         binding.followedUsersListView.setOnItemClickListener((parent, itemView, position, id) -> {
+
             if (position >= 0 && position < followedUserMoodEvents.size()) {
-                MoodEvent selectedMoodEvent = followedUserMoodEvents.get(position);
+
+                MoodEvent selectedMoodEvent;
+
+                if(isFiltered){
+                    selectedMoodEvent = filteredMoodList.get(position);
+                }else {
+                    selectedMoodEvent = followedUserMoodEvents.get(position);
+                }
 
                 // Make sure the mood event has a username set
                 if (selectedMoodEvent.getUserName() == null && selectedMoodEvent.getUserId() != null) {
@@ -175,6 +248,8 @@ public class FollowedUserMoodEvents extends Fragment {
                 // Navigate to the mood detail fragment
                 Navigation.findNavController(view)
                         .navigate(R.id.action_followedUserMoodEventsFragment_to_moodDetailFragment, args);
+
+
             }
         });
     }
@@ -282,7 +357,7 @@ public class FollowedUserMoodEvents extends Fragment {
                         return;
                     }
 
-                    List<String> followedUserIds = new ArrayList<>();
+                    followedUserIds = new ArrayList<>();
 
                     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                         String followedId = document.getString("followedId");
@@ -450,6 +525,10 @@ public class FollowedUserMoodEvents extends Fragment {
                         }
                     });
         }
+
+        binding.followedUsersListView.setAdapter(moodAdapter);
+        moodAdapter.notifyDataSetChanged();
+
     }
 
     /**

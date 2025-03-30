@@ -227,5 +227,8 @@
         <argument
             android:name="selected_mood_event"
             app:argType="com.example.unemployedavengers.models.MoodEvent" />
+        <action
+            android:id="@+id/action_moodDetailFragment_to_followedUserMoodEventsFragment"
+            app:destination="@id/followedUserMoodEventsFragment" />
     </fragment>
 </navigation>
