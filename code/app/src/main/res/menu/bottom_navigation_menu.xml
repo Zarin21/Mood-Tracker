@@ -8,7 +8,7 @@
     <item
         android:id="@+id/mapFragment"
         android:enabled="true"
-        android:icon="@drawable/outline_add_location_alt_24"
+        android:icon="@drawable/outline_map_24"
         android:iconTint="@drawable/icon_hover"
         android:title="Map"/>
     <item
@@ -20,7 +20,7 @@
     <item
         android:id="@+id/friendsHistoryFragment"
         android:enabled="true"
-        android:icon="@drawable/ic_friend"
+        android:icon="@drawable/outline_group_24"
         android:iconTint="@drawable/icon_hover"
         android:title="Following"/>
 </menu>
