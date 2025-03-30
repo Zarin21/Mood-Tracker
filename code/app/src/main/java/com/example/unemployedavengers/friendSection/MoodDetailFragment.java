@@ -5,6 +5,7 @@ import static android.view.View.VISIBLE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -120,12 +122,14 @@ public class MoodDetailFragment extends Fragment {
         commentsList.setOnItemClickListener(((adapterView, view1, i, l) -> {
             enterReplyMode(((Comment) commentsList.getItemAtPosition(i)).getId(), currentUsername);
         }));
-
     }
 
     private void displayMoodEvent() {
         // Display mood information
         binding.tvMoodType.setText(moodEvent.getMood());
+
+        // Set appropriate mood color based on mood type
+        binding.tvMoodType.setTextColor(getMoodColor(requireContext(), moodEvent.getMood()));
 
         // Format timestamp
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -164,6 +168,27 @@ public class MoodDetailFragment extends Fragment {
         } else {
             binding.ivMoodImage.setVisibility(GONE);
         }
+    }
+
+    /**
+     * Helper method to set consistent mood colors based on mood type
+     * @param context Application context
+     * @param mood The mood string to determine color for
+     * @return The appropriate color for the mood
+     */
+    private int getMoodColor(Context context, String mood) {
+        String lowerMood = mood.toLowerCase(); // Normalize case
+
+        if (lowerMood.contains("anger")) return Color.RED;
+        if (lowerMood.contains("confusion")) return ContextCompat.getColor(context, R.color.orange);
+        if (lowerMood.contains("disgust")) return Color.GREEN;
+        if (lowerMood.contains("fear")) return Color.BLUE;
+        if (lowerMood.contains("happiness")) return ContextCompat.getColor(context, R.color.baby_blue);
+        if (lowerMood.contains("sadness")) return Color.GRAY;
+        if (lowerMood.contains("shame")) return ContextCompat.getColor(context, R.color.yellow);
+        if (lowerMood.contains("surprise")) return ContextCompat.getColor(context, R.color.pink);
+
+        return ContextCompat.getColor(context, R.color.black); // Default color
     }
 
     private void loadComments() {
