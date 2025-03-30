@@ -36,7 +36,6 @@ import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.arrayadapters.FollowedUserMoodEventAdapter;
 
 import com.example.unemployedavengers.databinding.FollowedUserMoodEventsBinding;
-
 import com.example.unemployedavengers.models.FriendMoodEventsViewModel;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.MoodEventsViewModel;

@@ -60,7 +60,10 @@
         app:layout_constraintBottom_toBottomOf="@+id/profileCircle"
         app:layout_constraintEnd_toEndOf="@+id/profileCircle"
         app:layout_constraintStart_toStartOf="@+id/profileCircle"
-        app:layout_constraintTop_toTopOf="@+id/profileCircle" />
+        app:layout_constraintTop_toTopOf="@+id/profileCircle"
+        android:scaleType="centerCrop"
+        android:background="@drawable/circle_background"
+        android:clipToOutline="true" />
 
     <!-- Friend ID/Username - FIXED POSITION -->
     <TextView

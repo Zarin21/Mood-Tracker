@@ -181,6 +181,7 @@ public class FriendsHistory extends Fragment {
 
                     updateUIForEmptyFriendsList();
                 });
+
     }
 
     private void updateUIForEmptyFriendsList() {

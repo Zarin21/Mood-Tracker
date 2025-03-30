@@ -18,6 +18,7 @@ public class Comment implements Serializable {
     private long timestamp;
     private String parentId;  // null for top-level comments, otherwise contains parent comment ID
     private List<String> replyIds; // IDs of replies to this comment
+    private int likeCount; // Number of likes
 
     /**
      * Empty constructor required for Firestore serialization.
@@ -43,6 +44,7 @@ public class Comment implements Serializable {
         this.timestamp = System.currentTimeMillis();
         this.parentId = parentId;
         this.replyIds = new ArrayList<>();
+        this.likeCount = 0;
     }
 
     /**
@@ -191,5 +193,23 @@ public class Comment implements Serializable {
             this.replyIds = new ArrayList<>();
         }
         this.replyIds.add(replyId);
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+    // Method to increment like count
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+    // Method to decrement like count
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
     }
 }
