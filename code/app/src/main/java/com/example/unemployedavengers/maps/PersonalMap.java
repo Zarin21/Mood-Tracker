@@ -1,3 +1,22 @@
+/**
+ * PersonalMap is a Fragment responsible for displaying the user's mood events on a Google Map.
+ * It fetches mood events from a shared ViewModel and displays them as custom markers on the map.
+ * Each marker represents a mood event with location data, and its appearance is customized based on the mood.
+ *
+ * Key Features:
+ * - Fetches mood events using a ViewModel and observes changes to the data.
+ * - Displays mood events as markers on a map, each with a custom design representing the event's mood.
+ * - Uses custom bitmaps for markers, where the color and text are based on the mood.
+ * - Optionally adjusts the camera to the first event's location on the map for a focused view.
+ *
+ * Methods:
+ * - onCreateView: Inflates the view and sets up the binding for the Fragment's layout.
+ * - onViewCreated: Observes mood events from the ViewModel and updates the map markers accordingly.
+ * - onMapReady: Adds markers to the map based on the mood events that have location data.
+ * - createCustomMarker: Creates a custom bitmap for each mood event marker, where the mood influences the marker's design (e.g., color).
+ * - onDestroyView: Nullifies the binding to prevent memory leaks when the view is destroyed.
+ */
+
 package com.example.unemployedavengers.maps;
 
 import android.content.Context;

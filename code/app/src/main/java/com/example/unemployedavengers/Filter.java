@@ -1,3 +1,19 @@
+/**
+ * Filter - A DialogFragment that presents filter options to the user for mood event filtering.
+ *
+ * Purpose:
+ * - This dialog provides options to filter mood events based on different criteria, such as mood, reason, and recency.
+ * - It allows users to select specific mood reasons and a time frame (recent week) for filtering the data.
+ * - The dialog interface includes a spinner for selecting mood types, a checkbox for filtering by mood or reason, and an input field for the reason filter.
+ * - The dialog supports a "See All" button to reset the filters and display all mood events.
+ *
+ * Key Features:
+ * - The user can apply a filter based on mood type, reason, or week.
+ * - Customizes the spinner dropdown with colors corresponding to different mood types.
+ * - Handles validation of the reason filter input to ensure it contains only one word.
+ * - The dialog communicates the selected filter criteria back to the parent fragment via the `FilterListener` interface.
+ */
+
 package com.example.unemployedavengers;
 
 import android.app.AlertDialog;

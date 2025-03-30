@@ -1,4 +1,4 @@
-/*
+/**
  * UserDAOImplement - Implementation of IUserDAO interface for managing user-related operations.
  *
  * This class provides concrete implementations for user authentication, profile management,

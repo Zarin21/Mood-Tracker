@@ -1,9 +1,10 @@
-/*
- * MoodEventArrayAdapter - An ArrayAdapter that binds MoodEvent objects to list items.
+/**
+ * MoodEventArrayAdapter - Custom ArrayAdapter for displaying MoodEvent objects.
  *
  * Purpose:
- * - Formats and displays mood events using a custom layout (mood_event.xml).
- * - Sets the mood text and formats the time, applying color styling based on the mood.
+ * - Binds MoodEvent objects to a custom layout (mood_event.xml).
+ * - Displays only the mood and its timestamp in a ListView.
+ * - Applies color styling to the mood text based on mood type.
  */
 package com.example.unemployedavengers.arrayadapters;
 
@@ -15,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.example.unemployedavengers.R;

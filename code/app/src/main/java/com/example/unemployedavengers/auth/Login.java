@@ -1,15 +1,17 @@
-/*
+/**
  * Login Fragment for the Unemployed Avengers Android application.
  *
- * This file handles user authentication, including:
- * - Inflating the login layout using view binding.
- * - Validating user input for login credentials.
- * - Authenticating the user via a DAO.
- * - Storing user credentials in SharedPreferences.
- * - Supporting offline login using cached credentials.
- * - Navigating to the Dashboard on successful login.
- * - Providing navigation options to Home and Password Reset screens.
+ * Responsibilities:
+ * - Inflates the login layout using view binding.
+ * - Validates user input for login credentials.
+ * - Authenticates users via Firebase through a DAO.
+ * - Implements offline login using cached credentials stored in SharedPreferences.
+ * - Stores user credentials securely (hashed passwords) for offline authentication.
+ * - Navigates to the Dashboard upon successful login.
+ * - Provides additional navigation to Home and Password Reset screens.
+ * - Displays network connectivity status and adjusts login behavior accordingly.
  */
+
 
 package com.example.unemployedavengers.auth;
 

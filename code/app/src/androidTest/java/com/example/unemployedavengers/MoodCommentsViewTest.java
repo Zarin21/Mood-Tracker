@@ -1,3 +1,21 @@
+/**
+ * MoodCommentsViewTest.java
+ *
+ * This class contains instrumented UI tests for the mood commenting functionality in the Unemployed Avengers app.
+ * It tests user stories related to posting and viewing comments on mood events (US 05.07.01 and US 05.07.02).
+ *
+ * The test follows a three-user scenario:
+ * 1. A mood poster creates a public mood event
+ * 2. A comment user views the mood and posts a comment
+ * 3. A viewer user views the mood and verifies the comment is visible
+ *
+ * Key Features Tested:
+ * - Comment creation and submission
+ * - Comment visibility to other users
+ * - Integration with Firebase Authentication and Firestore
+ * - Following relationships between users
+ * Note: This test requires Firebase emulators to be running locally.
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onData;

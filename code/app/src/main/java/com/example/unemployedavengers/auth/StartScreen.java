@@ -1,9 +1,9 @@
-/*
+/**
  * StartScreen Fragment for the Unemployed Avengers Android application.
  *
- * This fragment serves as the starting screen of the app, allowing users to:
- * - Navigate to the Sign-Up screen to create a new account.
- * - Navigate to the Login screen if they already have an account.
+ * Purpose:
+ * - Serves as the entry point of the app, providing users with options to either sign up or log in.
+ *
  */
 
 package com.example.unemployedavengers.auth;

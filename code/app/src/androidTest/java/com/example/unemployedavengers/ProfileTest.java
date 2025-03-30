@@ -1,3 +1,26 @@
+/**
+ * ProfileTest.java
+ *
+ * Instrumented UI tests for user profile functionality in the Unemployed Avengers app.
+ *
+ * Tests user stories related to:
+ * - US 3.1.1: Unique username enforcement during signup and profile updates
+ * - US 3.2.1: User search functionality
+ * - US 3.3.1: Profile viewing and following capabilities
+ *
+ * Testing Approach:
+ * - Uses Espresso for UI testing
+ * - Sets up multiple test users with moods in Firebase emulators
+ * - Verifies profile uniqueness constraints
+ * - Tests search and profile viewing flows
+ * - Includes comprehensive test data cleanup
+ *
+ * Key Test Scenarios:
+ * 1. Attempting to create duplicate usernames
+ * 2. Searching for other users
+ * 3. Viewing other user profiles
+ * 4. Following/unfollowing functionality
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -209,98 +232,6 @@ public class ProfileTest {
     }
 
 
-
-    /*
-        @AfterClass
-        public static void tearDown() throws InterruptedException {
-            final CountDownLatch latch = new CountDownLatch(3); // Wait for all 3 deletions
-
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-            List<String> usersToDelete = Arrays.asList("user1@example.com", "user2@example.com", "user3@example.com");
-            List<String> passwords = Arrays.asList("password1", "password2", "password3");
-
-            AtomicInteger usersProcessed = new AtomicInteger(0);
-
-            for (int i = 0; i < usersToDelete.size(); i++) {
-                String email = usersToDelete.get(i);
-                String password = passwords.get(i);
-                Log.d("FilterTest", "email" + email);
-
-                // Sign in the user before deletion
-                auth.signOut();
-                Thread.sleep(1000);
-                auth.signInWithEmailAndPassword(email, password)
-                        .addOnSuccessListener(authResult -> {
-
-                            FirebaseUser user = auth.getCurrentUser();
-
-                            if (user != null) {
-                                String userId = user.getUid();
-                                Log.d("FilterTest", "tearDown: got user" + userId);
-                                // Delete the user's moods
-                                db.collection("users").document(userId).collection("moods")
-                                        .get()
-                                        .addOnSuccessListener(moodsSnapshot -> {
-                                            for (QueryDocumentSnapshot moodDoc : moodsSnapshot) {
-                                                moodDoc.getReference().delete()
-                                                        .addOnFailureListener(e -> Log.e("Testing", "Error deleting mood document for user: " + userId, e));
-                                            }
-
-                                            // After moods are deleted, delete the user document
-                                            db.collection("users").document(userId).delete()
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        // Finally, delete the user from Firebase Authentication
-                                                        user.delete()
-                                                                .addOnSuccessListener(aVoid1 -> {
-                                                                    Log.d("Testing", "User deleted from Firebase Auth: " + userId);
-                                                                    if (usersProcessed.incrementAndGet() == usersToDelete.size()) {
-                                                                        latch.countDown(); // Decrement latch when all users are deleted
-                                                                    }
-                                                                })
-                                                                .addOnFailureListener(e -> {
-                                                                    Log.e("Testing", "Error deleting user from Firebase Auth: " + userId, e);
-                                                                    if (usersProcessed.incrementAndGet() == usersToDelete.size()) {
-                                                                        latch.countDown();
-                                                                    }
-                                                                });
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        Log.e("Testing", "Error deleting user from Firestore: " + userId, e);
-                                                        if (usersProcessed.incrementAndGet() == usersToDelete.size()) {
-                                                            latch.countDown();
-                                                        }
-                                                    });
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.e("Testing", "Error retrieving moods for user: " + userId, e);
-                                            if (usersProcessed.incrementAndGet() == usersToDelete.size()) {
-                                                latch.countDown();
-                                            }
-                                        });
-                            } else {
-                                Log.e("Testing", "No user is currently signed in for email: " + email);
-                                if (usersProcessed.incrementAndGet() == usersToDelete.size()) {
-                                    latch.countDown();
-                                }
-                            }
-
-
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("Testing", "Login failed for user: " + email, e);
-                            if (usersProcessed.incrementAndGet() == usersToDelete.size()) {
-                                latch.countDown();
-                            }
-                        });
-            }
-
-            latch.await();  // Wait for all deletions to complete before finishing teardown
-            Log.d("ProfileTest", "Test completed");
-        }
-
-     */
     @AfterClass
     public static void tearDown() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(3); // Wait for all 3 deletions

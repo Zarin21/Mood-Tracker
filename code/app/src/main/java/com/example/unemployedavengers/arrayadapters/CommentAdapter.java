@@ -1,3 +1,12 @@
+/**
+ * CommentAdapter - A custom adapter for displaying comments and their replies in a ListView.
+ *
+ * Purpose:
+ * - Displays comment details including username, content, time, and profile picture.
+ * - Threaded replies by mapping parent comments to their replies.
+ * - Retrieve and stores user profile pictures from firebase.
+ * - Updates the UI when new replies are added.
+ */
 package com.example.unemployedavengers.arrayadapters;
 
 import android.content.Context;

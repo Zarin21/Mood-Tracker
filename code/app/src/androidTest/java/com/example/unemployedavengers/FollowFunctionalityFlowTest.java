@@ -429,6 +429,7 @@ public class FollowFunctionalityFlowTest {
         }
     }
 
+    //5.5.1
     @Test
     public void test1_SendFollowRequest() {
         // Ensure setup is complete
@@ -491,6 +492,7 @@ public class FollowFunctionalityFlowTest {
         SystemClock.sleep(2000);
     }
 
+    //5.2.1
     @Test
     public void test2_ViewAndAcceptFollowRequest() {
         // Ensure the first test has run

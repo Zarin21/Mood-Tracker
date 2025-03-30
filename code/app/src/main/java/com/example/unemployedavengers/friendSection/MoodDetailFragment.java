@@ -1,3 +1,16 @@
+/**
+ * MoodDetailFragment displays detailed information about a selected mood event.
+ *
+ * This fragment includes functionality for:
+ * - Displaying mood event details (mood type, time, reason, situation, and image).
+ * - Loading and displaying top-level comments and their replies.
+ * - Enabling users to add comments and replies.
+ * - Navigating back to the previous screen.
+ *
+ * The fragment retrieves the selected mood event from the arguments, fetches related comments and replies from Firestore,
+ * and allows users to interact by submitting comments or replies. The comment section dynamically updates based on user interactions.
+ */
+
 package com.example.unemployedavengers.friendSection;
 
 import static android.view.View.GONE;

@@ -1,4 +1,4 @@
-/*
+/**
  * MainActivity - Entry point and navigation handler for the Unemployed Avengers Android application.
  *
  * This class sets up:
@@ -11,6 +11,7 @@
  * - Controls the visibility of the BottomNavigationView based on active fragments.
  *
  */
+
 
 package com.example.unemployedavengers;
 

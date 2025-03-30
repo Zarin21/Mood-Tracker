@@ -1,3 +1,18 @@
+/**
+ * BaseFragment - A base class for Fragments providing utility methods to handle common fragment tasks.
+ *
+ * Purpose:
+ * - Provides navigation methods to prevent rapid, multiple clicks (debouncing).
+ * - Offers safe navigation even with multiple click attempts or invalid fragment states.
+ * - Ensures that navigation is only performed if the fragment is in a valid state and can be interacted with.
+ * - Helps manage user interactions to avoid issues caused by fast, repeated clicks (common in navigation scenarios).
+ *
+ * Key Features:
+ * - Debounced click handling: Prevents multiple navigations in quick succession using the `isClickTooSoon()` method.
+ * - Safe navigation: Includes methods like `safeNavigate()` to ensure navigation happens only when appropriate.
+ * - Fragment state checks: Ensures fragment operations are performed only when the fragment is valid (attached, not removing, not detached).
+ *
+ */
 package com.example.unemployedavengers;
 
 import android.os.Bundle;

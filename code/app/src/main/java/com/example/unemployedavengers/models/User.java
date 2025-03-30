@@ -11,6 +11,14 @@ package com.example.unemployedavengers.models;
 
 import java.io.Serializable;
 
+/**
+ * Model class representing a user in the mood tracking application.
+ * <p>
+ * This class encapsulates essential user data, including the user's unique ID, display name,
+ * email (used for Firebase authentication), password, and avatar. It implements the Serializable
+ * interface to allow passing User objects between components, such as activities or fragments.
+ * </p>
+ */
 public class User implements Serializable {
     // Core user identification and authentication properties
     private String userId;      // Firebase UID for the user
@@ -22,19 +30,27 @@ public class User implements Serializable {
 
 
     /**
-     * Default constructor required for Firestore deserialization
+     * Default constructor required for Firestore deserialization.
+     * <p>
+     * This constructor allows Firestore to create a default instance of the User class during
+     * deserialization. This constructor should not be used manually.
+     * </p>
      */
     public User() {
     }
 
     /**
-     * Constructs a new User with all required fields
+     * Constructs a new User with all required fields.
+     * <p>
+     * This constructor initializes the User object with all necessary data, including the user's
+     * unique identifier, username, dummy email for Firebase authentication, password, and avatar.
+     * </p>
      *
-     * @param userId     The unique identifier for the user
-     * @param username   The display name for the user
+     * @param userId     The unique identifier for the user (Firebase UID)
+     * @param username   The display name for the user in the application
      * @param dummyEmail The email address for Firebase Authentication
-     * @param password   The user's password
-     * @param avatar     The user's avatar
+     * @param password   The user's password (plaintext, which should be handled securely)
+     * @param avatar     The user's avatar image (URL or file reference)
      */
     public User(String userId, String username, String dummyEmail, String password, String avatar) {
         this.userId = userId;
@@ -45,65 +61,81 @@ public class User implements Serializable {
     }
 
     /**
-     * @return The user's unique identifier
+     * @return The user's unique identifier (Firebase UID)
      */
     public String getUserId() {
         return userId;
     }
 
     /**
-     * @param userId The user's unique identifier to set
+     * Sets the user's unique identifier.
+     *
+     * @param userId The unique identifier to set for the user (Firebase UID)
      */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
     /**
-     * @return The user's display name
+     * @return The user's display name in the application
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * @param username The user's display name to set
+     * Sets the user's display name.
+     *
+     * @param username The display name to set for the user
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     * @return The dummy email used for Firebase Authentication
+     * @return The dummy email used for Firebase authentication
      */
     public String getDummyEmail() {
         return dummyEmail;
     }
 
     /**
-     * @param dummyEmail The dummy email to set
+     * Sets the dummy email used for Firebase authentication.
+     *
+     * @param dummyEmail The dummy email to set for the user
      */
     public void setDummyEmail(String dummyEmail) {
         this.dummyEmail = dummyEmail;
     }
 
     /**
-     * @return The user's password
+     * @return The user's password (plaintext)
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * @param password The user's password to set
+     * Sets the user's password.
+     *
+     * @param password The password to set for the user
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * @return The user's avatar (URL or file reference)
+     */
     public String getAvatar() {
         return avatar;
     }
 
+    /**
+     * Sets the user's avatar.
+     *
+     * @param avatar The avatar to set for the user (URL or file reference)
+     */
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }

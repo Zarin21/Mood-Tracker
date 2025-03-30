@@ -1,12 +1,13 @@
-/*
+/**
  * PasswordReset2 Fragment for the Unemployed Avengers Android application.
  *
- * This fragment handles the second step of the password reset process, including:
- * - Retrieving the username from the previous fragment.
- * - Validating the new password and confirmation.
- * - Updating the user's password using the UserDAO.
- * - Navigating back to the login screen upon successful reset.
- * - Displaying error messages with a custom Toast in case of failure.
+ * Purpose:
+ * - Manages the second step of the password reset process.
+ * - Retrieves the username from the previous fragment.
+ * - Validates and confirms the new password.
+ * - Updates the user's password securely via the UserDAO.
+ * - Navigates back to the login screen upon successful reset.
+ * - Displays error messages with a custom Toast notification.
  */
 
 package com.example.unemployedavengers.auth;

@@ -1,3 +1,20 @@
+/**
+ * Map is a Fragment that serves as the entry point for navigating between different types of maps.
+ * It provides buttons for the user to navigate to the following views:
+ * - A personal map view displaying the user's own mood events.
+ * - A friends' map view showing mood events shared by friends.
+ * - A map view displaying mood events within a 5 km radius of the user.
+ *
+ * Key Features:
+ * - Provides navigation to different map views using buttons.
+ * - Handles navigation logic for the personal map, friends' map, and nearby mood events.
+ * - Utilizes view binding for easier interaction with UI components.
+ *
+ * Methods:
+ * - onViewCreated: Sets up onClickListeners for the map navigation buttons.
+ * - onDestroyView: Nullifies the binding to avoid memory leaks when the view is destroyed.
+ */
+
 package com.example.unemployedavengers.maps;
 
 import android.os.Bundle;

@@ -1,3 +1,13 @@
+/**
+ * UserSearch Fragment allows users to search for other users by username.
+ *
+ * Key functionalities:
+ * - Allows the current user to input a search query (username).
+ * - Queries the user database for matching usernames and displays the results.
+ * - Allows the user to select a username from the search results to view their profile.
+ * - Provides feedback for invalid or failed searches.
+ */
+
 package com.example.unemployedavengers.friendSection;
 
 import android.os.Bundle;
@@ -21,7 +31,7 @@ import com.example.unemployedavengers.models.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserSearch extends Fragment {
+public class  UserSearch extends Fragment {
     private UserSearchBinding binding;
     private IUserDAO userDAO;
 

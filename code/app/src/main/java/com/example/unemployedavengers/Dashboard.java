@@ -1,13 +1,21 @@
-/*
- * Dashboard Fragment
- * --------------------
- * Purpose:
- * - Display the main dashboard of the Unemployed Avengers app.
- * - Load and show mood events from Firestore using MoodEventArrayAdapter.
- * - Provide navigation to other screens (e.g., friends history, profile, input dialog).
- * - Handle user interactions such as selecting mood events, editing, and deleting.
+/**
+ * Dashboard Fragment - Main screen of the application showing user's mood history.
+ *
+ * Primary Responsibilities:
+ * - Displays user's recent mood events in a scrollable list
+ * - Provides navigation to key app features (friends, mood input)
+ * - Manages mood event CRUD operations with Firestore
+ * - Handles online/offline mode with cached credentials
+ * - Tracks and shares nearby mood events (within 5km)
+ *
+ * Key Features:
+ * - Displays last 7 mood entries sorted by recency
+ * - Real-time sync with Firestore (works offline with cached data)
+ * - Location-based mood event filtering
+ * - Mood event editing/deletion functionality
+ * - Shared ViewModel integration for cross-fragment data
  */
-package com.example.unemployedavengers;
+ package com.example.unemployedavengers;
 
 import android.content.Context;
 import android.content.SharedPreferences;

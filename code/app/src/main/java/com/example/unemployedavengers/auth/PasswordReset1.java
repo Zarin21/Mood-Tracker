@@ -1,12 +1,13 @@
-/*
+/**
  * PasswordReset1 Fragment for the Unemployed Avengers Android application.
  *
- * This file handles the first step of the password reset process:
+ * Purpose:
+ * - Handles the first step of the password reset process.
  * - Inflates the password reset layout using view binding.
- * - Provides navigation back to the login screen.
- * - Verifies if a user exists via the UserDAO.
- * - Navigates to the next password reset step if the user exists.
- * - Displays error messages using Toasts.
+ * - Allows users to return to the login screen.
+ * - Verifies if a user exists in the database using the UserDAO.
+ * - If the user exists, navigates to the next step in the reset process.
+ * - Displays appropriate error messages using Toast notifications.
  */
 
 package com.example.unemployedavengers.auth;
