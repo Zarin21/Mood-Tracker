@@ -332,7 +332,7 @@ public class Dashboard extends BaseFragment {
     }
 
     public void loadFollowedMoodEvents() {
-        if (binding == null || !isValidFragment()) return;
+        if (binding == null || moodEventRef == null || !isValidFragment()) return;
 
         // Create an empty list to collect mood events.
         List<MoodEvent> followedEventsList = new ArrayList<>();
@@ -396,22 +396,29 @@ public class Dashboard extends BaseFragment {
                                     db.collection("users")
                                             .document(followedId)
                                             .collection("moods")
-                                            .orderBy("time", Query.Direction.DESCENDING) // sort by time (newest first)
-                                            .limit(3)
+                                            .orderBy("time", Query.Direction.DESCENDING) // Sort by time descending (newest first)
+                                            .limit(10) // Get more than we need in case some are private
                                             .get()
                                             .addOnSuccessListener(querySnapshot1 -> {
                                                 if (binding == null || !isValidFragment()) return;
+                                                int count = 0;
 
                                                 for (QueryDocumentSnapshot doc : querySnapshot1) {
                                                     MoodEvent moodEvent = doc.toObject(MoodEvent.class);
-                                                    if (moodEvent != null) {
+                                                    Boolean isPublic = doc.contains("publicStatus") ?
+                                                            doc.getBoolean("publicStatus") : true;
+                                                    if (isPublic != null && isPublic) {
                                                         followedEventsList.add(moodEvent);
+                                                        count++;
                                                         if (moodEvent.getHasLocation()) {
                                                             LatLng eventLocation = new LatLng(moodEvent.getLatitude(), moodEvent.getLongitude());
                                                             double distanceInMeters = SphericalUtil.computeDistanceBetween(currentLocation, eventLocation);
                                                             if (distanceInMeters <= 5000) {
                                                                 withinFiveEventsList.add(moodEvent);
                                                             }
+                                                        }
+                                                        if (count >= 3) {
+                                                            break;
                                                         }
                                                     }
                                                 }
