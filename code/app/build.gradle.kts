@@ -36,9 +36,12 @@ android {
 
     // Add this block to support unit testing
     testOptions {
-        unitTests.isIncludeAndroidResources = true
-        unitTests.all {
-            it.useJUnitPlatform()
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                // Use JUnit 4 for all unit tests
+                it.useJUnit()
+            }
         }
     }
 }
@@ -70,10 +73,13 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:4.11.0")
     testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation(libs.junit.jupiter)
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
     testImplementation("com.google.android.gms:play-services-tasks:18.0.2")
+    testImplementation("org.awaitility:awaitility:4.2.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("androidx.test:core:1.5.0")
+
+
 
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
