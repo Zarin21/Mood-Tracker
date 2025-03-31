@@ -497,6 +497,7 @@ public class FollowFunctionalityFlowTest {
         login(USER1_USERNAME, USER1_PASSWORD);
 
         // Navigate to Friends/User Search
+        onView(withId(R.id.friendsHistoryFragment)).perform(click());
         onView(withId(R.id.friendsButton)).perform(click());
         SystemClock.sleep(2000);
 
