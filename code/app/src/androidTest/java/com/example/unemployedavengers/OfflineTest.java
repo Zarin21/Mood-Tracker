@@ -4,7 +4,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -387,7 +389,7 @@ public class OfflineTest {
 
         Thread.sleep(10000);
 
-        onView(withText("\uD83D\uDE20Anger"))
+        onView(withText("\uD83D\uDE04Happiness"))
                 .check(matches(isDisplayed()))
                 .perform(click());
         onView(withId(R.id.editSocialSituation)).perform(clearText());
@@ -401,11 +403,19 @@ public class OfflineTest {
                 .perform(click()); // Click the button
 
         Thread.sleep(10000);
-        onView(withText("\uD83D\uDE20Anger")).check(matches(isDisplayed()));
-        onView(withText("\uD83D\uDE20Anger")).perform(click());
+        onView(withText("\uD83D\uDE04Happiness")).check(matches(isDisplayed()));
+        onView(withText("\uD83D\uDE04Happiness")).perform(click());
+        onView(withId(R.id.scrollView)).perform(swipeUp());
+        Espresso.onIdle();
+        onView(withId(R.id.buttonCancel))
+                .check(matches(isDisplayed()))  // Check if button is visible
+                .check(matches(isClickable())) // Check if button is clickable
+                .perform(click()); // Click the button
 
         Thread.sleep(5000);
-        onView(withText("\uD83D\uDE20Anger")).check(matches(isDisplayed()));
+        onView(withText("\uD83D\uDE04Happiness")).check(matches(isDisplayed()));
+        onView(withText("\uD83D\uDE04Happiness")).perform(click());
+        onView(withText("\uD83D\uDE04Happiness")).check(matches(isDisplayed()));
         onView(withId(R.id.editSocialSituation)).check(matches(withText("I am alone")));
         Thread.sleep(5000);
 
@@ -418,13 +428,88 @@ public class OfflineTest {
     }
 
     @Test
-    public void stage5_testOfflineEditSync(){}
+    public void stage5_testOfflineEditSync() throws InterruptedException {
+        // First ensure we're online
+        executeAdbCommand("svc wifi enable");
+        executeAdbCommand("svc data enable");
+        Thread.sleep(5000); // Wait for connection
+
+        // Manually trigger Firestore sync
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.enableNetwork().addOnCompleteListener(task -> {
+            Log.d("Testing", "Network enabled, sync triggered");
+        });
+
+        // Wait for sync to complete
+        Thread.sleep(3000);
+
+        // Now verify the mood exists
+        login();
+        Thread.sleep(3000);
+
+        // Check if mood appears in the list
+        onView(withText("\uD83D\uDE04Happiness"))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withId(R.id.editSocialSituation))
+                .check(matches(withText("I am alone")));
+
+    }
 
     @Test
-    public void stage6_testOfflineDelete(){}
+    public void stage6_testOfflineDelete() throws InterruptedException {
+
+        // Verify we have credentials first
+        assertNotNull("No userID in SharedPreferences",
+                sharedPreferences.getString("userID", null));
+
+        // Now go offline
+        executeAdbCommand("svc wifi disable");
+        executeAdbCommand("svc data disable");
+
+        Log.d("offline testing", "stage1_testOfflineModeAdd: " + sharedPreferences.getString("userID", null));
+
+        Thread.sleep(5000);
+
+        onView(withId(R.id.tvStartLogin)).perform(click());
+
+        // Verify offline mode indicator is shown
+        onView(withText("Offline Mode - Limited functionality available"))
+                .check(matches(isDisplayed()));
+
+        // Perform offline login
+
+        onView(withId(R.id.etUsername)).perform(ViewActions.typeText("testUser"), closeSoftKeyboard());
+        onView(withId(R.id.etPassword)).perform(ViewActions.typeText("123456"), closeSoftKeyboard());
+        onView(withId(R.id.btnLogin)).perform(click());
+        CustomMatchers.handleLocationPermissionPopup();
+
+        Thread.sleep(10000);
+
+        onView(withText("\uD83D\uDE04Happiness"))
+                .check(matches(isDisplayed()))
+                .perform(longClick());
+
+        onView(withText("Delete")).perform(click());
+
+        Thread.sleep(5000);
+
+        onView(withText("\uD83D\uDE04Happiness")).check(doesNotExist());
+
+        // Simulate going online
+        executeAdbCommand("svc wifi enable");
+        executeAdbCommand("svc data enable");
+
+        Thread.sleep(5000);
+
+    }
+
 
     @Test
     public void stage7_testOfflineDeleteSync(){
+        login();
+        onView(withText("\uD83D\uDE04Happiness")).check(doesNotExist());
 
     }
     @AfterClass

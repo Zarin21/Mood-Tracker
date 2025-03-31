@@ -99,8 +99,11 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (navController != null) {
             if (itemId == R.id.notificationsFragment ||
-                    itemId == R.id.settingsFragment||itemId==R.id.profileFragment) {
+                    itemId == R.id.settingsFragment) {
                 navController.navigate(itemId);
+                return true;
+            }else if (itemId == R.id.profileFragmentt){
+                navController.navigate(R.id.profileFragment);
                 return true;
             }
         }
