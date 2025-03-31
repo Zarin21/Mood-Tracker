@@ -75,6 +75,7 @@ public class MoodDetailFragment extends Fragment {
     private Button submitCommentButton;
     private String replyingToCommentId;
     private View replyView;
+    private String source;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -111,6 +112,7 @@ public class MoodDetailFragment extends Fragment {
         // Get mood event from arguments
         if (getArguments() != null) {
             moodEvent = (MoodEvent) getArguments().getSerializable("selected_mood_event");
+            source = getArguments().getString("source");
             if (moodEvent != null) {
                 displayMoodEvent();
                 loadComments();
@@ -118,10 +120,16 @@ public class MoodDetailFragment extends Fragment {
         }
 
         // Set up back button
-        binding.btnBack.setOnClickListener(v ->
-                Navigation.findNavController(view)
-                        .navigate(R.id.action_moodDetailFragment_to_followedUserMoodEventsFragment)
-        );
+        binding.btnBack.setOnClickListener(v -> {
+            if ("FollowedUserMoodEvents".equals(source)) {
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_moodDetailFragment_to_followedUserMoodEventsFragment);
+            } else {
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_moodDetailFragment_to_historyFragment);
+            }
+        });
+
 
         // Set up comment submission
         submitCommentButton.setOnClickListener(v -> {
