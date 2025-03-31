@@ -191,10 +191,6 @@ public class Dashboard extends BaseFragment {
         //load mood event function
         loadMoodEvents();
 
-        binding.friendsButton.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_dashboardFragment_to_userSearchFragment);
-        });
-
         //Navigates to the input dialog
         binding.addMoodButton.setOnClickListener(v -> {
             Bundle args = new Bundle();

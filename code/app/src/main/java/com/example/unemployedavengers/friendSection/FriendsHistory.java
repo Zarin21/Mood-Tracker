@@ -82,6 +82,10 @@ public class FriendsHistory extends Fragment {
         // Load friends list
         loadFriendsList();
 
+        binding.friendsButton.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_friendsHistoryFragment_to_userSearchFragment);
+        });
+
         // Only keep the Friends History Mood button click handler
         binding.friendsHistoryMoodButton.setOnClickListener(v ->
                 Navigation.findNavController(v)
