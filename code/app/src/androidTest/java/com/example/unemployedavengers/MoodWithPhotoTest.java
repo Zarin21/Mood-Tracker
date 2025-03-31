@@ -1,20 +1,3 @@
-/**
- * MoodWithPhotoTest.java
- *
- * Instrumented UI tests for the photo attachment functionality in mood events (US 02.02.01).
- *
- * This test verifies that users can:
- * - Attach photos to mood events
- * - Have those photos properly saved and displayed
- * - View the photos when reviewing mood events
- *
- * Key Features Tested:
- * - Image capture/selection UI flow
- * - Image processing and storage
- * - Image display in mood details
- * - Integration with Firebase storage
- *
- */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -28,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertTrue;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -38,7 +23,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.ScrollView;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -299,7 +283,6 @@ public class MoodWithPhotoTest {
         }
     }
 
-    //US 2.2.1
     @Test
     public void testAddMoodWithPhoto() throws InterruptedException {
         try {
@@ -400,10 +383,9 @@ public class MoodWithPhotoTest {
                 throw e;
             }
 
-
             // Wait for the mood to be saved
             Log.d("MoodWithPhotoTest", "Waiting for mood to be saved");
-            SystemClock.sleep(5000);
+            SystemClock.sleep(3000);
 
             // Verify the mood was created
             Log.d("MoodWithPhotoTest", "Verifying mood was created");
@@ -437,6 +419,122 @@ public class MoodWithPhotoTest {
             throw e;
         }
     }
+    @Test
+    public void testAddMoodWithLargePhoto() throws IOException, InterruptedException {
+        // Create a large test image (>64KB)
+        Uri largeImageUri = createLargeTestImage(800, 800, Bitmap.CompressFormat.JPEG, 90, "large_test_image.jpg");
+
+        // Verify the image is indeed >64KB
+        File largeFile = new File(largeImageUri.getPath());
+        assertTrue("Test image should be >64KB", largeFile.length() > 64 * 1024);
+        Log.d("MoodWithPhotoTest", "Large test image size: " + largeFile.length() + " bytes");
+
+        // Login with test user
+        login();
+
+        // Navigate to add mood screen
+        onView(withId(R.id.add_mood_button)).perform(click());
+
+        // Select a mood
+        onView(withId(R.id.spinnerEmotion)).perform(click());
+        onView(withText("😄Happiness")).perform(click());
+
+        // Add reason text
+        onView(withId(R.id.editReason)).perform(typeText("Testing with large photo"), closeSoftKeyboard());
+
+        // Inject the large image using ActivityScenario
+        activityScenarioRule.getScenario().onActivity(activity -> {
+            try {
+                // Find the InputDialog fragment
+                androidx.fragment.app.Fragment currentFragment = activity
+                        .getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment)
+                        .getChildFragmentManager()
+                        .getFragments().get(0);
+
+                if (currentFragment instanceof InputDialog) {
+                    InputDialog inputDialog = (InputDialog) currentFragment;
+
+                    // Use reflection to set the imageUri and fileSize
+                    java.lang.reflect.Field imageUriField = InputDialog.class.getDeclaredField("imageUri");
+                    imageUriField.setAccessible(true);
+                    imageUriField.set(inputDialog, largeImageUri);
+
+                    java.lang.reflect.Field fileSizeField = InputDialog.class.getDeclaredField("fileSize");
+                    fileSizeField.setAccessible(true);
+                    fileSizeField.set(inputDialog, (int)largeFile.length());
+
+                    // Update the preview
+                    android.widget.ImageView imagePreview = activity.findViewById(R.id.imagePreview);
+                    if (imagePreview != null) {
+                        activity.runOnUiThread(() -> {
+                            imagePreview.setImageURI(largeImageUri);
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // Wait for processing
+        SystemClock.sleep(2000);
+
+        // Scroll to show confirm button
+        onView(withClassName(Matchers.equalTo(ScrollView.class.getName()))).perform(swipeUp());
+        SystemClock.sleep(1000);
+
+        // Attempt to submit the mood
+        onView(withId(R.id.buttonConfirm)).perform(click());
+
+        // Wait for error message
+        SystemClock.sleep(1000);
+
+
+        // Verify we're still in the input dialog (not navigated away)
+        onView(withId(R.id.spinnerEmotion)).check(matches(isDisplayed()));
+        onView(withId(R.id.editReason)).check(matches(isDisplayed()));
+
+        // Clean up by canceling
+        onView(withId(R.id.buttonCancel)).perform(click());
+    }
+
+    private Uri createLargeTestImage(int width, int height, Bitmap.CompressFormat format,
+                                     int quality, String filename) throws IOException {
+        // Create a detailed bitmap that will be >64KB when saved
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // Fill with a complex pattern that will create a large file
+        Paint paint = new Paint();
+        for (int i = 0; i < 1000; i++) {
+            paint.setColor(Color.rgb(
+                    (int)(Math.random() * 255),
+                    (int)(Math.random() * 255),
+                    (int)(Math.random() * 255)
+            ));
+            canvas.drawCircle(
+                    (float)(Math.random() * width),
+                    (float)(Math.random() * height),
+                    (float)(Math.random() * 50 + 10),
+                    paint
+            );
+        }
+
+        // Add text
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(60);
+        canvas.drawText("Large Test Image", width/4, height/2, paint);
+
+        // Save to file
+        File file = new File(context.getCacheDir(), filename);
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(format, quality, out);
+        }
+
+        return Uri.fromFile(file);
+    }
+
 
     @After
     public void tearDown() {
