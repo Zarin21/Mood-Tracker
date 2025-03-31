@@ -1,15 +1,3 @@
-/**
- * UserProfile Fragment displays the profile of a selected user and allows the current user to follow them.
- *
- * This fragment:
- * - Retrieves the current user's profile and the selected user's profile from the database.
- * - Displays the selected user's username.
- * - Allows the current user to send a follow request to the selected user.
- * - Provides navigation functionality to go back to the previous screen.
- *
- * The follow button is shown if the user exists, and a follow request is sent upon clicking the button.
- */
-
 package com.example.unemployedavengers.friendSection;
 
 import android.os.Bundle;
@@ -61,9 +49,29 @@ public class UserProfile extends Fragment {
 
                 if (viewedUser != null) {
                     binding.userUsername.setText(viewedUser.getUsername());
-                    binding.followButton.setText("Follow");
-                    binding.followButton.setVisibility(View.VISIBLE);
-                    setupFollowLogic();
+
+                    userDAO.getFollowStatus(currentUser.getUserId(), viewedUser.getUserId())
+                            .addOnSuccessListener(status -> {
+                                switch (status) {
+                                    case "following":
+                                        binding.followButton.setText("Following");
+                                        binding.followButton.setEnabled(false);
+                                        break;
+                                    case "requested":
+                                        binding.followButton.setText("Requested");
+                                        binding.followButton.setEnabled(false);
+                                        break;
+                                    case "none":
+                                        binding.followButton.setText("Follow");
+                                        binding.followButton.setVisibility(View.VISIBLE);
+                                        setupFollowLogic();
+                                        break;
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Error checking follow status", Toast.LENGTH_SHORT).show();
+                            });
+
                 } else {
                     Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
                 }

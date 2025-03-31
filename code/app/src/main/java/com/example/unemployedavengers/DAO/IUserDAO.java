@@ -146,4 +146,14 @@ public interface IUserDAO {
      * @return A {@link Task<Void>} indicating the success or failure of the update operation.
      */
     Task<Void> updateUserAvatar(@NonNull String avatarUrl);
+
+    /**
+     * Checks if the requester already follows or has requested to follow the target.
+     *
+     * @param requesterId The user ID of the person initiating the follow.
+     * @param targetId The user ID of the target person.
+     * @return A {@link Task<Boolean>} indicating if a relationship already exists.
+     */
+
+    Task<String> getFollowStatus(@NonNull String requesterId, @NonNull String targetId);
 }

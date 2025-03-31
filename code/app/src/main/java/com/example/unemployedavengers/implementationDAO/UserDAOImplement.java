@@ -594,5 +594,34 @@ public class UserDAOImplement implements IUserDAO {
                 });
     }
 
+    @Override
+    public Task<String> getFollowStatus(@NonNull String requesterId, @NonNull String targetId) {
+        DocumentReference requestDoc = db.collection("users")
+                .document(targetId)
+                .collection("requests")
+                .document(requesterId);
+
+        DocumentReference followDoc = db.collection("users")
+                .document(requesterId)
+                .collection("following")
+                .document(targetId);
+
+        Task<DocumentSnapshot> requestTask = requestDoc.get();
+        Task<DocumentSnapshot> followTask = followDoc.get();
+
+        return Tasks.whenAllSuccess(requestTask, followTask)
+                .continueWith(task -> {
+                    DocumentSnapshot requestSnapshot = (DocumentSnapshot) task.getResult().get(0);
+                    DocumentSnapshot followSnapshot = (DocumentSnapshot) task.getResult().get(1);
+
+                    if (followSnapshot.exists()) {
+                        return "following";
+                    } else if (requestSnapshot.exists()) {
+                        return "requested";
+                    } else {
+                        return "none";
+                    }
+                });
+    }
 
 }
