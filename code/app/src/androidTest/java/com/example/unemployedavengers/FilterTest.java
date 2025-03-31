@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(AndroidJUnit4.class)
@@ -322,7 +323,7 @@ public class FilterTest {
                     });
         }
 
-        latch.await();  // Wait for all deletions to complete before finishing teardown
+        latch.await(15, TimeUnit.SECONDS);
         Log.d("ProfileTest", "Test completed");
     }
 }

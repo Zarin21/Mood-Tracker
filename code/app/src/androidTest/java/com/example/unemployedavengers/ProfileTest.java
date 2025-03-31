@@ -204,7 +204,7 @@ public class ProfileTest {
         onView(withId(R.id.btnBack)).perform(click());
         login("User1","password1");
         Espresso.onIdle();
-        onView(withId(R.id.profileFragment)).perform(click());
+        onView(withId(R.id.profileFragmentt)).perform(click());
         onView(withText("User1")).check(matches(isDisplayed()));
         onView(withId(R.id.btnChangeUsername)).perform(click());
         onView(withId(R.id.etNewUsername)).perform(ViewActions.typeText("User2"),closeSoftKeyboard());
@@ -218,6 +218,7 @@ public class ProfileTest {
     public void testingSearchUserAndProfile(){
         login("User1","password1");
         Espresso.onIdle();
+        onView(withId(R.id.friendsHistoryFragment)).perform(click());
         onView(withId(R.id.friendsButton)).perform(click());
         onView(withId(R.id.etUsername)).perform(ViewActions.typeText("User2"),closeSoftKeyboard());
         onView(withId(R.id.search_button)).perform(click());
@@ -307,7 +308,7 @@ public class ProfileTest {
                     });
         }
 
-        latch.await();  // Wait for all deletions to complete before finishing teardown
+        latch.await(15, TimeUnit.SECONDS);
         Log.d("ProfileTest", "Test completed");
     }
 
