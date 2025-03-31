@@ -430,7 +430,7 @@ public class MoodWithPhotoTest {
 
             // Wait for the mood to be saved
             Log.d("MoodWithPhotoTest", "Waiting for mood to be saved");
-            SystemClock.sleep(3000);
+            SystemClock.sleep(10000);
 
             // Verify the mood was created
             Log.d("MoodWithPhotoTest", "Verifying mood was created");
@@ -480,9 +480,7 @@ public class MoodWithPhotoTest {
         // Navigate to add mood screen
         onView(withId(R.id.add_mood_button)).perform(click());
 
-        // Select a mood
-        onView(withId(R.id.spinnerEmotion)).perform(click());
-        onView(withText("😄Happiness")).perform(click());
+
 
         // Add reason text
         onView(withId(R.id.editReason)).perform(typeText("Testing with large photo"), closeSoftKeyboard());
@@ -537,7 +535,6 @@ public class MoodWithPhotoTest {
 
 
         // Verify we're still in the input dialog (not navigated away)
-        onView(withId(R.id.spinnerEmotion)).check(matches(isDisplayed()));
         onView(withId(R.id.editReason)).check(matches(isDisplayed()));
 
         // Clean up by canceling

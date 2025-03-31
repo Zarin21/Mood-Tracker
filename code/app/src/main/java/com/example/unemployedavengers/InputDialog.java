@@ -151,6 +151,7 @@ public class InputDialog extends DialogFragment {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ActivityResultLauncher<String> permissionLauncher;
 
+    private int fileSize;
     /**
      * A empty constructor needed
      */
@@ -305,7 +306,7 @@ public class InputDialog extends DialogFragment {
                         imageUri = result.getData().getData();
 
                         try {
-                            int fileSize = requireContext().getContentResolver()
+                            fileSize = requireContext().getContentResolver()
                                     .openInputStream(imageUri)
                                     .available(); // Get file size in bytes
 
@@ -417,6 +418,9 @@ public class InputDialog extends DialogFragment {
 
         //when user clicks confirm
         binding.buttonConfirm.setOnClickListener(v -> {
+            if(fileSize>=65536){
+                return;
+            }
             //get all relevant information
             String mood = (String) binding.spinnerEmotion.getSelectedItem();
             String reason = binding.editReason.getText().toString();
