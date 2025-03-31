@@ -183,7 +183,7 @@ public class Profile extends Fragment {
                                     .openInputStream(imageUri)
                                     .available(); // Get file size in bytes
 
-                            if (fileSize > 0.065536) { // 65536 bytes limit
+                            if (fileSize > 65536) { // 65536 bytes limit
                                 Toast.makeText(getContext(), "File size must be under 65536 bytes or 65.536 kb", Toast.LENGTH_SHORT).show();
                                 imageUri = null; // Reset imageUri
                             } else {
