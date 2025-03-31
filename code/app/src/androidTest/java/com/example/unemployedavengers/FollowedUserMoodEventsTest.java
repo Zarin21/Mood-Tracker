@@ -361,9 +361,7 @@ public class FollowedUserMoodEventsTest {
             deleteUserData(followedUserId, FOLLOWED_EMAIL, FOLLOWED_PASSWORD);
         }
 
-        if (followerUserId != null) {
-            deleteUserData(followerUserId, FOLLOWER_EMAIL, FOLLOWER_PASSWORD);
-        }
+
 
         // Sign out
         auth.signOut();
