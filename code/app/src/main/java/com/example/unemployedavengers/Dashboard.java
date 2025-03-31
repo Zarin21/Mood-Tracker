@@ -355,7 +355,6 @@ public class Dashboard extends BaseFragment {
                     if (location != null) {
                         currentLatitude = location.getLatitude();
                         currentLongitude = location.getLongitude();
-                        Toast.makeText(getContext(), "Current location set.", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getContext(), "Unable to retrieve current location", Toast.LENGTH_SHORT).show();
                     }
