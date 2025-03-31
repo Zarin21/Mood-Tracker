@@ -1,12 +1,23 @@
-/*
- * History Fragment - Displays the mood event history.
+/**
+ * History Fragment - Displays the user's mood event history and allows interaction for editing, deleting, and filtering events.
  *
  * Purpose:
- * - Loads mood events from Firestore.
- * - Sorts events in reverse chronological order and shows them in a ListView using MoodEventArrayAdapter.
- * - Handles user interactions for editing or deleting mood events.
+ * - The History fragment displays a list of mood events stored in Firestore. It sorts the events in reverse chronological order.
+ * - It supports filtering the events based on mood, reason, and recency (the last 7 days).
+ * - Users can edit or delete mood events from the list.
+ * - The fragment uses a `MoodEventArrayAdapter` to populate the list and allows interactions like viewing, editing, or deleting individual events.
+ * - It communicates with the `Filter` dialog to update the list according to user-specified criteria.
+ * - The `loadHistoryMoodEvents` method retrieves the events from Firestore, while methods like `onDeleteConfirmed` and `updateMoodEvent` handle deletion and updates to events.
  *
- */
+ * Key Features:
+ * - Displays mood events in a list, sorted by time (most recent first).
+ * - Supports filtering by mood, reason, and recent week.
+ * - Allows editing and deleting mood events.
+ * - Integrates with Firestore to persist the data.
+ * - Includes a confirmation dialog before deletion to prevent accidental removals.
+ *
+*/
+
 package com.example.unemployedavengers;
 
 import android.content.Context;

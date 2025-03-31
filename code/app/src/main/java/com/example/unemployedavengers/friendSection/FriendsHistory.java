@@ -1,3 +1,16 @@
+/**
+ * FriendsHistory Fragment for the Unemployed Avengers Android application.
+ *
+ * This fragment displays the list of users that the current user is following (i.e., their "friends").
+ * It includes functionality for:
+ * - Retrieving and displaying the list of followed users.
+ * - Navigating to the followed user's mood events when selected.
+ * - Displaying a button to view the mood events for followed users.
+ *
+ * The fragment retrieves the current user's followed users from Firestore and displays their usernames.
+ * If no followed users are found, an appropriate message is shown.
+ */
+
 package com.example.unemployedavengers.friendSection;
 
 import android.content.Context;
@@ -172,6 +185,7 @@ public class FriendsHistory extends Fragment {
 
                     updateUIForEmptyFriendsList();
                 });
+
     }
 
     private void updateUIForEmptyFriendsList() {

@@ -1,3 +1,19 @@
+/**
+ * FollowedUserMoodEventsTest.java
+ *
+ * Purpose:
+ * This class contains UI tests to verify the functionality of the feature where a user can view the 3 most recent mood events
+ * of the users they follow. The mood events are displayed in reverse chronological order, with the most recent mood appearing first.
+ * This test is designed to validate the implementation of user-following functionality and the proper display of mood events
+ * retrieved from Firestore. It also includes test setup, including creating test users, establishing relationships between them,
+ * and adding sample mood events. The main test case checks the display of the most recent 3 mood events from a followed user.
+ *
+ * Key Design Patterns:
+ * - Setup and Cleanup: Methods like setUp(), tearDown() ensure the test environment is properly initialized and cleaned up.
+ * - Firebase Integration: The test interacts with Firebase Authentication and Firestore for user creation, mood events, and relationships.
+ * - Espresso for UI Testing: The test uses Espresso to perform UI actions like clicking, typing, and verifying displayed elements.
+ */
+
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onData;
@@ -10,7 +26,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.containsString;
 
 import android.os.SystemClock;
 import android.util.Log;
@@ -258,6 +273,7 @@ public class FollowedUserMoodEventsTest {
         }
     }
 
+    //US 5.3.1
     @Test
     public void testFollowedUserMoodEvents() {
         // Login with follower user who will view the moods

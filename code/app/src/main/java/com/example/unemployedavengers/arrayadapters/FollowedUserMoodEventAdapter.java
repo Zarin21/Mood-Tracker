@@ -1,11 +1,12 @@
-/*
+/**
  * FollowedUserMoodEventAdapter - A custom adapter for displaying mood events from followed users.
  *
  * Purpose:
- * - Extends ArrayAdapter to display MoodEvent objects in a ListView with custom formatting
- * - Shows the username of the followed user alongside their mood information
- * - Applies appropriate color styling based on the mood type
- * - Loads and displays mood images if available
+ * - Extends ArrayAdapter to display MoodEvent objects in a ListView with custom formatting.
+ * - Displays the username of the followed user alongside their mood information.
+ * - Dynamically fetches and associates usernames from Firebase Firestore if not available locally.
+ * - Applies appropriate color styling to mood text based on mood type.
+ * - Formats and displays the timestamp of each mood event.
  */
 package com.example.unemployedavengers.arrayadapters;
 
@@ -80,32 +81,10 @@ public class FollowedUserMoodEventAdapter extends ArrayAdapter<MoodEvent> {
         if (moodEvent == null) return view;
 
         // Get references to views
-        TextView moodEmoji = view.findViewById(R.id.moodEmoji);
         TextView moodText = view.findViewById(R.id.mood_text);
         TextView dateText = view.findViewById(R.id.date_text);
         TextView usernameText = view.findViewById(R.id.usernameText);
 
-        // Set appropriate emoji based on mood
-        String mood = moodEvent.getMood().toLowerCase();
-        if (mood.contains("anger")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("confusion")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("disgust")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("fear")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("happiness")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("sadness")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("shame")) {
-            moodEmoji.setText("");
-        } else if (mood.contains("surprise")) {
-            moodEmoji.setText("");
-        } else {
-            moodEmoji.setText("😊"); // Default emoji
-        }
 
         // Set the mood text and apply color
         moodText.setText(moodEvent.getMood());

@@ -1,3 +1,18 @@
+/**
+ * Fragment that displays mood history from followed users.
+ *
+ * Features:
+ * - Shows public mood events from all followed users (or single user in detail view)
+ * - Supports filtering by mood, reason text, and recent week
+ * - Displays usernames alongside mood entries
+ * - Provides navigation to mood detail view
+ *
+ * Handles both:
+ * 1. Aggregate view of all followed users' moods
+ * 2. Single-user focused mood history view
+ *
+ * Uses FollowedUserMoodEventAdapter to render mood entries in a ListView.
+ */
 package com.example.unemployedavengers.friendSection;
 
 import android.content.Context;
@@ -21,7 +36,6 @@ import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.arrayadapters.FollowedUserMoodEventAdapter;
 
 import com.example.unemployedavengers.databinding.FollowedUserMoodEventsBinding;
-
 import com.example.unemployedavengers.models.FriendMoodEventsViewModel;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.example.unemployedavengers.models.MoodEventsViewModel;

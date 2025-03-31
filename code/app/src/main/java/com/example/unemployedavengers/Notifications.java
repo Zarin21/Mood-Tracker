@@ -1,3 +1,20 @@
+/*
+ * Notifications Fragment - Displays follow requests for the current user in the Unemployed Avengers application.
+ *
+ * This fragment handles:
+ * - Fetching follow requests from Firestore based on the current user's ID.
+ * - Displaying the follow requests in a ListView using a custom adapter (`FollowRequestAdapter`).
+ * - Managing the state of the notifications list and updating the UI accordingly.
+ *
+ * Features:
+ * - Retrieves a list of follow requests from Firestore by querying the user's subcollection of "requests".
+ * - Displays the list using a `FollowRequestAdapter` to show each follow request in the list.
+ * - Handles user authentication via FirebaseAuth and retrieves user details from FirebaseFirestore.
+ *
+ * Outstanding Issues/Improvements:
+ * - Following someone that you followed already is possible
+ */
+
 package com.example.unemployedavengers;
 
 import android.os.Bundle;
@@ -6,14 +23,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.unemployedavengers.DAO.IUserDAO;
-import com.example.unemployedavengers.adapters.FollowRequestAdapter;
+import com.example.unemployedavengers.arrayadapters.FollowRequestAdapter;
 import com.example.unemployedavengers.implementationDAO.UserDAOImplement;
 import com.example.unemployedavengers.models.User;
 import com.google.firebase.auth.FirebaseAuth;

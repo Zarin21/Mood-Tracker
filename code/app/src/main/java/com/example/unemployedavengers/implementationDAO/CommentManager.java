@@ -1,6 +1,15 @@
-package com.example.unemployedavengers.implementationDAO;
+/**
+ * CommentManager handles operations related to comments in Firestore, such as adding, fetching,
+ * and deleting comments. It also supports nested comment replies.
+ *
+ * Key Methods:
+ * - getCommentsForMoodEvent: Fetches comments for a specific mood event.
+ * - getRepliesForComment: Retrieves replies for a given comment.
+ * - addComment: Adds a new comment, either top-level or a reply.
+ * - deleteComment: Deletes a comment, handling replies if the comment is a top-level comment.
+ */
 
-import android.util.Log;
+package com.example.unemployedavengers.implementationDAO;
 
 import com.example.unemployedavengers.models.Comment;
 import com.google.android.gms.tasks.Task;

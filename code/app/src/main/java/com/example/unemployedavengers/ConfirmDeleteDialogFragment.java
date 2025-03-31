@@ -1,9 +1,16 @@
-/*
- * ConfirmDeleteDialogFragment - A DialogFragment to confirm deletion of a mood event.
+/**
+ * ConfirmDeleteDialogFragment - A DialogFragment that prompts the user to confirm the deletion of a mood event.
  *
  * Purpose:
- * - Displays a confirmation prompt with options to "Delete" or "Cancel".
- * - Sends the deletion confirmation result back to the parent fragment via FragmentResult.
+ * - Displays a confirmation dialog with options to "Delete" or "Cancel".
+ * - Sends a result back to the parent fragment when the user confirms the deletion.
+ * - The parent fragment can then take appropriate action, such as removing the mood event from the list.
+ *
+ * Key Features:
+ * - Custom dialog with a title, message, and buttons for user confirmation.
+ * - Uses FragmentResult API to send the deletion confirmation result back to the parent fragment.
+ * - Modifies button text color for a customized user interface (UI) experience.
+ *
  */
 package com.example.unemployedavengers;
 

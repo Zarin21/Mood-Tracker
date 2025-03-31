@@ -1,3 +1,20 @@
+/**
+ * MoodWithPhotoTest.java
+ *
+ * Instrumented UI tests for the photo attachment functionality in mood events (US 02.02.01).
+ *
+ * This test verifies that users can:
+ * - Attach photos to mood events
+ * - Have those photos properly saved and displayed
+ * - View the photos when reviewing mood events
+ *
+ * Key Features Tested:
+ * - Image capture/selection UI flow
+ * - Image processing and storage
+ * - Image display in mood details
+ * - Integration with Firebase storage
+ *
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -21,6 +38,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.ScrollView;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -281,6 +299,7 @@ public class MoodWithPhotoTest {
         }
     }
 
+    //US 2.2.1
     @Test
     public void testAddMoodWithPhoto() throws InterruptedException {
         try {
@@ -381,9 +400,10 @@ public class MoodWithPhotoTest {
                 throw e;
             }
 
+
             // Wait for the mood to be saved
             Log.d("MoodWithPhotoTest", "Waiting for mood to be saved");
-            SystemClock.sleep(3000);
+            SystemClock.sleep(5000);
 
             // Verify the mood was created
             Log.d("MoodWithPhotoTest", "Verifying mood was created");

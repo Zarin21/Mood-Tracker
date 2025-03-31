@@ -1,4 +1,14 @@
-package com.example.unemployedavengers.adapters;
+/**
+ * FollowRequestAdapter - A custom ArrayAdapter for handling follow requests.
+ *
+ * Purpose:
+ * - Displays a list of follow requests in a ListView.
+ * - Provides UI elements (buttons) for accepting or ignoring follow requests.
+ * - Uses an IUserDAO implementation to interact with the database.
+ * - Updates the UI dynamically when a request is processed.
+ *
+ */
+package com.example.unemployedavengers.arrayadapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

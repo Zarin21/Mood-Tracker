@@ -1,3 +1,16 @@
+/**
+ * MoodDetailFragment displays detailed information about a selected mood event.
+ *
+ * This fragment includes functionality for:
+ * - Displaying mood event details (mood type, time, reason, situation, and image).
+ * - Loading and displaying top-level comments and their replies.
+ * - Enabling users to add comments and replies.
+ * - Navigating back to the previous screen.
+ *
+ * The fragment retrieves the selected mood event from the arguments, fetches related comments and replies from Firestore,
+ * and allows users to interact by submitting comments or replies. The comment section dynamically updates based on user interactions.
+ */
+
 package com.example.unemployedavengers.friendSection;
 
 import static android.view.View.GONE;
@@ -5,6 +18,8 @@ import static android.view.View.VISIBLE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,22 +28,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.arrayadapters.CommentAdapter;
 import com.example.unemployedavengers.databinding.MoodDetailBinding;
 import com.example.unemployedavengers.implementationDAO.CommentManager;
 import com.example.unemployedavengers.models.Comment;
 import com.example.unemployedavengers.models.MoodEvent;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,7 +105,7 @@ public class MoodDetailFragment extends Fragment {
         TextView commentCount = view.findViewById(R.id.comment_count);
 
         // Set up comment adapter
-        commentAdapter = new CommentAdapter(requireContext(), comments);
+        commentAdapter = new CommentAdapter(requireContext(), comments, currentUserId);
         commentsList.setAdapter(commentAdapter);
 
         // Get mood event from arguments
@@ -116,16 +137,55 @@ public class MoodDetailFragment extends Fragment {
             }
         });
 
-        // Set up Reply Listener
         commentsList.setOnItemClickListener(((adapterView, view1, i, l) -> {
             enterReplyMode(((Comment) commentsList.getItemAtPosition(i)).getId(), currentUsername);
         }));
 
+        commentsList.setOnItemLongClickListener((adapterView, view1, i, l) -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Delete Comment");
+                builder.setMessage("Are you sure you want to delete this comment?");
+                builder.setPositiveButton("Delete", (dialog, which) -> {
+                    CommentManager commentManager = new CommentManager();
+                    commentManager.deleteComment(comments.get(i).getId())
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getActivity(), "Comment deleted", Toast.LENGTH_SHORT).show();
+                                loadComments();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getActivity(), "Failed to delete comment", Toast.LENGTH_SHORT).show();
+                            });
+                });
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                positiveButton.setTextColor(ContextCompat.getColor(getActivity(), R.color.thememain));
+                negativeButton.setTextColor(ContextCompat.getColor(getActivity(), R.color.thememain));
+                return true;
+        });
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userDocRef = db.collection("users").document(moodEvent.getUserId());
+        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String profilePicUrl = documentSnapshot.getString("avatar");
+                if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                    Glide.with(getActivity()).load(profilePicUrl).into((ImageView) view.findViewById(R.id.event_author_picture));
+                }
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("CommentAdapter", "Failed to load profile picture", e);
+        });
     }
 
     private void displayMoodEvent() {
         // Display mood information
         binding.tvMoodType.setText(moodEvent.getMood());
+
+        // Set appropriate mood color based on mood type
+        binding.tvMoodType.setTextColor(getMoodColor(requireContext(), moodEvent.getMood()));
 
         // Format timestamp
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -166,13 +226,31 @@ public class MoodDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * Helper method to set consistent mood colors based on mood type
+     * @param context Application context
+     * @param mood The mood string to determine color for
+     * @return The appropriate color for the mood
+     */
+    private int getMoodColor(Context context, String mood) {
+        String lowerMood = mood.toLowerCase(); // Normalize case
+
+        if (lowerMood.contains("anger")) return Color.RED;
+        if (lowerMood.contains("confusion")) return ContextCompat.getColor(context, R.color.orange);
+        if (lowerMood.contains("disgust")) return Color.GREEN;
+        if (lowerMood.contains("fear")) return Color.BLUE;
+        if (lowerMood.contains("happiness")) return ContextCompat.getColor(context, R.color.baby_blue);
+        if (lowerMood.contains("sadness")) return Color.GRAY;
+        if (lowerMood.contains("shame")) return ContextCompat.getColor(context, R.color.yellow);
+        if (lowerMood.contains("surprise")) return ContextCompat.getColor(context, R.color.pink);
+
+        return ContextCompat.getColor(context, R.color.black); // Default color
+    }
+
     private void loadComments() {
         if (moodEvent == null || moodEvent.getId() == null) {
             return;
         }
-
-        // To test
-        Log.d("MOOD EVENT", moodEvent.getId());
 
         commentManager.getCommentsForMoodEvent(moodEvent.getId(), false)
                 .addOnSuccessListener(topLevelComments -> {
