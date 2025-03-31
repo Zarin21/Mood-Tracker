@@ -259,6 +259,7 @@ public class FollowedUserMoodEvents extends Fragment {
                 // Create bundle and add the selected mood event
                 Bundle args = new Bundle();
                 args.putSerializable("selected_mood_event", selectedMoodEvent);
+                args.putString("source", "FollowedUserMoodEvents");
 
                 // Navigate to the mood detail fragment
                 Navigation.findNavController(view)
