@@ -37,7 +37,6 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:background="@drawable/circle_background"
-        android:backgroundTint="#9C27B0"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guidelineCenter" />
@@ -53,17 +52,16 @@
     <!-- User profile icon -->
     <ImageView
         android:id="@+id/profileIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:src="@drawable/ic_person"
-        app:tint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="@+id/profileCircle"
         app:layout_constraintEnd_toEndOf="@+id/profileCircle"
         app:layout_constraintStart_toStartOf="@+id/profileCircle"
         app:layout_constraintTop_toTopOf="@+id/profileCircle"
-        android:scaleType="centerCrop"
         android:background="@drawable/circle_background"
-        android:clipToOutline="true" />
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"/>
 
     <!-- Friend ID/Username - FIXED POSITION -->
     <TextView

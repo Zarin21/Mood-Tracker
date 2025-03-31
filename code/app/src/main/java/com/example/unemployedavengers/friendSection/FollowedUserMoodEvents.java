@@ -109,7 +109,7 @@ public class FollowedUserMoodEvents extends Fragment {
             singleUsername = getArguments().getString("followedUsername");
         }
 
-        //hide the button if we are in single view
+        // Hide the button if we are in single view
         if (singleUserView) {
             binding.filterButton.setVisibility(View.GONE);
             binding.filterButton.setEnabled(false);
