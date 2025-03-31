@@ -146,7 +146,7 @@ public class MoodDetailFragment extends Fragment {
         });
 
         commentsList.setOnItemClickListener(((adapterView, view1, i, l) -> {
-            enterReplyMode(((Comment) commentsList.getItemAtPosition(i)).getId(), currentUsername);
+            enterReplyMode(((Comment) commentsList.getItemAtPosition(i)).getId(), ((Comment) commentsList.getItemAtPosition(i)).getUsername());
         }));
 
         commentsList.setOnItemLongClickListener((adapterView, view1, i, l) -> {

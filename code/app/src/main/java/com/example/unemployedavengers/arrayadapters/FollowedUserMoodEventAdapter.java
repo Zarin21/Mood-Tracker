@@ -18,12 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.unemployedavengers.R;
 import com.example.unemployedavengers.models.MoodEvent;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -103,6 +105,19 @@ public class FollowedUserMoodEventAdapter extends ArrayAdapter<MoodEvent> {
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference userDocRef = db.collection("users").document(userId);
+
+            ImageView image = (ImageView) view.findViewById(R.id.profileIcon);
+
+            userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String profilePicUrl = documentSnapshot.getString("avatar");
+                    if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                        Glide.with(context).load(profilePicUrl).into(image);
+                    }
+                }
+            }).addOnFailureListener(e -> {
+                Log.e("CommentAdapter", "Failed to load profile picture", e);
+            });
 
             userDocRef.get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
