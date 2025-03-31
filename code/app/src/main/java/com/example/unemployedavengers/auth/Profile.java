@@ -119,7 +119,7 @@ public class Profile extends Fragment {
                                 Toast.makeText(getContext(), "User name changed to: " + newUsername, Toast.LENGTH_LONG).show();
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "This username is taken, please try another.", Toast.LENGTH_LONG).show();
                             });
                     dialog.dismiss();
                 } else {
