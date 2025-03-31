@@ -183,8 +183,8 @@ public class Profile extends Fragment {
                                     .openInputStream(imageUri)
                                     .available(); // Get file size in bytes
 
-                            if (fileSize > 2 * 1024 * 1024) { // 2MB limit
-                                Toast.makeText(getContext(), "File size must be under 2MB", Toast.LENGTH_SHORT).show();
+                            if (fileSize > 0.065536) { // 65536 bytes limit
+                                Toast.makeText(getContext(), "File size must be under 65536 bytes or 65.536 kb", Toast.LENGTH_SHORT).show();
                                 imageUri = null; // Reset imageUri
                             } else {
                                 imagePreview.setImageURI(imageUri);
