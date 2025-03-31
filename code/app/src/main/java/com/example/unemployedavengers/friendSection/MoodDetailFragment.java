@@ -1,15 +1,26 @@
 /**
- * MoodDetailFragment displays detailed information about a selected mood event.
+ * MoodDetailFragment - Displays detailed information about a selected mood event.
  *
- * This fragment includes functionality for:
- * - Displaying mood event details (mood type, time, reason, situation, and image).
- * - Loading and displaying top-level comments and their replies.
- * - Enabling users to add comments and replies.
- * - Navigating back to the previous screen.
+ * This fragment is responsible for displaying the details of a mood event such as the mood type,
+ * time, reason, situation, and any associated image. Additionally, it allows users to view and interact
+ * with comments and replies related to the mood event, including adding new comments, replies, and deleting
+ * existing ones.
  *
- * The fragment retrieves the selected mood event from the arguments, fetches related comments and replies from Firestore,
- * and allows users to interact by submitting comments or replies. The comment section dynamically updates based on user interactions.
+ * Key Features:
+ * - Display mood event details (mood, time, reason, situation, and image).
+ * - Allow users to add top-level comments or replies to existing comments.
+ * - Display comments and replies dynamically from Firebase Firestore.
+ * - Handle comment deletion and update the UI accordingly.
+ * - Allows navigation back to the previous screen with context-aware routing.
+ *
+ * Outstanding Issues:
+ * - Ensure the UI updates in real-time when other users add comments or replies (currently, only the user
+ *   who adds comments sees their changes immediately).
+ * - Handle potential edge cases related to missing or incomplete mood event data (e.g., missing image URL,
+ *   username, etc.).
+ * - Optimize comment loading performance, particularly for mood events with a large number of comments.
  */
+
 
 package com.example.unemployedavengers.friendSection;
 

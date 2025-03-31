@@ -3,12 +3,28 @@
  *
  * Purpose:
  * - Handles the first step of the password reset process.
- * - Inflates the password reset layout using view binding.
- * - Allows users to return to the login screen.
- * - Verifies if a user exists in the database using the UserDAO.
- * - If the user exists, navigates to the next step in the reset process.
- * - Displays appropriate error messages using Toast notifications.
+ * - Inflates the password reset layout using view binding for efficient view management.
+ * - Allows users to navigate back to the login screen.
+ * - Verifies if a user exists in the database using the UserDAO interface.
+ * - If the user exists, navigates to the next step in the password reset process.
+ * - Provides appropriate feedback via Toast notifications on success or failure.
+
+ * Features:
+ * - Validates the username entered by the user and checks its existence in the system.
+ * - Handles user navigation to the second step of password reset upon successful verification.
+ * - Displays error messages if the user does not exist or an error occurs.
+
+ * Design Pattern:
+ * - Follows the fragment-based structure for managing the password reset process.
+ * - Utilizes View Binding for simplifying UI interactions and avoiding null pointer issues.
+ * - Implements navigation between fragments based on user actions.
+ *
+ * Outstanding Issues:
+ * - There is no handling for cases where the user enters an incorrect or invalid username format.
+ * - Password reset flow lacks security considerations such as limiting the number of attempts or CAPTCHA implementation.
+ * - Could benefit from additional user input validation (e.g., checking for empty fields or username format).
  */
+
 
 package com.example.unemployedavengers.auth;
 

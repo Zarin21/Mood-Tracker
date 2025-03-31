@@ -4,9 +4,19 @@
  * Purpose:
  * - Displays comment details including username, content, time, and profile picture.
  * - Threaded replies by mapping parent comments to their replies.
- * - Retrieve and stores user profile pictures from firebase.
+ * - Retrieve and store user profile pictures from Firebase.
  * - Updates the UI when new replies are added.
+ *
+ * Known Issues:
+ * - There is a potential issue with handling nested replies and dynamically loading them as the number of replies increases. The current implementation could lead to performance degradation in large datasets.
+ * - The like/unlike feature is dependent on real-time updates in Firebase; if there is network lag or disconnection, the UI might not accurately reflect the user's actions until the database syncs again.
+ * - Profile pictures are fetched asynchronously, which could result in delays in displaying them, especially if the user has a poor network connection.
+ *
+ * Design Patterns:
+ * - The `CommentAdapter` follows the Adapter design pattern by providing a way to bind comment data to the UI. It also uses caching for user profile pictures, minimizing repeated network calls.
+ * - The design supports threading of comments and replies, allowing for nested conversations within the ListView.
  */
+
 package com.example.unemployedavengers.arrayadapters;
 
 import android.content.Context;

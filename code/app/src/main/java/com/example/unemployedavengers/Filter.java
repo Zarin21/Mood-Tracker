@@ -1,17 +1,54 @@
 /**
- * Filter - A DialogFragment that presents filter options to the user for mood event filtering.
+ * Filter - DialogFragment for configuring mood event filtering criteria.
  *
- * Purpose:
- * - This dialog provides options to filter mood events based on different criteria, such as mood, reason, and recency.
- * - It allows users to select specific mood reasons and a time frame (recent week) for filtering the data.
- * - The dialog interface includes a spinner for selecting mood types, a checkbox for filtering by mood or reason, and an input field for the reason filter.
- * - The dialog supports a "See All" button to reset the filters and display all mood events.
+ * Design Pattern:
+ * - Implements DialogFragment pattern for modal UI
+ * - Uses Observer pattern via FilterListener interface
+ * - Follows Single Responsibility Principle for filtering logic
  *
- * Key Features:
- * - The user can apply a filter based on mood type, reason, or week.
- * - Customizes the spinner dropdown with colors corresponding to different mood types.
- * - Handles validation of the reason filter input to ensure it contains only one word.
- * - The dialog communicates the selected filter criteria back to the parent fragment via the `FilterListener` interface.
+ * Key Responsibilities:
+ * 1. Filter Configuration:
+ *    - Provides UI for selecting mood types, reason keywords, and time windows
+ *    - Validates filter criteria before application
+ *    - Supports resetting filters via "See All" option
+ *
+ * 2. Visual Feedback:
+ *    - Color-coded mood type spinner for intuitive selection
+ *    - Input validation with error messages
+ *    - Consistent styling with app theme
+ *
+ * 3. Data Communication:
+ *    - Passes filter selections to parent via callback interface
+ *    - Maintains loose coupling with parent components
+ *    - Handles dialog lifecycle events properly
+ *
+ * Technical Implementation:
+ * - Custom ArrayAdapter for colored spinner items
+ * - Input validation for single-word reason filtering
+ * - Dialog button customization (color/style)
+ * - Bundle arguments for configuration
+ *
+ * Outstanding Issues/TODOs:
+ * 1. No persistence of last used filters
+ * 2. Limited to single-word reason filtering
+ * 3. Hardcoded color values could use theme references
+ * 4. No keyboard auto-focus management
+ * 5. Could benefit from filter presets
+ *
+ * Dependencies:
+ * - Parent component implementing FilterListener
+ * - App color resources (R.color.*)
+ * - String array resources (R.array.spinner_items)
+ *
+ * Usage Example:
+ * Filter filter = new Filter();
+ * filter.setFilterListener((mood, reason, week, text, selection, all) -> {
+ *     // Handle filter changes
+ * });
+ * filter.show(getParentFragmentManager(), "filter");
+ *
+ * @see DialogFragment
+ * @see FilterListener
  */
 
 package com.example.unemployedavengers;

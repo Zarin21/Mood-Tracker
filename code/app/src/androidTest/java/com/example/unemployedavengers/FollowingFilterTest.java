@@ -1,3 +1,49 @@
+/**
+ * FollowingFilterTest - End-to-end test suite for filtering followed users' mood events.
+ *
+ * Design Pattern:
+ * - Implements Page Object Model pattern for test organization
+ * - Uses Test Data Builder pattern for test mood creation
+ * - Follows Test Fixture pattern for setup/teardown
+ * - Implements Flow Testing pattern for multi-step user scenarios
+ *
+ * Key Responsibilities:
+ * 1. Test Coverage:
+ *    - Tests filtering by recent week (US 05.04.01)
+ *    - Tests filtering by emotional state (US 05.05.01)
+ *    - Tests filtering by reason text (US 05.06.01)
+ *
+ * 2. Test Infrastructure:
+ *    - Configures Firebase emulator for isolated testing
+ *    - Creates test users with follow relationships
+ *    - Generates varied test moods with different characteristics
+ *    - Implements robust login and navigation flows
+ *
+ * 3. Test Methodology:
+ *    - Creates controlled test environment before each test
+ *    - Validates filter functionality through UI interactions
+ *    - Provides detailed logging for test debugging
+ *
+ * Technical Implementation:
+ * - Uses Espresso for UI testing
+ * - Leverages Firebase emulator for backend testing
+ * - Implements CountDownLatch for async operations
+ * - Uses JUnit 4 testing framework
+ *
+ * Dependencies:
+ * - AndroidX Test (Espresso)
+ * - Firebase Emulator Suite
+ * - JUnit 4
+ * - CustomMatchers helper class
+ *
+ * Lifecycle Notes:
+ * - Uses @BeforeClass for emulator setup
+ * - @Before creates fresh test data for each test
+ * - @After handles comprehensive cleanup
+ * - Each test maintains independent state
+ *
+ * @see CustomMatchers
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onData;

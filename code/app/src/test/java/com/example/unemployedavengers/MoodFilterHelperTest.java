@@ -1,3 +1,27 @@
+/**
+ * MoodFilterHelperTest.java
+ *
+ * Unit tests for the MoodFilterHelper utility class which handles filtering of mood events
+ * in the UnemployedAvengers application. Tests verify the filtering logic for:
+ * - No filters case (returns all events)
+ * - Mood type filtering
+ * - Time-based filtering (recent events)
+ * - Combination filters
+ *
+ * Testing Approach:
+ * - Uses JUnit 4 test framework
+ * - Follows Arrange-Act-Assert pattern
+ * - Tests both individual filters and their combinations
+ * - Verifies edge cases for time-based filtering
+ * - Uses realistic test data with proper timestamps
+ *
+ * Outstanding Issues:
+ * - No tests for empty input list handling
+ * - No tests for invalid filter combinations
+ * - No tests for case sensitivity in mood filtering
+ * - No tests for timezone handling in date comparisons
+ * - No tests for maximum date range filtering
+ */
 package com.example.unemployedavengers;
 
 import org.junit.Test;

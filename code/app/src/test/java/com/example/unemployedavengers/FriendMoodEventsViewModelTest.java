@@ -1,3 +1,22 @@
+/**
+ * FriendMoodEventsViewModelTest.java
+ *
+ * Unit tests for the FriendMoodEventsViewModel class in the UnemployedAvengers application.
+ *
+ * This test class verifies the behavior of the ViewModel responsible for managing
+ * and exposing friend mood events data to the UI layer using LiveData.
+ *
+ * Key Test Cases:
+ * - Verifies that mood events are properly set and exposed through LiveData
+ * - Ensures observers are notified when mood events are updated
+ * - Tests the integration between ViewModel and LiveData components
+ *
+ * Testing Approach:
+ * - Uses Mockito to mock Observer for verifying LiveData updates
+ * - Leverages InstantTaskExecutorRule for synchronous LiveData testing
+ * - Follows standard Arrange-Act-Assert pattern
+ *
+ */
 package com.example.unemployedavengers;
 
 import static org.junit.Assert.assertEquals;

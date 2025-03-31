@@ -1,3 +1,29 @@
+/**
+ * OfflineTest.java
+ *
+ * Instrumented integration tests for verifying offline functionality in the UnemployedAvengers app.
+ *
+ * This test class verifies:
+ * 1. User authentication works in offline mode using cached credentials
+ * 2. Mood operations (add/edit/delete) are properly queued and synced when connectivity is restored
+ * 3. Data consistency between local storage and Firestore after sync
+ *
+ * The tests follow a strict order (NAME_ASCENDING) to simulate a complete user workflow:
+ * 1. Initial login and credential caching
+ * 2. Offline mood addition
+ * 3. Sync verification after coming online
+ * 4. Offline mood editing
+ * 5. Sync verification
+ * 6. Offline mood deletion
+ * 7. Final sync verification
+ *
+ * Key Components:
+ * - Uses Firebase Emulator Suite for local testing
+ * - Tests SharedPreferences credential caching
+ * - Verifies Firestore offline persistence
+ * - Simulates network connectivity changes via ADB commands
+ *
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;

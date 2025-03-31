@@ -1,13 +1,28 @@
 /**
- * CommentManager handles operations related to comments in Firestore, such as adding, fetching,
- * and deleting comments. It also supports nested comment replies.
+ * CommentManager - Manages operations related to comments in Firestore, including adding, fetching,
+ * and deleting comments, as well as handling nested replies.
+ *
+ * Purpose:
+ * - Provides methods for adding, fetching, and deleting comments in a Firestore database.
+ * - Supports threaded comments by allowing replies to be associated with parent comments.
+ * - Manages the update and removal of reply references when deleting comments.
  *
  * Key Methods:
- * - getCommentsForMoodEvent: Fetches comments for a specific mood event.
+ * - getCommentsForMoodEvent: Fetches comments for a specific mood event, with an option to include replies.
  * - getRepliesForComment: Retrieves replies for a given comment.
- * - addComment: Adds a new comment, either top-level or a reply.
- * - deleteComment: Deletes a comment, handling replies if the comment is a top-level comment.
+ * - addComment: Adds a new comment (either top-level or a reply), and manages replies for parent comments.
+ * - deleteComment: Deletes a comment, including handling the deletion of replies if it's a top-level comment.
+ *
+ * Known Issues:
+ * - Deletion of comments can be slow, especially if there are many replies associated with the comment.
+ * - There could be race conditions in cases where multiple operations (e.g., adding and deleting comments) are performed concurrently, which may lead to inconsistent data (for example, replyIds may not be properly updated).
+ * - The method `deleteComment` assumes replies are only stored in the `replyIds` field. If the data structure changes (e.g., replies stored elsewhere), this code will need to be updated.
+ *
+ * Design Patterns:
+ * - This class follows the Data Access Object (DAO) design pattern, isolating the application logic from the data persistence layer (Firestore).
+ * - The operations are asynchronous, using Firebase Tasks to handle the database interactions, allowing for non-blocking UI updates.
  */
+
 
 package com.example.unemployedavengers.implementationDAO;
 

@@ -3,12 +3,28 @@
  *
  * Purpose:
  * - Manages the second step of the password reset process.
- * - Retrieves the username from the previous fragment.
- * - Validates and confirms the new password.
- * - Updates the user's password securely via the UserDAO.
- * - Navigates back to the login screen upon successful reset.
- * - Displays error messages with a custom Toast notification.
+ * - Retrieves the username from the previous fragment and validates the new password.
+ * - Allows the user to confirm and set a new password.
+ * - Updates the user's password securely using the UserDAO interface.
+ * - Navigates to the login screen upon successful password reset.
+ * - Provides user feedback via custom Toast notifications for error messages.
+
+ * Features:
+ * - Ensures both the password and confirm password fields are filled and match.
+ * - Displays success or failure feedback with a custom Toast message.
+ * - Supports navigation back to the previous password reset screen and the login screen after reset completion.
+
+ * Design Pattern:
+ * - Follows the fragment-based architecture for the password reset workflow.
+ * - Utilizes View Binding for efficient view handling and interaction with UI components.
+ * - Implements custom Toast notifications for error handling.
+
+ * Outstanding Issues:
+ * - There is no password strength validation or complexity checks (e.g., minimum length, special characters).
+ * - Error handling could be improved with more specific messages for different failure cases.
+ * - The password reset flow currently doesn't have any rate-limiting or account-lockout measures in case of multiple failed attempts.
  */
+
 
 package com.example.unemployedavengers.auth;
 

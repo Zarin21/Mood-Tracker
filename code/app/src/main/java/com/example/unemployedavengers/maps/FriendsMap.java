@@ -1,19 +1,30 @@
 /**
- * FriendsMap is a Fragment that displays a map with mood event markers for friends.
- * It retrieves mood events from a shared ViewModel and places custom markers
- * on the map based on the events' locations and moods.
+ * FriendsMap - A Fragment that displays a map with mood event markers for friends.
+ * It retrieves mood events from a shared ViewModel and places custom markers on the map
+ * based on the events' locations and moods.
  *
- * Key Features:
- * - Observes mood events from a ViewModel and updates the map with markers.
- * - Each marker represents a mood event with mood text and username.
- * - Custom markers are created based on the mood of the event.
- * - The map camera zooms to the first event’s location if available.
+ * Purpose:
+ * - Displays mood events as markers on a map for a friend-based mood tracking application.
+ * - Each marker represents a mood event with mood text and the username of the person who created it.
+ * - Custom markers are generated based on the mood and are color-coded for easy recognition.
+ * - The camera zooms to the first mood event's location if available.
  *
- * Methods:
- * - onViewCreated: Observes the mood events and triggers the map update.
- * - onMapReady: Adds markers for mood events on the map.
- * - createCustomMarker: Creates a custom bitmap marker with the mood and username.
+ * Key Methods:
+ * - onViewCreated: Observes the mood events from the ViewModel and triggers the map update.
+ * - onMapReady: Adds mood event markers to the map when it is ready.
+ * - createCustomMarker: Creates a custom bitmap marker that includes the mood and username.
+ *
+ * Known Issues:
+ * - If the list of mood events is empty or null, the camera will not move, but no error is shown to the user.
+ * - The method of updating the map (by adding markers for each mood event) could be inefficient if there are too many events.
+ * - Memory leaks could potentially occur if markers are not properly cleaned up when the fragment is destroyed, especially if the ViewModel is still active.
+ * - The custom markers' layout may be suboptimal on different screen sizes, and future adjustments to their size or text might be necessary.
+ *
+ * Design Patterns:
+ * - This fragment is an example of the Observer pattern, where the fragment observes changes to the `LiveData` in the ViewModel and updates the UI accordingly.
+ * - It also follows the MVC (Model-View-Controller) pattern, with the map and UI components functioning as the view, while mood events and logic are handled by the ViewModel.
  */
+
 
 package com.example.unemployedavengers.maps;
 

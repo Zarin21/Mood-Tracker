@@ -2,9 +2,18 @@
  * StartScreen Fragment for the Unemployed Avengers Android application.
  *
  * Purpose:
- * - Serves as the entry point of the app, providing users with options to either sign up or log in.
+ * - This fragment serves as the entry point of the application, allowing users to either sign up or log in.
+ * - The fragment provides navigation options to direct users to the sign-up screen or the login screen.
  *
+ * Design Pattern:
+ * - The fragment follows a simple View-based architecture, using Android's Navigation component to handle screen transitions.
+ *
+ * Outstanding Issues:
+ * - There is no validation or error handling for potential navigation failures, such as network issues or navigation actions failing.
+ * - A loading indicator could be useful during screen transitions to improve user experience, especially when navigating between multiple fragments.
+ * - The buttons are statically linked to specific fragments, which may limit flexibility for future features, like adding guest access or other authentication methods.
  */
+
 
 package com.example.unemployedavengers.auth;
 

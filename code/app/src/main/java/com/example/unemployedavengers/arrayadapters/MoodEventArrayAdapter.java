@@ -2,10 +2,22 @@
  * MoodEventArrayAdapter - Custom ArrayAdapter for displaying MoodEvent objects.
  *
  * Purpose:
- * - Binds MoodEvent objects to a custom layout (mood_event.xml).
- * - Displays only the mood and its timestamp in a ListView.
- * - Applies color styling to the mood text based on mood type.
+ * - Binds `MoodEvent` objects to a custom layout (`mood_event.xml`) for display in a `ListView`.
+ * - Displays the mood and its timestamp for each event.
+ * - Applies color styling to the mood text based on the mood type (e.g., red for anger, blue for fear).
+ * - Utilizes `SimpleDateFormat` to format the timestamp for each `MoodEvent` for better readability.
+ *
+ * Design Pattern:
+ * - Implements the `ArrayAdapter` design pattern to efficiently display a list of objects in a `ListView`.
+ * - Uses a custom layout (`mood_event.xml`) to define how each `MoodEvent` is represented visually.
+ * - Ensures that mood text is color-coded to represent different emotional states.
+ *
+ * Outstanding Issues:
+ * - The mood color assignment is currently based on basic string matching, which may not be robust enough for more complex mood classifications (e.g., synonyms, different language support).
+ * - The timestamp format is static (YYYY-MM-DD HH:mm), which may need localization or further flexibility based on user preferences or regional settings.
+ * - If there are many `MoodEvent` objects, performance could be impacted, as each `getView()` method inflates the layout and calculates the color for each item. Optimization might be required if the list grows significantly.
  */
+
 package com.example.unemployedavengers.arrayadapters;
 
 import android.content.Context;

@@ -2,12 +2,29 @@
  * Profile Fragment for the Unemployed Avengers Android application.
  *
  * Purpose:
- * - Manages user profile interactions, including username changes, password updates, and avatar selection.
- * - Retrieves and displays user profile information.
- * - Provides secure authentication operations using the UserDAO.
- * - Integrates Firebase Storage for handling profile pictures.
+ * - Manages user profile interactions, such as updating the username, password, and avatar.
+ * - Retrieves and displays the current user's profile data (username and avatar).
+ * - Provides secure authentication operations using the UserDAO interface for actions like changing the username or password.
+ * - Integrates with Firebase Storage to upload and display the user's avatar.
  *
+ * Features:
+ * - Allows users to change their username and password through dialog boxes with validation.
+ * - Supports avatar selection through a media picker, with file size restrictions and upload to Firebase Storage.
+ * - Displays the current avatar using Glide for image loading and caching.
+ * - Uses a custom `UserDAO` implementation to interact with the backend and Firebase.
+ *
+ * Design Pattern:
+ * - Follows the View-based architecture in Android, using fragments and dialogs to facilitate user interaction.
+ * - Uses Firebase Storage for file handling (profile pictures).
+ * - Implements Activity Result APIs for permission handling and image picking.
+
+ * Outstanding Issues:
+ * - There are no password complexity checks, such as requiring a certain length or character types.
+ * - Error handling for file uploads could be improved with more specific messages.
+ * - Image size validation might be restrictive (only allowing 65KB for profile pictures), which could frustrate users.
+ * - There’s no fallback or retry mechanism in case of network or upload failures.
  */
+
 
 package com.example.unemployedavengers.auth;
 

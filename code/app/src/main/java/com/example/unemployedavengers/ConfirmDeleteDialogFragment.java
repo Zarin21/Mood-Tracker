@@ -11,6 +11,10 @@
  * - Uses FragmentResult API to send the deletion confirmation result back to the parent fragment.
  * - Modifies button text color for a customized user interface (UI) experience.
  *
+ * Outstanding Issues:
+ * - There is no feedback given to the user after pressing "Delete" to confirm the action (e.g., showing a loading spinner or toast message).
+ * - The dialog currently only handles deletion confirmation, but additional confirmation details or error handling might be required.
+ * - No handling of scenarios where the mood event to be deleted no longer exists or has been modified in the database since the user initiated deletion.
  */
 package com.example.unemployedavengers;
 

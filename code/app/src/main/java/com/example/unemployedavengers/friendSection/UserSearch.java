@@ -6,6 +6,22 @@
  * - Queries the user database for matching usernames and displays the results.
  * - Allows the user to select a username from the search results to view their profile.
  * - Provides feedback for invalid or failed searches.
+ *
+ * Outstanding Issues:
+ * 1. UI Responsiveness:
+ *    - No loading indicator while searching, which may leave users uncertain if the app is working.
+ *    - Consider adding a progress bar or loading spinner during search execution.
+ *
+ * 2. Error Handling:
+ *    - No feedback when no users are found; should display a "No users found" message.
+ *    - Potential crash if `getContext()` is null when displaying Toast messages.
+ *
+ * 3. Performance Optimization:
+ *    - Searching a large user database might cause lag. Implement a debounce mechanism to delay execution until typing stops.
+ *    - Consider using a `RecyclerView` instead of `ListView` for better performance with large datasets.
+ *
+ * 4. Navigation Issue:
+ *    - If the user clicks on a search result, navigation happens immediately without verifying if the `selectedUsername` exists.
  */
 
 package com.example.unemployedavengers.friendSection;

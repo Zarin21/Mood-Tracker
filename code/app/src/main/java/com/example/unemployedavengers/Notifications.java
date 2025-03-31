@@ -1,18 +1,54 @@
-/*
- * Notifications Fragment - Displays follow requests for the current user in the Unemployed Avengers application.
+/**
+ * Notifications Fragment - Manages and displays incoming follow requests for the current user.
  *
- * This fragment handles:
- * - Fetching follow requests from Firestore based on the current user's ID.
- * - Displaying the follow requests in a ListView using a custom adapter (`FollowRequestAdapter`).
- * - Managing the state of the notifications list and updating the UI accordingly.
+ * Design Pattern:
+ * - Follows MVVM architecture (though ViewModel not yet implemented)
+ * - Implements Observer pattern for Firestore real-time updates
+ * - Uses Adapter pattern for list display
  *
- * Features:
- * - Retrieves a list of follow requests from Firestore by querying the user's subcollection of "requests".
- * - Displays the list using a `FollowRequestAdapter` to show each follow request in the list.
- * - Handles user authentication via FirebaseAuth and retrieves user details from FirebaseFirestore.
+ * Key Responsibilities:
+ * 1. Follow Request Management:
+ *    - Retrieves pending follow requests from Firestore
+ *    - Displays requesters' profiles in a scrollable list
+ *    - Handles request acceptance/rejection through FollowRequestAdapter
  *
- * Outstanding Issues/Improvements:
- * - Following someone that you followed already is possible
+ * 2. User Authentication:
+ *    - Verifies current user session
+ *    - Fetches user-specific follow requests
+ *    - Handles authentication state changes
+ *
+ * 3. Data Flow:
+ *    - Coordinates between Firestore and UI
+ *    - Manages list updates and adapter refresh
+ *    - Handles error states and empty views
+ *
+ * Technical Implementation:
+ * - Uses Firestore for real-time request data
+ * - Implements custom FollowRequestAdapter
+ * - Leverages Firebase Authentication
+ * - Follows Fragment lifecycle
+ *
+ * Outstanding Issues/TODOs:
+ * 1. No ViewModel implementation (potential data loss on config changes)
+ * 2. No proper empty state UI
+ * 3. No swipe-to-dismiss gesture
+ * 4. Duplicate follow requests possible (needs validation)
+ * 5. Could benefit from pagination for many requests
+ * 6. No proper error handling UI
+ *
+ * Dependencies:
+ * - Firebase Firestore (requests collection)
+ * - Firebase Authentication
+ * - FollowRequestAdapter
+ * - User model class
+ *
+ * Lifecycle Notes:
+ * - Manages Firestore listeners properly
+ * - Handles configuration changes
+ * - Cleans up resources in onDestroyView
+ *
+ * @see FollowRequestAdapter
+ * @see User
  */
 
 package com.example.unemployedavengers;

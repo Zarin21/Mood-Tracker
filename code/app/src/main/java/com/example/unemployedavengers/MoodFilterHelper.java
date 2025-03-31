@@ -1,3 +1,56 @@
+/**
+ * MoodFilterHelper - Utility class for filtering mood events based on multiple criteria.
+ *
+ * Design Pattern:
+ * - Implements Strategy pattern for different filtering algorithms
+ * - Follows Single Responsibility Principle for filter operations
+ * - Uses Functional approach with static methods
+ *
+ * Key Responsibilities:
+ * 1. Multi-criteria Filtering:
+ *    - Combines mood type, reason text, and time-based filters
+ *    - Applies filters sequentially in fixed order
+ *    - Maintains immutability of original data
+ *
+ * 2. Filter Operations:
+ *    - Mood type matching (case-sensitive contains)
+ *    - Reason text word matching (case-insensitive)
+ *    - Recent week time window filtering
+ *
+ * 3. Performance:
+ *    - Optimized for linear time complexity O(n)
+ *    - Minimal object creation during filtering
+ *    - Early termination for empty filter conditions
+ *
+ * Technical Implementation:
+ * - Static utility methods for stateless operation
+ * - Defensive copying of input collections
+ * - Null-safe comparisons
+ * - Time calculations using system milliseconds
+ *
+ * Outstanding Issues/TODOs:
+ * 1. No support for complex boolean filter combinations
+ * 2. Limited to single-word reason filtering
+ * 3. Hardcoded 7-day window for recent filter
+ * 4. Could benefit from predicate composition
+ * 5. No localization support for time calculations
+ *
+ * Dependencies:
+ * - MoodEvent model class
+ * - Java Collections Framework
+ *
+ * Usage Example:
+ * List<MoodEvent> filtered = MoodFilterHelper.filterMoodEvents(
+ *     events,
+ *     true,
+ *     false,
+ *     true,
+ *     "Happy",
+ *     ""
+ * );
+ *
+ * @see MoodEvent
+ */
 package com.example.unemployedavengers;
 
 import com.example.unemployedavengers.models.MoodEvent;

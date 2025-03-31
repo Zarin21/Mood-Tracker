@@ -13,6 +13,7 @@
  * Outstanding Issues:
  * - The `handleLocationPermissionPopup` method currently does not account for cases where the location permission popup text might differ across different devices or configurations. Additional handling might be required.
  * - The custom matcher `hasTextColor` may not work correctly if the TextView's color is changed dynamically (e.g., due to themes or other factors).
+ * - The `withDrawable` matcher only checks if an `ImageView` has a drawable but does not verify its specific properties (e.g., if the drawable is the expected one).
  */
 
 package com.example.unemployedavengers;

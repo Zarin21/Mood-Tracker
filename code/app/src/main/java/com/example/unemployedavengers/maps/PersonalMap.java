@@ -1,21 +1,37 @@
 /**
- * PersonalMap is a Fragment responsible for displaying the user's mood events on a Google Map.
- * It fetches mood events from a shared ViewModel and displays them as custom markers on the map.
- * Each marker represents a mood event with location data, and its appearance is customized based on the mood.
+ * PersonalMap - A Fragment responsible for displaying the user's mood events on a Google Map.
+ * This fragment fetches mood events from a shared ViewModel and shows them as custom markers on the map.
+ * Each marker represents a mood event with location data, and its appearance is customized based on the mood of the event.
+ *
+ * Purpose:
+ * - Displays the user's mood events on a map with custom markers that reflect the mood's nature.
+ * - Fetches mood event data from a shared ViewModel, ensuring that the map updates when the data changes.
+ * - Uses custom-designed markers where the color and text depend on the specific mood associated with the event.
  *
  * Key Features:
- * - Fetches mood events using a ViewModel and observes changes to the data.
- * - Displays mood events as markers on a map, each with a custom design representing the event's mood.
- * - Uses custom bitmaps for markers, where the color and text are based on the mood.
- * - Optionally adjusts the camera to the first event's location on the map for a focused view.
+ * - Fetches mood events using a ViewModel and observes changes to the data (LiveData).
+ * - Displays mood events as markers on a Google Map, where each marker's color and text represent the mood.
+ * - Uses custom bitmaps for markers, where the mood influences the marker's design (e.g., color coding for different moods).
+ * - Optionally adjusts the camera to the location of the first mood event on the map for an optimal user experience.
  *
  * Methods:
- * - onCreateView: Inflates the view and sets up the binding for the Fragment's layout.
+ * - onCreateView: Inflates the layout and sets up the binding for this Fragment.
  * - onViewCreated: Observes mood events from the ViewModel and updates the map markers accordingly.
- * - onMapReady: Adds markers to the map based on the mood events that have location data.
- * - createCustomMarker: Creates a custom bitmap for each mood event marker, where the mood influences the marker's design (e.g., color).
+ * - onMapReady: Adds the mood event markers to the map based on the locations provided.
+ * - createCustomMarker: Creates a custom bitmap for each mood event marker, with the mood influencing the marker's design.
  * - onDestroyView: Nullifies the binding to prevent memory leaks when the view is destroyed.
+ *
+ * Known Issues:
+ * - No explicit error handling is implemented for situations when mood events have no location data.
+ * - The camera zoom behavior may not be ideal for larger datasets with widely scattered markers.
+ * - Custom marker layouts could be more optimized to handle performance for large numbers of events.
+ *
+ * Design Patterns:
+ * - **MVVM** (Model-View-ViewModel) pattern is employed, where mood events are managed by the ViewModel, and the Fragment observes and reacts to changes.
+ * - **Observer** pattern is utilized via LiveData, ensuring the map is updated when mood events change.
+ * - Custom markers use **View Binding** to bind the layout views efficiently.
  */
+
 
 package com.example.unemployedavengers.maps;
 

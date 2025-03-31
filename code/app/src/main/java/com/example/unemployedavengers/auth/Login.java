@@ -2,14 +2,32 @@
  * Login Fragment for the Unemployed Avengers Android application.
  *
  * Responsibilities:
- * - Inflates the login layout using view binding.
- * - Validates user input for login credentials.
- * - Authenticates users via Firebase through a DAO.
- * - Implements offline login using cached credentials stored in SharedPreferences.
- * - Stores user credentials securely (hashed passwords) for offline authentication.
- * - Navigates to the Dashboard upon successful login.
- * - Provides additional navigation to Home and Password Reset screens.
- * - Displays network connectivity status and adjusts login behavior accordingly.
+ * - Inflates the login layout using view binding for seamless UI interaction.
+ * - Validates user input for username and password fields to ensure correct data is entered.
+ * - Authenticates users via Firebase authentication or offline login with cached credentials.
+ * - Implements offline authentication by securely storing hashed user credentials in SharedPreferences.
+ * - Navigates to the Dashboard screen upon successful login.
+ * - Provides additional navigation to the Home and Password Reset screens.
+ * - Displays network connectivity status and adjusts login behavior based on the device’s connectivity.
+ * - Handles successful or failed login attempts with appropriate feedback, including custom error messages.
+ *
+ * Features:
+ * - Supports online login via Firebase, with user data retrieval after authentication.
+ * - Supports offline login using stored credentials, allowing users to log in without an internet connection.
+ * - Implements secure storage of user credentials using password hashing.
+ * - Provides UI feedback for network connectivity status and alerts the user about offline/online modes.
+ * - Facilitates password reset navigation when necessary, with checks for network availability.
+
+ * Design Pattern:
+ * - Follows the Fragment design pattern for modular UI components.
+ * - Utilizes SharedPreferences for secure offline authentication.
+ * - Implements Firebase Firestore for real-time data sync and offline persistence.
+ * - Uses custom Toast notifications for personalized feedback, particularly in error handling.
+
+ * Outstanding Issues:
+ * - The current offline authentication relies on cached credentials, which may become outdated or insecure if the credentials are not properly refreshed.
+ * - No rate-limiting or security measures for repeated failed login attempts, which could pose a potential security risk.
+ * - The current error handling could be improved with more specific exceptions, and it may need to be enhanced for edge cases (e.g., corrupt SharedPreferences).
  */
 
 

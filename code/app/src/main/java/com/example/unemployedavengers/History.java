@@ -1,22 +1,56 @@
 /**
- * History Fragment - Displays the user's mood event history and allows interaction for editing, deleting, and filtering events.
+ * History Fragment - Displays and manages user's mood event history with filtering capabilities.
  *
- * Purpose:
- * - The History fragment displays a list of mood events stored in Firestore. It sorts the events in reverse chronological order.
- * - It supports filtering the events based on mood, reason, and recency (the last 7 days).
- * - Users can edit or delete mood events from the list.
- * - The fragment uses a `MoodEventArrayAdapter` to populate the list and allows interactions like viewing, editing, or deleting individual events.
- * - It communicates with the `Filter` dialog to update the list according to user-specified criteria.
- * - The `loadHistoryMoodEvents` method retrieves the events from Firestore, while methods like `onDeleteConfirmed` and `updateMoodEvent` handle deletion and updates to events.
+ * Design Pattern:
+ * - Follows MVVM architecture with ViewModel integration
+ * - Implements Observer pattern for filter updates
+ * - Uses Repository pattern for Firestore data access
  *
- * Key Features:
- * - Displays mood events in a list, sorted by time (most recent first).
- * - Supports filtering by mood, reason, and recent week.
- * - Allows editing and deleting mood events.
- * - Integrates with Firestore to persist the data.
- * - Includes a confirmation dialog before deletion to prevent accidental removals.
+ * Key Responsibilities:
+ * 1. Mood Event Management:
+ *    - Displays chronological list of mood events
+ *    - Handles CRUD operations (Create, Read, Update, Delete)
+ *    - Maintains real-time sync with Firestore
  *
-*/
+ * 2. Filtering System:
+ *    - Supports multi-criteria filtering (mood type, reason, recency)
+ *    - Integrates with Filter dialog for user input
+ *    - Maintains filtered and unfiltered states
+ *
+ * 3. User Interaction:
+ *    - Provides edit/view/delete options via dialog
+ *    - Handles long-press for deletion
+ *    - Navigates to InputDialog for edits
+ *
+ * Technical Implementation:
+ * - Uses Firestore with offline persistence
+ * - Maintains two separate lists (filtered/unfiltered)
+ * - Shares data with other fragments via ViewModel
+ * - Implements custom ArrayAdapter for mood display
+ *
+ * Outstanding Issues/TODOs:
+ * 1. Filter state not preserved across configuration changes
+ * 2. No pagination for large mood histories
+ * 3. Limited to single-word reason filtering
+ * 4. Could benefit from swipe-to-delete gesture
+ * 5. No proper empty state UI
+ *
+ * Dependencies:
+ * - Firebase Firestore (moodEventRef)
+ * - MoodEventsViewModel for data sharing
+ * - MoodEventArrayAdapter for list display
+ * - Filter dialog for filter configuration
+ *
+ * Lifecycle Notes:
+ * - Maintains View binding only during active lifecycle
+ * - Cleans up resources in onDestroyView
+ * - Handles fragment result callbacks
+ *
+ * @see MoodEvent
+ * @see MoodEventsViewModel
+ * @see Filter
+ * @see MoodEventArrayAdapter
+ */
 
 package com.example.unemployedavengers;
 

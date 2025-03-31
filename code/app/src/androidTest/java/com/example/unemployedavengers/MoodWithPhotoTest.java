@@ -1,3 +1,48 @@
+/**
+ * MoodWithPhotoTest - End-to-end test suite for mood event photo functionality.
+ *
+ * Design Pattern:
+ * - Implements Page Object Model pattern for test organization
+ * - Uses Test Data Builder pattern for test image creation
+ * - Follows Test Fixture pattern for setup/teardown
+ * - Implements Flow Testing pattern for multi-step user scenarios
+ *
+ * Key Responsibilities:
+ * 1. Test Coverage:
+ *    - Tests adding mood events with photos (US 02.02.01)
+ *    - Validates photo upload and display functionality
+ *    - Tests handling of large photo files (>64KB)
+ *
+ * 2. Test Infrastructure:
+ *    - Configures Firebase emulator for isolated testing
+ *    - Creates test users with clean state
+ *    - Generates test images with controlled characteristics
+ *    - Implements robust login and navigation flows
+ *
+ * 3. Test Methodology:
+ *    - Uses reflection to inject test images into UI
+ *    - Validates photo functionality through UI interactions
+ *    - Provides detailed logging for test debugging
+ *
+ * Technical Implementation:
+ * - Uses Espresso for UI testing
+ * - Leverages Firebase emulator for backend testing
+ * - Implements CountDownLatch for async operations
+ * - Uses JUnit 4 testing framework
+ * Dependencies:
+ * - AndroidX Test (Espresso)
+ * - Firebase Emulator Suite
+ * - JUnit 4
+ * - CustomMatchers helper class
+ *
+ * Lifecycle Notes:
+ * - Uses @BeforeClass for emulator setup
+ * - @Before creates fresh test data for each test
+ * - @After handles comprehensive cleanup
+ * - Each test maintains independent state
+ *
+ * @see CustomMatchers
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;

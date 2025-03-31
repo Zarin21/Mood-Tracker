@@ -1,17 +1,28 @@
 /**
  * Fragment that displays mood history from followed users.
  *
- * Features:
- * - Shows public mood events from all followed users (or single user in detail view)
- * - Supports filtering by mood, reason text, and recent week
- * - Displays usernames alongside mood entries
- * - Provides navigation to mood detail view
+ * Key Responsibilities:
+ * - Shows public mood events from all followed users (aggregate view)
+ * - Supports single-user mood history view when navigated from friends list
+ * - Provides filtering capabilities (by mood, reason text, and time window)
+ * - Handles navigation to mood detail view for comments/reactions
  *
- * Handles both:
- * 1. Aggregate view of all followed users' moods
- * 2. Single-user focused mood history view
+ * Architecture:
+ * - Follows MVVM pattern using FriendMoodEventsViewModel
+ * - Uses Firestore for real-time data
+ * - Implements efficient loading with pagination (limit 10 docs per user)
  *
- * Uses FollowedUserMoodEventAdapter to render mood entries in a ListView.
+ * Outstanding Issues/TODOs:
+ * 1. No pagination/infinite scrolling implementation for large mood histories
+ * 2. Filtering could be optimized by moving to server-side queries
+ * 3. No error handling for cases where username lookup fails
+ * 4. Could benefit from pull-to-refresh functionality
+ * 5. Hardcoded limit of 3 moods per user in aggregate view
+ *
+ * Dependencies:
+ * - Requires Firestore database structure with 'users' and 'moods' collections
+ * - Expects SharedPreferences to store current user ID
+ * - Relies on MoodEvent model class structure
  */
 package com.example.unemployedavengers.friendSection;
 

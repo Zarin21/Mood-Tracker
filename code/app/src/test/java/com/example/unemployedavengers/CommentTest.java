@@ -1,3 +1,27 @@
+/**
+ * CommentTest.java
+ *
+ * Unit tests for the Comment model class in the UnemployedAvengers application.
+ *
+ * This test class verifies:
+ * 1. Proper construction of Comment objects with all required fields
+ * 2. Correct functioning of getter and setter methods
+ * 3. Behavior of reply management functionality
+ * 4. Default values and null safety
+ *
+ * The tests follow standard JUnit practices with:
+ * - @Before setup method to initialize test objects
+ * - Individual test methods for each logical unit of functionality
+ * - Clear assertions for expected behavior
+ *
+ * Key Test Cases:
+ * - Constructor initializes all fields correctly
+ * - Setters properly update model state
+ * - Reply ID management works as expected
+ * - Timestamp is automatically generated on creation
+ *
+
+ */
 package com.example.unemployedavengers;
 
 import static org.junit.Assert.*;
