@@ -1,19 +1,59 @@
 /**
- * Dashboard Fragment - Main screen of the application showing user's mood history.
+ * Dashboard Fragment - Primary UI component displaying user's mood history and social interactions.
  *
- * Primary Responsibilities:
- * - Displays user's recent mood events in a scrollable list
- * - Provides navigation to key app features (friends, mood input)
- * - Manages mood event CRUD operations with Firestore
- * - Handles online/offline mode with cached credentials
- * - Tracks and shares nearby mood events (within 5km)
+ * Design Pattern:
+ * - Follows MVVM architecture with ViewModel integration
+ * - Implements Observer pattern for real-time data updates
+ * - Uses Repository pattern for data access abstraction
  *
- * Key Features:
- * - Displays last 7 mood entries sorted by recency
- * - Real-time sync with Firestore (works offline with cached data)
- * - Location-based mood event filtering
- * - Mood event editing/deletion functionality
- * - Shared ViewModel integration for cross-fragment data
+ * Key Responsibilities:
+ * 1. Mood History Management:
+ *    - Displays user's last 7 mood events in chronological order
+ *    - Handles CRUD operations for mood events
+ *    - Syncs with Firestore (online/offline)
+ *
+ * 2. Social Features:
+ *    - Shows nearby mood events (within 5km radius)
+ *    - Displays followed users' public mood events
+ *    - Manages location-based filtering
+ *
+ * 3. Navigation Hub:
+ *    - Entry point to mood input dialog
+ *    - Gateway to friend management features
+ *    - Handles authentication state transitions
+ *
+ * Technical Implementation:
+ * - Uses Firestore with offline persistence
+ * - Integrates Google Location Services
+ * - Shares data across fragments via ViewModels
+ * - Implements permission handling for location access
+ *
+ * Security Considerations:
+ * - Validates user authentication state
+ * - Enforces location permission requirements
+ * - Maintains data privacy boundaries
+ *
+ * Outstanding Issues/TODOs:
+ * 1. Location permission handling could be more robust
+ * 2. No proper error state UI for failed operations
+ * 3. Offline cache invalidation needs improvement
+ * 4. Hardcoded limit of 7 mood events
+ * 5. No proper loading states during data fetch
+ *
+ * Dependencies:
+ * - Firebase Authentication
+ * - Cloud Firestore
+ * - Google Play Services (Location)
+ * - Shared ViewModels (MoodEvents, FriendMoods)
+ *
+ * Lifecycle Notes:
+ * - Maintains View binding only during active lifecycle
+ * - Handles configuration changes via ViewModel
+ * - Cleans up resources in onDestroyView
+ *
+ * @see BaseFragment
+ * @see MoodEventsViewModel
+ * @see FriendMoodEventsViewModel
  */
  package com.example.unemployedavengers;
 

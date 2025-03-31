@@ -1,15 +1,23 @@
 /**
  * FriendsHistory Fragment for the Unemployed Avengers Android application.
  *
- * This fragment displays the list of users that the current user is following (i.e., their "friends").
- * It includes functionality for:
- * - Retrieving and displaying the list of followed users.
- * - Navigating to the followed user's mood events when selected.
- * - Displaying a button to view the mood events for followed users.
+ * This fragment is responsible for displaying a list of users that the current user is following (their "friends").
+ * It fetches the list of followed users from Firebase Firestore and allows the user to view the mood events of
+ * a specific followed user. The fragment includes the following functionality:
+ * - Fetching and displaying a list of followed users.
+ * - Allowing users to navigate to the followed user's mood events.
+ * - Providing navigation to search for new users to follow.
  *
- * The fragment retrieves the current user's followed users from Firestore and displays their usernames.
- * If no followed users are found, an appropriate message is shown.
+ * Design Pattern:
+ * - This fragment follows a typical MVP (Model-View-Presenter) pattern by separating UI logic and business logic.
+ *
+ * Outstanding Issues:
+ * - Loading followed users and their details could be optimized to reduce the number of separate calls to Firestore.
+ * - There is no loading or progress indicator during data fetch, which may confuse users if the list takes time to load.
+ * - Error handling for Firestore operations could be more robust, including retries or more descriptive error messages.
+ * - Currently, there is no real-time update for the followed users' data (e.g., if the user starts following a new user, the list isn't updated until the fragment is reloaded).
  */
+
 
 package com.example.unemployedavengers.friendSection;
 

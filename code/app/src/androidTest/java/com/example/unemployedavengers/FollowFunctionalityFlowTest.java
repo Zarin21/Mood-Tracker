@@ -1,3 +1,48 @@
+/**
+ * FollowFunctionalityFlowTest - End-to-end test suite for follow request functionality.
+ *
+ * Design Pattern:
+ * - Implements Page Object Model pattern for test organization
+ * - Uses Test Data Builder pattern for test user creation
+ * - Follows Test Fixture pattern for setup/teardown
+ * - Implements Flow Testing pattern for multi-step user scenarios
+ *
+ * Key Responsibilities:
+ * 1. Test Coverage:
+ *    - Tests complete follow request flow (US 05.01.01)
+ *    - Verifies follow request acceptance (US 05.02.01)
+ *    - Validates request visibility (US 05.02.02)
+ *
+ * 2. Test Infrastructure:
+ *    - Manages Firebase emulator configuration
+ *    - Handles test user lifecycle (creation/deletion)
+ *    - Implements robust login/logout flows
+ *    - Provides detailed logging for debugging
+ *
+ * 3. Test Scenarios:
+ *    - test1_SendFollowRequest: Validates request sending
+ *    - test2_ViewAndAcceptFollowRequest: Tests request acceptance
+ *
+ * Technical Implementation:
+ * - Uses Espresso for UI testing
+ * - Leverages Firebase emulator for isolated testing
+ * - Implements CountDownLatch for async operations
+ * - Uses JUnit 4 with fixed test ordering
+ *
+ * Dependencies:
+ * - AndroidX Test (Espresso)
+ * - Firebase Emulator Suite
+ * - JUnit 4
+ * - CustomMatchers helper class
+ *
+ * Lifecycle Notes:
+ * - Uses @BeforeClass for one-time setup
+ * - @Test methods run in fixed order (@FixMethodOrder)
+ * - @AfterClass handles comprehensive cleanup
+ * - Each test maintains independent state
+ *
+ * @see CustomMatchers
+ */
 package com.example.unemployedavengers;
 
 import static androidx.test.espresso.Espresso.onView;

@@ -1,3 +1,21 @@
+/**
+ * UserProfile.java
+ *
+ * This fragment represents the user profile screen within the application.
+ * It is responsible for displaying a selected user's profile details, including their username,
+ * profile picture, and follow status. Users can send follow requests from this screen.
+ *
+ * Features:
+ * - Fetches the logged-in user's profile and the selected user's profile.
+ * - Displays the selected user's profile picture and username.
+ * - Handles follow requests and updates the UI accordingly.
+ *
+ * Outstanding Issues:
+ * - Error handling: If fetching user data fails, UI feedback could be improved.
+ * - UI performance: Profile picture loading might need optimization for better performance.
+ * - Follow status: Consider implementing real-time updates instead of fetching on view load.
+ */
+
 package com.example.unemployedavengers.friendSection;
 
 import android.net.Uri;

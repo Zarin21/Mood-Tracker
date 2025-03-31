@@ -2,12 +2,23 @@
  * SignUp Fragment for the Unemployed Avengers Android application.
  *
  * Purpose:
- * - Manages user registration by collecting and validating input credentials.
- * - Utilizes the UserDAO to register new users securely.
- * - Provides feedback on success or failure using a custom Toast.
- * - Navigates users to the Login screen upon successful registration.
+ * - Manages the user registration process by collecting credentials from the user (username, password, confirm password).
+ * - Validates the input to ensure all fields are filled and that the passwords match.
+ * - Uses the UserDAO interface (with the UserDAOImplement implementation) to interact with the database and register the user.
+ * - Displays success or failure messages via a custom Toast, depending on the outcome of the registration attempt.
+ * - Navigates the user to the Login screen upon successful registration.
  *
+ * Design Pattern:
+ * - The fragment follows a typical Android View-based architecture, with user input handling and validation before interacting with the data layer via the DAO.
+ * - The custom Toast is used to enhance the user experience with visually distinct error messages.
+ *
+ * Outstanding Issues:
+ * - There is minimal validation for password strength (e.g., ensuring the password meets certain complexity requirements).
+ * - The app does not handle the scenario where the network is unavailable, which might prevent sign-up attempts.
+ * - There are no detailed error handling mechanisms for specific backend issues (other than username already taken).
+ * - The password input fields do not provide visibility toggles to show or hide the password, which could improve usability.
  */
+
 
 package com.example.unemployedavengers.auth;
 

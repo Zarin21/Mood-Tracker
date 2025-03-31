@@ -1,3 +1,22 @@
+/**
+ * MoodEventTest.java
+ *
+ * Unit tests for the MoodEvent model class which represents a user's mood entry
+ * in the UnemployedAvengers application. Tests cover:
+ * - Object construction (both parameterized and default constructors)
+ * - All getter and setter methods
+ * - Location data handling (latitude/longitude)
+ * - Edge cases (null values, empty strings)
+ * - Automatic ID generation
+ * - Default value initialization
+ *
+ * Testing Approach:
+ * - Uses JUnit 4 test framework
+ * - Follows Arrange-Act-Assert pattern
+ * - Tests both normal operation and edge cases
+ * - Verifies proper null handling
+ * - Tests field validation where applicable
+ */
 package com.example.unemployedavengers;
 
 

@@ -1,19 +1,36 @@
 /**
- * IUserDAO - Data Access Object (DAO) interface for user-related operations.
+ * IUserDAO - Data Access Object interface for user management operations.
  *
- * This interface defines methods for user authentication, profile management,
- * follow system interactions, and user search functionality using Firebase Authentication
- * and Firestore as the backend database.
+ * Design Pattern:
+ * - Follows the DAO pattern to abstract database operations from business logic
+ * - Provides a clean separation between application logic and data persistence
  *
- * Features:
- * - User registration and authentication
- * - Password and username management
- * - Follow/unfollow functionality
- * - Searching for users
- * - Retrieving user profiles
+ * Key Responsibilities:
+ * - Centralizes all user-related database operations
+ * - Manages authentication, profile data, and social relationships
+ * - Serves as the single source of truth for user data operations
  *
- * Implementing classes should provide concrete implementations for these methods.
+ * Technical Implementation:
+ * - Uses Firebase Authentication for credential management
+ * - Leverages Firestore for profile data and relationships
+ * - Returns Task-based results for asynchronous operations
  *
+ * Outstanding Issues/TODOs:
+ * 1. No transaction support for multi-document operations
+ * 2. Error handling could be more granular (specific error codes)
+ * 3. No bulk operation methods for batch updates
+ * 4. Limited query capabilities (e.g., no pagination support)
+ * 5. No caching layer implementation
+ *
+ * Dependencies:
+ * - Requires Firebase Authentication setup
+ * - Depends on Firestore database structure with 'users' collection
+ * - Uses the User model class for data representation
+ *
+ * Security Considerations:
+ * - All methods assume proper authentication state
+ * - Callers must handle authentication errors appropriately
+ * - Password operations should be called from secure contexts
  */
 
 package com.example.unemployedavengers.DAO;

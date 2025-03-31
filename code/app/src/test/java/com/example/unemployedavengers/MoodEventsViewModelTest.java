@@ -1,3 +1,26 @@
+/**
+ * MoodEventsViewModelTest.java
+ *
+ * Unit tests for the MoodEventsViewModel class which manages mood event data
+ * for the UnemployedAvengers application using the MVVM (Model-View-ViewModel)
+ * architectural pattern.
+ *
+ * Responsibilities Tested:
+ * - Maintaining and exposing mood event data via LiveData
+ * - Proper notification of UI observers on data changes
+ * - Data integrity between ViewModel and UI components
+ *
+ * Testing Strategy:
+ * - Uses Mockito to verify observer notifications
+ * - Leverages InstantTaskExecutorRule for synchronous LiveData testing
+ * - Follows Arrange-Act-Assert pattern for clear test structure
+ * - Tests both data storage and observer notification aspects
+ *
+ * Key Test Case:
+ * - Verifies that setMoodEvents() properly updates LiveData and notifies observers
+ *
+
+ */
 package com.example.unemployedavengers;
 
 import static org.junit.Assert.assertEquals;

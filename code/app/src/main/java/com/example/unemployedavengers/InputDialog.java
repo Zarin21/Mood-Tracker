@@ -1,19 +1,32 @@
 /**
- * InputDialog - A DialogFragment for creating and editing mood entries.
+ * InputDialog - DialogFragment for creating and editing mood entries with multimedia support.
  *
- * Primary Responsibilities:
- * - Provides a form interface for mood event data entry/editing
- * - Handles image uploads to Firebase Storage
- * - Manages location data collection
- * - Validates user inputs before submission
- * - Communicates mood events back to parent fragments
+ * Design Pattern:
+ * - Implements Factory Method pattern via newInstance()
+ * - Follows DialogFragment best practices
+ * - Uses Result API for fragment communication
  *
- * Key Features:
- * - Custom mood spinner with emotion-specific coloring
- * - Image upload capability with size validation
- * - Current location capture functionality
- * - Social situation radio group selection
- * - Public/private visibility toggle
+ * Key Responsibilities:
+ * 1. Mood Entry Management:
+ *    - Provides form interface for mood event data entry/editing
+ *    - Handles validation of user inputs
+ *    - Manages MoodEvent object lifecycle (create/update)
+ *
+ * 2. Media Integration:
+ *    - Handles image uploads to Firebase Storage
+ *    - Validates image size (<65KB)
+ *    - Supports image preview with Glide
+ *
+ * 3. Location Services:
+ *    - Captures current location coordinates
+ *    - Manages location permissions
+ *    - Provides visual feedback during location acquisition
+ *
+ * 4. UI Components:
+ *    - Custom mood spinner with emotion-specific coloring
+ *    - Social situation radio group
+ *    - Public/private visibility toggle
+ *    - Progress indicators for async operations
  *
  * Integration Points:
  * - Receives existing MoodEvent objects for editing
@@ -21,10 +34,27 @@
  * - Works with both DashboardFragment and HistoryFragment
  * - Coordinates with Firebase Storage for image uploads
  *
- * Design Patterns:
- * - Uses Factory Method pattern via newInstance()
- * - Follows DialogFragment best practices
- * - Implements Result API for fragment communication
+ * Outstanding Issues/TODOs:
+ * 1. No image compression before upload
+ * 2. Limited error handling for location services
+ * 3. No validation for social situation input
+ * 4. Could benefit from camera integration
+ * 5. No offline image caching
+ *
+ * Dependencies:
+ * - Firebase Storage (image uploads)
+ * - Glide (image loading)
+ * - Google Play Services (Location)
+ * - AndroidX Activity/Fragment Result APIs
+ *
+ * Lifecycle Notes:
+ * - Maintains proper state during configuration changes
+ * - Cleans up resources appropriately
+ * - Handles permission requests gracefully
+ *
+ * @see MoodEvent
+ * @see DashboardFragment
+ * @see HistoryFragment
  */
 package com.example.unemployedavengers;
 

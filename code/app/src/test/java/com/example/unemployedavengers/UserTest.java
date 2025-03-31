@@ -1,3 +1,21 @@
+/**
+ * UserTest.java
+ *
+ * Unit tests for the User model class in the UnemployedAvengers application.
+ *
+ * This test class verifies:
+ * - Proper initialization of User objects through constructors
+ * - Correct functioning of all getter and setter methods
+ * - Data integrity for core user attributes (ID, username, email, etc.)
+ * - Avatar URL handling
+ *
+ * Testing Methodology:
+ * - Uses JUnit 4 testing framework
+ * - Follows Arrange-Act-Assert pattern
+ * - Tests both object construction and field modification
+ * - Verifies all model fields are properly accessible
+ *
+ */
 package com.example.unemployedavengers;
 
 import static org.junit.Assert.assertEquals;

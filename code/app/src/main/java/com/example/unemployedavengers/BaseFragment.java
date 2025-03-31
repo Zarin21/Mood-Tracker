@@ -12,6 +12,9 @@
  * - Safe navigation: Includes methods like `safeNavigate()` to ensure navigation happens only when appropriate.
  * - Fragment state checks: Ensures fragment operations are performed only when the fragment is valid (attached, not removing, not detached).
  *
+ * Outstanding Issues:
+ * - Currently, the method `safeNavigate()` does not handle cases where the navigation action itself may fail (e.g., if the destination is unavailable).
+ * - Consider adding visual feedback to the user when clicks are debounced, to improve UX.
  */
 package com.example.unemployedavengers;
 

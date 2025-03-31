@@ -2,12 +2,25 @@
  * FollowedUserMoodEventAdapter - A custom adapter for displaying mood events from followed users.
  *
  * Purpose:
- * - Extends ArrayAdapter to display MoodEvent objects in a ListView with custom formatting.
- * - Displays the username of the followed user alongside their mood information.
- * - Dynamically fetches and associates usernames from Firebase Firestore if not available locally.
+ * - Extends `ArrayAdapter` to display `MoodEvent` objects in a `ListView` with custom formatting.
+ * - Displays the username of the followed user alongside their mood information (mood type and timestamp).
+ * - Dynamically fetches usernames and profile pictures from Firebase Firestore if not available locally.
  * - Applies appropriate color styling to mood text based on mood type.
  * - Formats and displays the timestamp of each mood event.
+ *
+ * Design Pattern:
+ * - Implements the `ArrayAdapter` design pattern to efficiently manage a list of `MoodEvent` objects and display them in a `ListView`.
+ * - Fetches user information (username and profile picture) dynamically from Firestore in real-time, ensuring up-to-date data for each followed user.
+ * - Supports dynamic updates by modifying the `userIdToUsernameMap` to allow the association of user IDs with usernames.
+ * - Uses the `Glide` library to efficiently load and display user profile pictures from a URL.
+ *
+ * Outstanding Issues:
+ * - The asynchronous loading of usernames and profile pictures from Firestore might lead to delays in displaying complete information, causing a potential lag in rendering the `ListView`.
+ * - The use of `getView` for database access in the UI thread could cause performance bottlenecks, especially with a large number of `MoodEvent` objects.
+ * - Error handling is minimal: If Firestore retrieval fails, it defaults to the username "Unknown User", but further feedback or fallbacks might be needed to improve the user experience.
+ * - The code could be optimized to avoid fetching user data multiple times if the user already exists in the `userIdToUsernameMap`.
  */
+
 package com.example.unemployedavengers.arrayadapters;
 
 import android.content.Context;

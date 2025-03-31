@@ -1,19 +1,33 @@
 /**
- * Map is a Fragment that serves as the entry point for navigating between different types of maps.
- * It provides buttons for the user to navigate to the following views:
- * - A personal map view displaying the user's own mood events.
- * - A friends' map view showing mood events shared by friends.
- * - A map view displaying mood events within a 5 km radius of the user.
+ * Map - A Fragment that serves as the entry point for navigating between different types of mood event maps.
+ * It allows the user to navigate to the following views:
+ * - A personal map showing the user's own mood events.
+ * - A friends' map displaying mood events shared by friends.
+ * - A map showing mood events within a 5 km radius of the user.
+ *
+ * Purpose:
+ * - Provides a simple interface to navigate between different map views in the application.
+ * - Uses buttons for the user to choose which map to view: personal, friends, or nearby mood events.
+ * - Ensures smooth navigation using the Navigation component for easy transitions.
  *
  * Key Features:
- * - Provides navigation to different map views using buttons.
- * - Handles navigation logic for the personal map, friends' map, and nearby mood events.
- * - Utilizes view binding for easier interaction with UI components.
+ * - Buttons for navigating to personal mood events, friends' mood events, and nearby mood events within a 5 km radius.
+ * - Uses view binding for efficient and safe UI interaction.
+ * - Leverages Android's Navigation component to facilitate clean transitions between fragments.
  *
  * Methods:
- * - onViewCreated: Sets up onClickListeners for the map navigation buttons.
- * - onDestroyView: Nullifies the binding to avoid memory leaks when the view is destroyed.
+ * - onViewCreated: Sets up click listeners for buttons to navigate to different map views.
+ * - onDestroyView: Nullifies the binding to avoid memory leaks when the fragment view is destroyed.
+ *
+ * Known Issues:
+ * - There are no known major issues in this fragment. However, navigation relies on predefined actions, so any misconfiguration in the Navigation Graph could lead to navigation failures.
+ * - The fragment assumes the user has network access for fetching data related to nearby mood events, but no explicit error handling is provided for offline scenarios.
+ *
+ * Design Patterns:
+ * - This fragment follows the **MVVM** (Model-View-ViewModel) pattern, where navigation and UI updates are managed by the ViewModel, and user interactions are handled via View Binding.
+ * - The **Navigation** component is used to handle fragment transitions, which simplifies and centralizes the navigation logic.
  */
+
 
 package com.example.unemployedavengers.maps;
 

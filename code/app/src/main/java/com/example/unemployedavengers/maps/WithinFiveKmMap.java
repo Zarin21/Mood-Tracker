@@ -1,22 +1,38 @@
 /**
- * WithinFiveKmMap is a Fragment responsible for displaying mood events on a map, specifically showing events within a 5 km radius.
- * It fetches mood events from a shared ViewModel and displays them as custom markers on the map.
- * Each marker represents a mood event with location data, and its appearance is customized based on the mood.
- * The markers are placed on the map based on the latitude and longitude of the mood events.
+ * WithinFiveKmMap - A Fragment responsible for displaying mood events on a Google Map, specifically showing events within a 5 km radius of the user's location.
+ * This fragment fetches mood events from a shared ViewModel and displays them as custom markers on the map.
+ * Each marker represents a mood event with location data, and its appearance is customized based on the mood of the event.
+ * The markers are placed on the map based on the latitude and longitude of the mood events, with an added filter to only display events within a 5 km radius of the user.
+ *
+ * Purpose:
+ * - Displays mood events within a 5 km radius of the user's location on a Google Map.
+ * - Fetches mood event data from a shared ViewModel, and the map is updated whenever the data changes.
+ * - Customizes the marker appearance based on the mood of each event, including text and color.
  *
  * Key Features:
- * - Fetches mood events using a ViewModel and observes changes to the data.
- * - Displays mood events as markers on the map, with a custom design representing the mood of the event.
- * - Optionally adjusts the camera to the first event's location on the map for a focused view.
- * - Customizes marker colors and text based on the mood of the event.
+ * - Fetches mood events using a ViewModel and observes changes to the data (LiveData).
+ * - Displays mood events as markers on the map, with each marker being customized based on the mood.
+ * - Uses custom bitmaps for markers where the mood influences the marker's text and color.
+ * - Optionally adjusts the camera to the location of the first mood event for a more focused view.
+ * - Ensures that only mood events within a 5 km radius of the user are displayed on the map.
  *
  * Methods:
  * - onCreateView: Inflates the layout using view binding and prepares the view for displaying the map.
- * - onViewCreated: Observes mood events from the WithinFiveKmViewModel and updates the map markers.
- * - onMapReady: Adds markers to the map for mood events that have location data, customizing the marker appearance based on the mood.
- * - createCustomMarker: Creates a custom bitmap for each mood event marker, where the mood influences the marker's text and color.
+ * - onViewCreated: Observes mood events from the WithinFiveKmViewModel and updates the map markers accordingly.
+ * - onMapReady: Adds markers to the map for mood events that have location data, ensuring only events within 5 km of the user are shown.
+ * - createCustomMarker: Creates a custom bitmap for each mood event marker, with the mood influencing the marker's text and color.
  * - onDestroyView: Nullifies the binding to prevent memory leaks when the view is destroyed.
+ *
+ * Known Issues:
+ * - No explicit checks or user feedback if the user's location cannot be fetched or if there are no events within 5 km.
+ * - Marker density could cause performance issues if a large number of mood events are within the 5 km radius.
+ * - No mechanism to dynamically update the user's location if it changes after the map is rendered.
+ *
+ * Design Patterns:
+ * - **MVVM** (Model-View-ViewModel) pattern is employed, where mood events are managed by the ViewModel, and the Fragment observes and reacts to changes.
+ * - **Observer** pattern is utilized via LiveData, ensuring the map is updated when mood events change.
  */
+
 
 package com.example.unemployedavengers.maps;
 

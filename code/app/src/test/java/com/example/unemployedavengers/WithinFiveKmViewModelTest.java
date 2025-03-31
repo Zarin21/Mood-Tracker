@@ -1,3 +1,21 @@
+/**
+ * WithinFiveKmViewModelTest.java
+ *
+ * Unit tests for the WithinFiveKmViewModel class which manages and filters
+ * mood events within a 5km radius of the user's location.
+ *
+ * Tests verify the ViewModel's core functionality including:
+ * - LiveData updates when mood events are set
+ * - Proper observation of mood events data
+ * - Maintenance of data consistency
+ *
+ * Testing Methodology:
+ * - Uses Mockito for creating test MoodEvent objects
+ * - Leverages InstantTaskExecutorRule for LiveData testing
+ * - Follows Arrange-Act-Assert pattern
+ * - Focuses on ViewModel-LiveData interaction
+ *
+ */
 package com.example.unemployedavengers;
 
 import static org.junit.Assert.assertEquals;

@@ -1,23 +1,48 @@
 /**
- * UserDAOImplement - Implementation of IUserDAO interface for managing user-related operations.
+ * UserDAOImplement - Concrete implementation of IUserDAO for Firebase/Firestore operations.
  *
- * This class provides concrete implementations for user authentication, profile management,
- * and social interactions (following/unfollowing users) using Firebase Authentication
- * and Firestore as the backend database.
+ * Design Pattern:
+ * - Implements Data Access Object (DAO) pattern
+ * - Follows Repository pattern for data abstraction
+ * - Uses Facade pattern to simplify complex Firebase operations
  *
- * Features:
- * - User registration and authentication
- * - Password and username management
- * - Follow/unfollow functionality
- * - Searching for users
- * - Retrieving user profiles
- * - Handling follow requests
+ * Key Responsibilities:
+ * - Provides concrete implementations for all user-related database operations
+ * - Manages authentication state and user sessions
+ * - Handles social graph operations (following/unfollowing)
+ * - Implements atomic operations using Firestore batches
  *
- * This class interacts with Firestore to store user details and Firebase Authentication for
- * secure user login and authentication management.
+ * Technical Implementation:
+ * - Wraps Firebase Authentication for credential management
+ * - Uses Firestore for user profiles and relationships
+ * - Implements atomic operations using Firestore batches
+ * - Provides Task-based asynchronous API
  *
- * @author
+ * Security Considerations:
+ * - Validates current user session for sensitive operations
+ * - Enforces proper authentication state
+ * - Uses Firestore security rules for data protection
+ *
+ * Outstanding Issues/TODOs:
+ * 1. No offline persistence support (Firestore offline cache not enabled)
+ * 2. Limited error recovery mechanisms
+ * 3. No rate limiting for follow operations
+ * 4. No transaction retry logic for failed operations
+ * 5. Avatar updates don't verify image URL validity
+ *
+ * Dependencies:
+ * - Firebase Authentication SDK
+ * - Cloud Firestore SDK
+ * - IUserDAO interface contract
+ * - User model class
+ *
+ * Performance Notes:
+ * - Some queries could benefit from Firestore indexes
+ * - Search operations use client-side filtering
+ * - No pagination implemented for large result sets
+ *
  * @version 1.0
+ * @see IUserDAO
  */
 
 package com.example.unemployedavengers.implementationDAO;
