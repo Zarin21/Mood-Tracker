@@ -24,14 +24,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -47,17 +49,14 @@ import java.util.concurrent.TimeUnit;
 public class FollowingFilterTest {
     private static final String TAG = "FollowingFilterTest";
 
-    // User who creates moods
-    private static final String MOOD_CREATOR = "moodcreator";
-    private static final String MOOD_CREATOR_PASS = "password123";
-    private static final String MOOD_CREATOR_EMAIL = "moodcreator@example.com";
-    private static String moodCreatorId;
+    // Create unique user IDs for each test to avoid test interdependencies
+    private static final String MOOD_CREATOR_PREFIX = "moodcreator";
+    private static final String FOLLOWER_PREFIX = "moodviewer";
+    private static final String PASSWORD = "password123";
 
-    // User who follows and views moods
-    private static final String FOLLOWER = "moodviewer";
-    private static final String FOLLOWER_PASS = "password123";
-    private static final String FOLLOWER_EMAIL = "moodviewer@example.com";
-    private static String followerId;
+    // Track all created user IDs for cleanup
+    private static List<String> createdUserIds = new ArrayList<>();
+    private static Map<String, String> userEmails = new HashMap<>();
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
@@ -70,88 +69,93 @@ public class FollowingFilterTest {
     }
 
     @Before
-    public void setUp() throws InterruptedException {
-        // Create test users
-        setupUsers();
-
-        // Create follow relationship
-        createFollowRelationship();
-
-        // Create multiple test moods with different characteristics
-        createTestMoods();
+    public void setUp() {
+        // Sign out at the beginning of each test
+        FirebaseAuth.getInstance().signOut();
     }
 
-    private void setupUsers() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(2);
+    // Create users and test data for each test individually
+    private String[] setupTestEnv(String testName) throws InterruptedException {
+        String moodCreatorUsername = MOOD_CREATOR_PREFIX + "_" + testName;
+        String moodCreatorEmail = moodCreatorUsername + "@example.com";
+
+        String followerUsername = FOLLOWER_PREFIX + "_" + testName;
+        String followerEmail = followerUsername + "@example.com";
+
+        Log.d(TAG, "Setting up test environment for test: " + testName);
+
+        // Create test users
+        String moodCreatorId = createTestUser(moodCreatorUsername, moodCreatorEmail, PASSWORD);
+        String followerId = createTestUser(followerUsername, followerEmail, PASSWORD);
+
+        // Track for cleanup
+        createdUserIds.add(moodCreatorId);
+        createdUserIds.add(followerId);
+        userEmails.put(moodCreatorId, moodCreatorEmail);
+        userEmails.put(followerId, followerEmail);
+
+        // Create follow relationship
+        createFollowRelationship(moodCreatorId, followerId);
+
+        // Create test moods
+        createTestMoods(moodCreatorId, moodCreatorUsername);
+
+        Log.d(TAG, "Test environment setup complete for: " + testName);
+
+        return new String[] {moodCreatorId, moodCreatorUsername, followerId, followerUsername};
+    }
+
+    private String createTestUser(String username, String email, String password) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        final String[] userId = new String[1];
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Try to sign in with the creator account first
-        auth.signInWithEmailAndPassword(MOOD_CREATOR_EMAIL, MOOD_CREATOR_PASS)
-                .addOnSuccessListener(authResult -> {
-                    // User exists, just get the ID
-                    moodCreatorId = authResult.getUser().getUid();
-                    auth.signOut();
-                    latch.countDown();
+        Log.d(TAG, "Creating test user: " + username);
+
+        // Create the user
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener(result -> {
+                    userId[0] = result.getUser().getUid();
+                    Log.d(TAG, "Created user auth: " + username + " with ID: " + userId[0]);
+
+                    // Add to Firestore
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("userId", userId[0]);
+                    userData.put("username", username);
+                    userData.put("dummyEmail", email);
+                    userData.put("password", password);
+
+                    db.collection("users").document(userId[0])
+                            .set(userData)
+                            .addOnSuccessListener(v -> {
+                                Log.d(TAG, "Added user to Firestore: " + username);
+                                auth.signOut();
+                                latch.countDown();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Error adding user to Firestore: " + username, e);
+                                latch.countDown();
+                            });
                 })
                 .addOnFailureListener(e -> {
-                    // User doesn't exist, create it
-                    auth.createUserWithEmailAndPassword(MOOD_CREATOR_EMAIL, MOOD_CREATOR_PASS)
-                            .addOnSuccessListener(result -> {
-                                moodCreatorId = result.getUser().getUid();
-
-                                // Add to Firestore
-                                Map<String, Object> userData = new HashMap<>();
-                                userData.put("userId", moodCreatorId);
-                                userData.put("username", MOOD_CREATOR);
-                                userData.put("dummyEmail", MOOD_CREATOR_EMAIL);
-                                userData.put("password", MOOD_CREATOR_PASS);
-
-                                db.collection("users").document(moodCreatorId)
-                                        .set(userData)
-                                        .addOnSuccessListener(v -> {
-                                            auth.signOut();
-                                            latch.countDown();
-                                        });
-                            });
-                });
-
-        // Try to sign in with the follower account first
-        auth.signInWithEmailAndPassword(FOLLOWER_EMAIL, FOLLOWER_PASS)
-                .addOnSuccessListener(authResult -> {
-                    // User exists, just get the ID
-                    followerId = authResult.getUser().getUid();
-                    auth.signOut();
+                    Log.e(TAG, "Error creating auth user: " + username, e);
                     latch.countDown();
-                })
-                .addOnFailureListener(e -> {
-                    // Create follower user
-                    auth.createUserWithEmailAndPassword(FOLLOWER_EMAIL, FOLLOWER_PASS)
-                            .addOnSuccessListener(result -> {
-                                followerId = result.getUser().getUid();
-
-                                // Add to Firestore
-                                Map<String, Object> userData = new HashMap<>();
-                                userData.put("userId", followerId);
-                                userData.put("username", FOLLOWER);
-                                userData.put("dummyEmail", FOLLOWER_EMAIL);
-                                userData.put("password", FOLLOWER_PASS);
-
-                                db.collection("users").document(followerId)
-                                        .set(userData)
-                                        .addOnSuccessListener(v -> {
-                                            auth.signOut();
-                                            latch.countDown();
-                                        });
-                            });
                 });
 
-        latch.await(30, TimeUnit.SECONDS);
+        boolean completed = latch.await(30, TimeUnit.SECONDS);
+        if (!completed) {
+            throw new RuntimeException("Timed out waiting to create user: " + username);
+        }
+        return userId[0];
     }
 
-    private void createFollowRelationship() throws InterruptedException {
+    private void createFollowRelationship(String moodCreatorId, String followerId) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Log.d(TAG, "Creating follow relationship between: " + followerId + " and " + moodCreatorId);
 
         // Create following entry for follower
         Map<String, Object> followingData = new HashMap<>();
@@ -161,7 +165,14 @@ public class FollowingFilterTest {
         db.collection("users").document(followerId)
                 .collection("following").document(moodCreatorId)
                 .set(followingData)
-                .addOnSuccessListener(v -> latch.countDown());
+                .addOnSuccessListener(v -> {
+                    Log.d(TAG, "Added following relationship");
+                    latch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error adding following relationship", e);
+                    latch.countDown();
+                });
 
         // Create followers entry for mood creator
         Map<String, Object> followerData = new HashMap<>();
@@ -171,14 +182,26 @@ public class FollowingFilterTest {
         db.collection("users").document(moodCreatorId)
                 .collection("followers").document(followerId)
                 .set(followerData)
-                .addOnSuccessListener(v -> latch.countDown());
+                .addOnSuccessListener(v -> {
+                    Log.d(TAG, "Added follower relationship");
+                    latch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error adding follower relationship", e);
+                    latch.countDown();
+                });
 
-        latch.await(30, TimeUnit.SECONDS);
+        boolean completed = latch.await(30, TimeUnit.SECONDS);
+        if (!completed) {
+            throw new RuntimeException("Timed out creating follow relationship");
+        }
     }
 
-    private void createTestMoods() throws InterruptedException {
+    private void createTestMoods(String moodCreatorId, String moodCreatorUsername) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(4);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Log.d(TAG, "Creating test moods for user: " + moodCreatorUsername);
 
         // Current time in millis
         long currentTime = System.currentTimeMillis();
@@ -191,12 +214,12 @@ public class FollowingFilterTest {
 
         // 1. Old Happiness mood with specific test word
         Map<String, Object> happinessMood = new HashMap<>();
-        happinessMood.put("id", "test_mood_happiness");
+        happinessMood.put("id", "test_mood_happiness_" + moodCreatorId);
         happinessMood.put("mood", "😄Happiness");
         happinessMood.put("reason", "Testing with filterword today");
         happinessMood.put("time", eightDaysAgo);
         happinessMood.put("userId", moodCreatorId);
-        happinessMood.put("userName", MOOD_CREATOR);
+        happinessMood.put("userName", moodCreatorUsername);
         happinessMood.put("publicStatus", true);
         happinessMood.put("radioSituation", "Alone");
         happinessMood.put("situation", "Testing situation");
@@ -205,12 +228,12 @@ public class FollowingFilterTest {
 
         // 2. Recent Sadness mood without the test word
         Map<String, Object> sadnessMood = new HashMap<>();
-        sadnessMood.put("id", "test_mood_sadness");
+        sadnessMood.put("id", "test_mood_sadness_" + moodCreatorId);
         sadnessMood.put("mood", "😔Sadness");
         sadnessMood.put("reason", "Just feeling blue");
         sadnessMood.put("time", threeDaysAgo);
         sadnessMood.put("userId", moodCreatorId);
-        sadnessMood.put("userName", MOOD_CREATOR);
+        sadnessMood.put("userName", moodCreatorUsername);
         sadnessMood.put("publicStatus", true);
         sadnessMood.put("radioSituation", "Alone");
         sadnessMood.put("situation", "Testing situation");
@@ -219,12 +242,12 @@ public class FollowingFilterTest {
 
         // 3. Recent Anger mood with the test word
         Map<String, Object> angerMood = new HashMap<>();
-        angerMood.put("id", "test_mood_anger");
+        angerMood.put("id", "test_mood_anger_" + moodCreatorId);
         angerMood.put("mood", "😠Anger");
         angerMood.put("reason", "Frustration with filterword");
         angerMood.put("time", currentTime - (2 * 24 * 60 * 60 * 1000));
         angerMood.put("userId", moodCreatorId);
-        angerMood.put("userName", MOOD_CREATOR);
+        angerMood.put("userName", moodCreatorUsername);
         angerMood.put("publicStatus", true);
         angerMood.put("radioSituation", "Alone");
         angerMood.put("situation", "Testing situation");
@@ -233,12 +256,12 @@ public class FollowingFilterTest {
 
         // 4. Very recent Surprise mood without the test word
         Map<String, Object> surpriseMood = new HashMap<>();
-        surpriseMood.put("id", "test_mood_surprise");
+        surpriseMood.put("id", "test_mood_surprise_" + moodCreatorId);
         surpriseMood.put("mood", "😯Surprise");
         surpriseMood.put("reason", "Unexpected event happened");
         surpriseMood.put("time", currentTime - (1 * 24 * 60 * 60 * 1000));
         surpriseMood.put("userId", moodCreatorId);
-        surpriseMood.put("userName", MOOD_CREATOR);
+        surpriseMood.put("userName", moodCreatorUsername);
         surpriseMood.put("publicStatus", true);
         surpriseMood.put("radioSituation", "Alone");
         surpriseMood.put("situation", "Testing situation");
@@ -247,7 +270,7 @@ public class FollowingFilterTest {
 
         // Add all moods to Firestore
         db.collection("users").document(moodCreatorId)
-                .collection("moods").document("test_mood_happiness")
+                .collection("moods").document("test_mood_happiness_" + moodCreatorId)
                 .set(happinessMood)
                 .addOnSuccessListener(v -> {
                     Log.d(TAG, "Added Happiness mood");
@@ -259,7 +282,7 @@ public class FollowingFilterTest {
                 });
 
         db.collection("users").document(moodCreatorId)
-                .collection("moods").document("test_mood_sadness")
+                .collection("moods").document("test_mood_sadness_" + moodCreatorId)
                 .set(sadnessMood)
                 .addOnSuccessListener(v -> {
                     Log.d(TAG, "Added Sadness mood");
@@ -271,7 +294,7 @@ public class FollowingFilterTest {
                 });
 
         db.collection("users").document(moodCreatorId)
-                .collection("moods").document("test_mood_anger")
+                .collection("moods").document("test_mood_anger_" + moodCreatorId)
                 .set(angerMood)
                 .addOnSuccessListener(v -> {
                     Log.d(TAG, "Added Anger mood");
@@ -283,7 +306,7 @@ public class FollowingFilterTest {
                 });
 
         db.collection("users").document(moodCreatorId)
-                .collection("moods").document("test_mood_surprise")
+                .collection("moods").document("test_mood_surprise_" + moodCreatorId)
                 .set(surpriseMood)
                 .addOnSuccessListener(v -> {
                     Log.d(TAG, "Added Surprise mood");
@@ -305,9 +328,16 @@ public class FollowingFilterTest {
      * US 05.04.01 - Filter by most recent week
      */
     @Test
-    public void testRecentWeekFilter() {
+    public void testRecentWeekFilter() throws InterruptedException {
+        // Setup unique test environment for this test
+        String[] testEnv = setupTestEnv("week");
+        String moodCreatorId = testEnv[0];
+        String moodCreatorUsername = testEnv[1];
+        String followerId = testEnv[2];
+        String followerUsername = testEnv[3];
+
         // Login as follower
-        login(FOLLOWER, FOLLOWER_PASS);
+        login(followerUsername, PASSWORD);
 
         // Navigate to friends history
         navigateToFriendsHistory();
@@ -322,7 +352,6 @@ public class FollowingFilterTest {
         onView(withText("Apply")).perform(click());
         SystemClock.sleep(3000);
 
-        // The test passes if it reaches this point without crashing
         Log.d(TAG, "Recent week filter applied successfully");
     }
 
@@ -330,9 +359,16 @@ public class FollowingFilterTest {
      * US 05.05.01 - Filter by emotional state
      */
     @Test
-    public void testEmotionalStateFilter() {
+    public void testEmotionalStateFilter() throws InterruptedException {
+        // Setup unique test environment for this test
+        String[] testEnv = setupTestEnv("emotion");
+        String moodCreatorId = testEnv[0];
+        String moodCreatorUsername = testEnv[1];
+        String followerId = testEnv[2];
+        String followerUsername = testEnv[3];
+
         // Login as follower
-        login(FOLLOWER, FOLLOWER_PASS);
+        login(followerUsername, PASSWORD);
 
         // Navigate to friends history
         navigateToFriendsHistory();
@@ -358,9 +394,16 @@ public class FollowingFilterTest {
      * US 05.06.01 - Filter by reason text
      */
     @Test
-    public void testReasonTextFilter() {
+    public void testReasonTextFilter() throws InterruptedException {
+        // Setup unique test environment for this test
+        String[] testEnv = setupTestEnv("reason");
+        String moodCreatorId = testEnv[0];
+        String moodCreatorUsername = testEnv[1];
+        String followerId = testEnv[2];
+        String followerUsername = testEnv[3];
+
         // Login as follower
-        login(FOLLOWER, FOLLOWER_PASS);
+        login(followerUsername, PASSWORD);
 
         // Navigate to friends history
         navigateToFriendsHistory();
@@ -445,98 +488,179 @@ public class FollowingFilterTest {
         }
     }
 
-    @After
-    public void tearDown() {
-        Log.d(TAG, "Starting test cleanup");
+    @AfterClass
+    public static void cleanupAllData() throws InterruptedException {
+        Log.d(TAG, "Starting final test cleanup");
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Clean up the mood creator user
-        if (moodCreatorId != null) {
-            // Delete mood events
-            db.collection("users").document(moodCreatorId).collection("moods")
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            document.getReference().delete();
-                        }
-                        Log.d(TAG, "Deleted mood creator's moods");
-                    });
+        CountDownLatch finalCleanupLatch = new CountDownLatch(createdUserIds.size());
 
-            // Delete followers collection
-            db.collection("users").document(moodCreatorId).collection("followers")
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            document.getReference().delete();
-                        }
-                        Log.d(TAG, "Deleted mood creator's followers");
-                    });
+        for (String userId : createdUserIds) {
+            String email = userEmails.get(userId);
 
-            // Delete user document
-            db.collection("users").document(moodCreatorId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "Deleted mood creator's user document");
-                    });
-
-            // Delete auth user
-            try {
-                auth.signInWithEmailAndPassword(MOOD_CREATOR_EMAIL, MOOD_CREATOR_PASS)
-                        .addOnSuccessListener(authResult -> {
-                            FirebaseUser user = authResult.getUser();
-                            if (user != null) {
-                                user.delete()
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.d(TAG, "Deleted mood creator's auth profile");
-                                        });
-                            }
-                        });
-            } catch (Exception e) {
-                Log.e(TAG, "Error signing in as mood creator for deletion", e);
-            }
+            // Cleanup user's collections and data
+            cleanupUser(db, auth, userId, email, PASSWORD, finalCleanupLatch);
         }
 
-        // Clean up the follower user
-        if (followerId != null) {
-            // Delete following collection
-            db.collection("users").document(followerId).collection("following")
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            document.getReference().delete();
-                        }
-                        Log.d(TAG, "Deleted follower's following collection");
-                    });
-
-            // Delete user document
-            db.collection("users").document(followerId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "Deleted follower's user document");
-                    });
-
-            // Delete auth user
-            try {
-                auth.signInWithEmailAndPassword(FOLLOWER_EMAIL, FOLLOWER_PASS)
-                        .addOnSuccessListener(authResult -> {
-                            FirebaseUser user = authResult.getUser();
-                            if (user != null) {
-                                user.delete()
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.d(TAG, "Deleted follower's auth profile");
-                                        });
-                            }
-                        });
-            } catch (Exception e) {
-                Log.e(TAG, "Error signing in as follower for deletion", e);
-            }
+        boolean completed = finalCleanupLatch.await(60, TimeUnit.SECONDS);
+        if (!completed) {
+            Log.w(TAG, "Cleanup did not complete within timeout, but continuing anyway");
         }
 
-        // Sign out
-        auth.signOut();
+        Log.d(TAG, "All test cleanup complete");
+    }
 
-        Log.d(TAG, "Test cleanup complete");
+    private static void cleanupUser(FirebaseFirestore db, FirebaseAuth auth, String userId,
+                                    String email, String password, CountDownLatch latch) {
+        Log.d(TAG, "Cleaning up user: " + userId + " with email: " + email);
+
+        // Use a nested CountDownLatch to track collection deletions
+        CountDownLatch collectionsLatch = new CountDownLatch(3); // 3 collections to clean
+
+        // Delete mood events
+        db.collection("users").document(userId).collection("moods")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d(TAG, "Found " + queryDocumentSnapshots.size() + " moods to delete for user " + userId);
+                    if (queryDocumentSnapshots.size() > 0) {
+                        CountDownLatch moodsLatch = new CountDownLatch(queryDocumentSnapshots.size());
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            document.getReference().delete()
+                                    .addOnSuccessListener(v -> {
+                                        Log.d(TAG, "Deleted mood: " + document.getId());
+                                        moodsLatch.countDown();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Failed to delete mood: " + document.getId(), e);
+                                        moodsLatch.countDown();
+                                    });
+                        }
+                        try {
+                            moodsLatch.await(10, TimeUnit.SECONDS);
+                        } catch (InterruptedException e) {
+                            Log.e(TAG, "Interrupted while waiting for mood deletion", e);
+                        }
+                    }
+                    collectionsLatch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting moods", e);
+                    collectionsLatch.countDown();
+                });
+
+        // Delete followers collection
+        db.collection("users").document(userId).collection("followers")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d(TAG, "Found " + queryDocumentSnapshots.size() + " followers to delete for user " + userId);
+                    if (queryDocumentSnapshots.size() > 0) {
+                        CountDownLatch followersLatch = new CountDownLatch(queryDocumentSnapshots.size());
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            document.getReference().delete()
+                                    .addOnSuccessListener(v -> {
+                                        Log.d(TAG, "Deleted follower: " + document.getId());
+                                        followersLatch.countDown();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Failed to delete follower: " + document.getId(), e);
+                                        followersLatch.countDown();
+                                    });
+                        }
+                        try {
+                            followersLatch.await(10, TimeUnit.SECONDS);
+                        } catch (InterruptedException e) {
+                            Log.e(TAG, "Interrupted while waiting for followers deletion", e);
+                        }
+                    }
+                    collectionsLatch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting followers", e);
+                    collectionsLatch.countDown();
+                });
+
+        // Delete following collection
+        db.collection("users").document(userId).collection("following")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d(TAG, "Found " + queryDocumentSnapshots.size() + " following to delete for user " + userId);
+                    if (queryDocumentSnapshots.size() > 0) {
+                        CountDownLatch followingLatch = new CountDownLatch(queryDocumentSnapshots.size());
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            document.getReference().delete()
+                                    .addOnSuccessListener(v -> {
+                                        Log.d(TAG, "Deleted following: " + document.getId());
+                                        followingLatch.countDown();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Failed to delete following: " + document.getId(), e);
+                                        followingLatch.countDown();
+                                    });
+                        }
+                        try {
+                            followingLatch.await(10, TimeUnit.SECONDS);
+                        } catch (InterruptedException e) {
+                            Log.e(TAG, "Interrupted while waiting for following deletion", e);
+                        }
+                    }
+                    collectionsLatch.countDown();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting following", e);
+                    collectionsLatch.countDown();
+                });
+
+        // Wait for all collections to be cleaned first
+        try {
+            boolean collectionsComplete = collectionsLatch.await(20, TimeUnit.SECONDS);
+            if (!collectionsComplete) {
+                Log.w(TAG, "Collection cleanup did not complete within timeout for user " + userId);
+            }
+
+            // Now delete the user document and auth profile
+            db.collection("users").document(userId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Deleted user document: " + userId);
+
+                        // Attempt to delete auth user
+                        try {
+                            auth.signInWithEmailAndPassword(email, password)
+                                    .addOnSuccessListener(authResult -> {
+                                        FirebaseUser user = authResult.getUser();
+                                        if (user != null) {
+                                            user.delete()
+                                                    .addOnSuccessListener(aVoid2 -> {
+                                                        Log.d(TAG, "Deleted auth profile: " + userId);
+                                                        latch.countDown();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e(TAG, "Error deleting auth profile: " + userId, e);
+                                                        latch.countDown();
+                                                    });
+                                        } else {
+                                            Log.w(TAG, "User was null after login: " + userId);
+                                            latch.countDown();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Error signing in as user for deletion: " + userId, e);
+                                        latch.countDown();
+                                    });
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception while deleting auth user: " + userId, e);
+                            latch.countDown();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error deleting user document: " + userId, e);
+                        latch.countDown();
+                    });
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Interrupted while waiting for collections cleanup", e);
+            latch.countDown(); // Make sure to count down the main latch on error
+        }
     }
 }
