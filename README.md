@@ -40,12 +40,6 @@
 4. Open the project in Android Studio and run the app on an emulator or connected device.
 5. Configure Firebase backend for authentication and Firestore database (details in the Wiki).
 
-## Setup Instructions
-
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
 ## Documentation
 
 - [Wiki Link](https://github.com/cmput301-w25/project-unemployedavengers/wiki)
