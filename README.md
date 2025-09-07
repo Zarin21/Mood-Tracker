@@ -28,6 +28,7 @@
 ## Setup Instructions
 
 1. Clone the repository:
+   ```bash
    
    git clone https://github.com/cmput301-w25/project-unemployedavengers.git
    cd project-unemployedavengers
