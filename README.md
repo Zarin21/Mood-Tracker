@@ -6,14 +6,13 @@
 | ----------- | ------ | --------------- |
 | Kevin Chan | kdchan | @kevindkchan     |
 | WeiKun He | weikun1 | @weikun0309     |
-| Chowdhury Tashrif Ahmed | cahmed | @tashrifahmedd     |
+| Chowdhury Tashrif Ahmed | cahmed | @tashrifahmedd |
 | Zarin Subah | zsubah | @Zarin21     |
 | Levi Liu | yingjia6 | @puro-exe     |
 | Ethan Shi | yunzhe3 | @EthanShi-push     |
 
 ## Project Description
-
-[Brief description of the project in your own words]
+**Mood Tracker** is a personal mental health journal app that allows users to track, visualize, and share their moods over time. Users can log emotional states, see trends in their mood history, view friends’ moods, and explore mood events on a map. The app emphasizes privacy while also allowing social interaction and support among friends.
 
 ## Key Features
 
@@ -29,19 +28,16 @@
 
 1. Clone the repository:
    ```bash
-   
    git clone https://github.com/cmput301-w25/project-unemployedavengers.git
    cd project-unemployedavengers
 2. Install dependencies:
-
    For Android (assuming using Android Studio)
-   ```bash
-    ./gradlew build
+	```bash
+	    ./gradlew build
 4. Open the project in Android Studio and run the app on an emulator or connected device.
 5. Configure Firebase backend for authentication and Firestore database (details in the Wiki).
 
 ## Documentation
-
 - [Wiki Link](https://github.com/cmput301-w25/project-unemployedavengers/wiki)
 - [Scrum Board](https://github.com/orgs/cmput301-w25/projects/63)
 - [UI Mockups](https://github.com/cmput301-w25/project-unemployedavengers/wiki/March-31,-UI-Mockup)
