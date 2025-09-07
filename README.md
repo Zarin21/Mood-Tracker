@@ -17,9 +17,26 @@
 
 ## Key Features
 
-- [Feature 1]: Brief description
-- [Feature 2]: Brief description
-- [Feature 3]: Brief description
+- **Mood Logging and Tracking**: Users can quickly log their mood, add notes, and specify the location and context of their emotions.
+- **Interactive Maps**: Personal and friends’ mood maps show mood events with location markers. Users can filter by distance or specific friends.
+- **Mood History**: Chronological list of mood entries, with filtering options by mood type, week, or keyword.
+- **Profile Management**: Users can manage their profile, change usernames or passwords, and customize avatars.
+- **Friend System**: Users can follow friends, view their mood histories, and comment on mood events.
+- **Notifications**: Real-time notifications for friend requests and mood activity updates.
+- **Input/Edit Mood Fragment**: A flexible input screen for adding, editing, or deleting mood entries with dropdowns for emotional states.
+
+## Setup Instructions
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/cmput301-w25/project-unemployedavengers.git
+   cd project-unemployedavengers
+2. Install dependencies:
+
+    # For Android (assuming using Android Studio)
+    ./gradlew build
+3. Open the project in Android Studio and run the app on an emulator or connected device.
+4. Configure Firebase backend for authentication and Firestore database (details in the Wiki).
 
 ## Setup Instructions
 
