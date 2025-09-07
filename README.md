@@ -28,15 +28,16 @@
 ## Setup Instructions
 
 1. Clone the repository:
-   ```bash
+   
    git clone https://github.com/cmput301-w25/project-unemployedavengers.git
    cd project-unemployedavengers
 2. Install dependencies:
 
-    # For Android (assuming using Android Studio)
+   For Android (assuming using Android Studio)
+   ```bash
     ./gradlew build
-3. Open the project in Android Studio and run the app on an emulator or connected device.
-4. Configure Firebase backend for authentication and Firestore database (details in the Wiki).
+4. Open the project in Android Studio and run the app on an emulator or connected device.
+5. Configure Firebase backend for authentication and Firestore database (details in the Wiki).
 
 ## Setup Instructions
 
