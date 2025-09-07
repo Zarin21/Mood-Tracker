@@ -1,4 +1,4 @@
-# CMPUT 301 W25 - Team UnemployedAvengers
+# CMPUT 301 W25 - Team UA
 
 ## Team Members
 
